@@ -80,6 +80,12 @@ resource "cloudfoundry_app" "ssb" {
     # service_binding  {
     #   TODO
     # }
+    routes {
+        route = cloudfoundry_route.ssb_uri.id
+    }
+    depends_on    = [
+        data.archive_file.app_zip
+    ]
 }
 
 # Give the broker a random route
@@ -91,9 +97,6 @@ resource "cloudfoundry_route" "ssb_uri" {
     domain      = data.cloudfoundry_domain.apps.id
     space       = data.cloudfoundry_space.management.id
     hostname    = random_pet.client_hostname.id
-    target { 
-        app = cloudfoundry_app.ssb.id 
-    }
 }
 
 # Register the broker in each of these spaces
