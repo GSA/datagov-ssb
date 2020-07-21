@@ -1,8 +1,14 @@
 # See vars.tf for more information
 
-cf_username = "username"
-cf_password = "password"
+cf_username = "your_cf_username"
+cf_password = "your_cf_password"
 
-aws_access_key_id       = "access_key_id"
-aws_secret_access_key   =  "secret_access_key"
+aws_access_key_id       = "your_access_key_id"
+aws_secret_access_key   =  "your_secret_access_key"
+
+gcp_project          = "your_project_name"
+gcp_credentials      = <<EOT
+<your credential file JSON content here>
+EOT
+
 
