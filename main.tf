@@ -35,33 +35,10 @@ resource "random_password" "client_password" {
     override_special = "_%@"
 }
 
-# Write out the config file for the broker
-resource "local_file" "broker_config" {
-  sensitive_content = templatefile("./config.yml-template", 
-    {   
-        client_username         = random_uuid.client_username.result, 
-        client_password         = random_password.client_password.result, 
-        aws_access_key_id       = var.aws_access_key_id,
-        aws_secret_access_key   = var.aws_secret_access_key,
-
-        # TODO: Remove these lines once this issue is addressed: 
-        # https://github.com/pivotal/cloud-service-broker/issues/49
-        db_host                 = cloudfoundry_service_key.key.credentials["host"],
-        db_user                 = cloudfoundry_service_key.key.credentials["username"],
-        db_password             = cloudfoundry_service_key.key.credentials["password"],
-        db_port                 = cloudfoundry_service_key.key.credentials["port"],
-        db_name                 = cloudfoundry_service_key.key.credentials["db_name"],
-    } )
-  filename = "./app/config.yml"
-}
-
 data archive_file "app_zip" {
   type          = "zip"
   source_dir    = "./app"
   output_path   = "./app.zip"
-  depends_on    = [
-    local_file.broker_config
-  ]
 }
 
 resource "cloudfoundry_app" "ssb" {
@@ -69,17 +46,28 @@ resource "cloudfoundry_app" "ssb" {
     name                = "ssb"
     path                = "./app.zip"
     buildpack           = "binary_buildpack"
-    command             = "./cloud-service-broker serve --config config.yml"
+    command             = "./cloud-service-broker serve"
     instances           = 2
     memory              = 128
     enable_ssh          = false
     source_code_hash    = data.archive_file.app_zip.output_base64sha256
     strategy            = "blue-green"
-    # TODO: Use a service_binding to provide the MySQL config once this issue is
-    # addressed: https://github.com/pivotal/cloud-service-broker/issues/49
-    # service_binding  {
-    #   TODO
-    # }
+    environment         = {
+        SECURITY_USER_NAME      = random_uuid.client_username.result, 
+        SECURITY_USER_PASSWORD  = random_password.client_password.result, 
+        AWS_ACCESS_KEY_ID       = var.aws_access_key_id,
+        AWS_SECRET_ACCESS_KEY   = var.aws_secret_access_key,
+        GCP_CREDENTIALS         = var.gcp_credentials,
+        GCP_PROJECT             = var.gcp_project,
+
+        # TODO: Use a service_binding to provide the MySQL config once this issue is addressed: 
+        # https://github.com/pivotal/cloud-service-broker/issues/49
+        DB_HOST         = cloudfoundry_service_key.key.credentials["host"]
+        DB_PASSWORD     = cloudfoundry_service_key.key.credentials["password"],
+        DB_PORT         = cloudfoundry_service_key.key.credentials["port"],
+        DB_USERNAME     = cloudfoundry_service_key.key.credentials["username"],
+        DB_NAME         = cloudfoundry_service_key.key.credentials["db_name"],
+    }
     routes {
         route = cloudfoundry_route.ssb_uri.id
     }
@@ -123,6 +111,9 @@ resource cloudfoundry_service_broker "ssb-broker" {
     username    = random_uuid.client_username.result
     password    = random_password.client_password.result
     space       = data.cloudfoundry_space.spaces["${each.key}"].id
+    depends_on = [
+        cloudfoundry_app.ssb
+    ]
 }
 
 # ---
