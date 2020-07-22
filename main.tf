@@ -1,119 +1,123 @@
+terraform {
+  backend "s3" {}
+}
+
 provider "random" {}
 provider "local" {}
 
 provider "cloudfoundry" {
-    # Configure the CloudFoundry Provider
-    api_url  = var.cf_api_url
-    user     = var.cf_username
-    password = var.cf_password
+  # Configure the CloudFoundry Provider
+  api_url  = var.cf_api_url
+  user     = var.cf_username
+  password = var.cf_password
 }
 
 data "cloudfoundry_space" "management" {
-    name = "management"
-    org_name = "gsa-datagov"
+  name     = "management"
+  org_name = "gsa-datagov"
 }
 
 data "cloudfoundry_service" "rds" {
-    name = "aws-rds"
+  name = "aws-rds"
 }
 
 resource "cloudfoundry_service_instance" "db" {
-    name = "ssb-db"
-    space = data.cloudfoundry_space.management.id
-    service_plan = data.cloudfoundry_service.rds.service_plans["shared-mysql"]
+  name         = "ssb-db"
+  space        = data.cloudfoundry_space.management.id
+  service_plan = data.cloudfoundry_service.rds.service_plans["shared-mysql"]
 }
 
 resource "cloudfoundry_service_key" "key" {
-    name = "ssb-key"
-    service_instance = cloudfoundry_service_instance.db.id
+  name             = "ssb-key"
+  service_instance = cloudfoundry_service_instance.db.id
 }
 
 resource "random_uuid" "client_username" {}
 resource "random_password" "client_password" {
-    length = 16
-    special = true
-    override_special = "_%@"
+  length           = 16
+  special          = true
+  override_special = "_%@"
 }
 
 data archive_file "app_zip" {
-  type          = "zip"
-  source_dir    = "./app"
-  output_path   = "./app.zip"
+  type        = "zip"
+  source_dir  = "./app"
+  output_path = "./app.zip"
 }
 
 resource "cloudfoundry_app" "ssb" {
-    space               = data.cloudfoundry_space.management.id
-    name                = "ssb"
-    path                = "./app.zip"
-    buildpack           = "binary_buildpack"
-    command             = "./cloud-service-broker serve"
-    instances           = 2
-    memory              = 128
-    enable_ssh          = false
-    source_code_hash    = data.archive_file.app_zip.output_base64sha256
-    strategy            = "blue-green"
-    environment         = {
-        SECURITY_USER_NAME      = random_uuid.client_username.result, 
-        SECURITY_USER_PASSWORD  = random_password.client_password.result, 
-        AWS_ACCESS_KEY_ID       = var.aws_access_key_id,
-        AWS_SECRET_ACCESS_KEY   = var.aws_secret_access_key,
-        GCP_CREDENTIALS         = var.gcp_credentials,
-        GCP_PROJECT             = var.gcp_project,
+  space            = data.cloudfoundry_space.management.id
+  name             = "ssb"
+  path             = "./app.zip"
+  buildpack        = "binary_buildpack"
+  command          = "./cloud-service-broker serve"
+  instances        = 2
+  memory           = 128
+  enable_ssh       = false
+  source_code_hash = data.archive_file.app_zip.output_base64sha256
+  strategy         = "blue-green"
+  environment = {
+    SECURITY_USER_NAME     = random_uuid.client_username.result,
+    SECURITY_USER_PASSWORD = random_password.client_password.result,
+    AWS_ACCESS_KEY_ID      = var.aws_access_key_id,
+    AWS_SECRET_ACCESS_KEY  = var.aws_secret_access_key,
+    GCP_CREDENTIALS        = var.gcp_credentials,
+    GCP_PROJECT            = var.gcp_project,
 
-        # TODO: Use a service_binding to provide the MySQL config once this issue is addressed: 
-        # https://github.com/pivotal/cloud-service-broker/issues/49
-        DB_HOST         = cloudfoundry_service_key.key.credentials["host"]
-        DB_PASSWORD     = cloudfoundry_service_key.key.credentials["password"],
-        DB_PORT         = cloudfoundry_service_key.key.credentials["port"],
-        DB_USERNAME     = cloudfoundry_service_key.key.credentials["username"],
-        DB_NAME         = cloudfoundry_service_key.key.credentials["db_name"],
-    }
-    routes {
-        route = cloudfoundry_route.ssb_uri.id
-    }
-    depends_on    = [
-        data.archive_file.app_zip
-    ]
+    # TODO: Use a service_binding to provide the MySQL config once this issue is addressed: 
+    # https://github.com/pivotal/cloud-service-broker/issues/49
+    DB_HOST     = cloudfoundry_service_key.key.credentials["host"]
+    DB_PASSWORD = cloudfoundry_service_key.key.credentials["password"],
+    DB_PORT     = cloudfoundry_service_key.key.credentials["port"],
+    DB_USERNAME = cloudfoundry_service_key.key.credentials["username"],
+    DB_NAME     = cloudfoundry_service_key.key.credentials["db_name"],
+  }
+  routes {
+    route = cloudfoundry_route.ssb_uri.id
+  }
+  depends_on = [
+    data.archive_file.app_zip
+  ]
 }
 
 # Give the broker a random route
 data "cloudfoundry_domain" "apps" {
-    sub_domain  = "app"
+  sub_domain = "app"
 }
 resource "random_pet" "client_hostname" {}
 resource "cloudfoundry_route" "ssb_uri" {
-    domain      = data.cloudfoundry_domain.apps.id
-    space       = data.cloudfoundry_space.management.id
-    hostname    = random_pet.client_hostname.id
+  domain   = data.cloudfoundry_domain.apps.id
+  space    = data.cloudfoundry_space.management.id
+  hostname = random_pet.client_hostname.id
 }
 
 # Register the broker in each of these spaces
 # TODO: Make this set DRY
 data "cloudfoundry_space" "spaces" {
-    for_each = {
-        development = "development"
-        staging     = "staging"
-        production  = "prod"
-    }        
-    name = each.value
-    org_name = "gsa-datagov"
+  for_each = {
+    development = "development"
+    staging     = "staging"
+    production  = "prod"
+  }
+  name     = each.value
+  org_name = "gsa-datagov"
 }
 
 resource cloudfoundry_service_broker "ssb-broker" {
-    for_each = {
-        development = "development"
-        staging     = "staging"
-        production  = "prod"
-    }        
-    fail_when_catalog_not_accessible = true
-    name        = "ssb-${each.value}-${var.cf_username}"
-    url         = "https://${cloudfoundry_route.ssb_uri.endpoint}"
-    username    = random_uuid.client_username.result
-    password    = random_password.client_password.result
-    space       = data.cloudfoundry_space.spaces["${each.key}"].id
-    depends_on = [
-        cloudfoundry_app.ssb
-    ]
+  for_each = {
+    development = "development"
+    staging     = "staging"
+    production  = "prod"
+  }
+  fail_when_catalog_not_accessible = true
+  name                             = "ssb-${each.value}-${var.cf_username}"
+  url                              = "https://${cloudfoundry_route.ssb_uri.endpoint}"
+  username                         = random_uuid.client_username.result
+  password                         = random_password.client_password.result
+  space                            = data.cloudfoundry_space.spaces["${each.key}"].id
+  depends_on = [
+    cloudfoundry_app.ssb
+  ]
 }
 
 # ---
