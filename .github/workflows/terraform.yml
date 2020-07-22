@@ -54,8 +54,18 @@ jobs:
   terraform:
     name: 'Terraform'
     env:
+      # For storing the Terraform state for the deployment
       AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
       AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+      # For deploying and registering the broker in Cloud Foundry
+      TF_VAR_cf_username: "${{ secrets.TF_VAR_cf_username }}"
+      TF_VAR_cf_password: "${{ secrets.TF_VAR_cf_password }}"      
+      # For managing brokered resources via the AWS brokerpak
+      TF_VAR_aws_access_key_id: "${{ secrets.TF_VAR_aws_access_key_id }}"
+      TF_VAR_aws_secret_access_key: "${{ secrets.TF_VAR_aws_access_key_id }}"
+      # For managing brokered resources via the GCP brokerpak
+      TF_VAR_gcp_credentials: "${{ secrets.TF_VAR_gcp_credentials }}"
+      TF_VAR_gcp_project: "${{ secrets.TF_VAR_gcp_project }}"
     runs-on: ubuntu-latest
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
@@ -82,6 +92,11 @@ jobs:
       run: bash -c "$(curl -fsSL https://raw.github.com/cloudfoundry-community/terraform-provider-cf/master/bin/install.sh)"
     # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
+      env:
+        BUCKET: "${{ secrets.BUCKET }}"
+        KEY: "ssb-tfstate"
+        REGION: "us-gov-west-1"
+        ENCRYPT: "true"
       # run: cat > backend.tfvars << EOT
       #   ${{ env.BACKEND_TFVARS }}
       # EOT
