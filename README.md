@@ -1,21 +1,59 @@
-# 18F Open Source Policy
+# datagov-ssb
 
-This repository contains the official [Open Source Policy](policy.md) of [18F](https://18f.gsa.gov/) (a digital delivery team within the [General Services Administration](http://gsa.gov)).
+The Supplementary Service Broker (SSB) fills gaps in cloud.gov's brokered
+services.
 
-**[Read 18F's open source policy.](policy.md)**
+Services are defined in a
+[brokerpaks](https://github.com/pivotal/cloud-service-broker/blob/master/docs/brokerpak-intro.md),
+bundles of Terraform and YAML that specifies the service should be
+advertised, provisioned, bound, unbound, and unprovisioned.
 
-### 18F Team Guidance
+# Dependencies
 
-For 18F team members, we have guidance on how 18F puts this policy into practice, and how we handle the narrow situations where we may delay or withhold the release of source code.
+The broker deployment is specified and managed using
+[Terraform](https://www.terraform.io/). You must have at least Terraform version
+`0.12.6` installed.
 
-**[Read 18F's open source team practices.](practice.md)**
+# Creating and installing the broker
 
-### Credits
+Download the broker binary and any desired brokerpak files into `/app`. (TODO
+Try to do this automatically with terraform... It seems possible with
+[github_release in the github_provider](https://registry.terraform.io/providers/hashicorp/github/latest/docs/data-sources/release)!)
+```
 
-This policy was originally forked from the [Consumer Financial Protection Bureau's policy](https://github.com/cfpb/source-code-policy). Thanks also to [@benbalter](https://github.com/benbalter) for his [insights regarding CFPB's initial policy](http://ben.balter.com/2012/04/10/whats-missing-from-cfpbs-awesome-new-source-code-policy/).
+(cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/sb-0.1.0-rc.34-aws-0.0.1-rc.108/cloud-service-broker)
+(cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/sb-0.1.0-rc.34-aws-0.0.1-rc.108/aws-services-0.0.1-rc.108.brokerpak)
 
+```
 
-### Public domain
+Copy the `terraform.tfvars-template` and edit in the values for any needed service accounts.
+```
+cp terraform.tfvars-template terraform.tfvars
+${EDITOR} terraform.tfvars
+```
+
+Run Terraform apply and answer `yes` when prompted.
+```
+terraform apply
+```
+
+# Uninstalling and deleting the broker
+Run Terraform destroy and answer `yes` when prompted.
+```
+terraform destroy
+```
+
+# Sharing the deployment in a team
+Ensure everyone running terraform must read/write the same
+`.tfstate` file. See the [Terraform
+documentation](https://www.terraform.io/docs/state/remote.html) for more information.
+
+---
+## Contributing
+
+See [CONTRIBUTING](CONTRIBUTING.md) for additional information.
+
+## Public domain
 
 This project is in the worldwide [public domain](LICENSE.md). As stated in [CONTRIBUTING](CONTRIBUTING.md):
 
