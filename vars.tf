@@ -38,11 +38,11 @@ variable "broker_space" {
 
 variable "client_spaces" {
   description = "The spaces where the broker should be available. A map where keys are org names, and the values are sets of spaces in that org. If none, the broker will not be restricted to a space"
-  type = map(set(string))
+  type        = map(set(string))
 
   default = {
     # orgname    = [ "space1", "space2" ]
-    gsa-datagov = [ "development", "staging", "prod" ]
+    gsa-datagov = ["development", "staging", "prod"]
   }
 }
 

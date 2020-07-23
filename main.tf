@@ -96,7 +96,7 @@ data "cloudfoundry_space" "spaces" {
 }
 
 resource cloudfoundry_service_broker "space-scoped-broker" {
-  for_each = local.spaces_in_orgs
+  for_each                         = local.spaces_in_orgs
   fail_when_catalog_not_accessible = true
   name                             = "ssb-${each.value.org}-${each.value.space}"
   url                              = "https://${cloudfoundry_route.ssb_uri.endpoint}"
@@ -111,7 +111,7 @@ resource cloudfoundry_service_broker "space-scoped-broker" {
 # If no client_spaces were specified, try to register this as broker globally.
 # This only works if the CF credentials provided belong to an administrator.
 resource cloudfoundry_service_broker "standard-broker" {
-  count = local.spaces_in_orgs == {} ? 1 : 0
+  count                            = local.spaces_in_orgs == {} ? 1 : 0
   fail_when_catalog_not_accessible = true
   name                             = "ssb-standard"
   url                              = "https://${cloudfoundry_route.ssb_uri.endpoint}"

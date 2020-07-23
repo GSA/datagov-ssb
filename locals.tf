@@ -14,10 +14,10 @@ locals {
     ]
   ])
 
-  spaces_in_orgs = { 
+  spaces_in_orgs = {
     for os in local.org_spaces : "${os.org}/${os.space}" => {
-      org = os.org
-      space  = os.space
+      org   = os.org
+      space = os.space
     }
   }
 }
