@@ -9,9 +9,9 @@ provider "cloudfoundry" {
   password = var.cf_password
 }
 
-data "cloudfoundry_space" "management" {
-  name     = "management"
-  org_name = "gsa-datagov"
+data "cloudfoundry_space" "broker_space" {
+  name     = var.broker_space.space
+  org_name = var.broker_space.org
 }
 
 data "cloudfoundry_service" "rds" {
@@ -20,7 +20,7 @@ data "cloudfoundry_service" "rds" {
 
 resource "cloudfoundry_service_instance" "db" {
   name         = "ssb-db"
-  space        = data.cloudfoundry_space.management.id
+  space        = data.cloudfoundry_space.broker_space.id
   service_plan = data.cloudfoundry_service.rds.service_plans["shared-mysql"]
 }
 
@@ -43,7 +43,7 @@ data archive_file "app_zip" {
 }
 
 resource "cloudfoundry_app" "ssb" {
-  space            = data.cloudfoundry_space.management.id
+  space            = data.cloudfoundry_space.broker_space.id
   name             = "ssb"
   path             = "./app.zip"
   buildpack        = "binary_buildpack"
@@ -84,7 +84,7 @@ data "cloudfoundry_domain" "apps" {
 resource "random_pet" "client_hostname" {}
 resource "cloudfoundry_route" "ssb_uri" {
   domain   = data.cloudfoundry_domain.apps.id
-  space    = data.cloudfoundry_space.management.id
+  space    = data.cloudfoundry_space.broker_space.id
   hostname = random_pet.client_hostname.id
 }
 

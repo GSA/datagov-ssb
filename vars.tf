@@ -27,3 +27,11 @@ variable "gcp_project" {
   description = "GCP project name"
 }
 
+variable "broker_space" {
+  description = "The space where the broker itself should be deployed"
+  type        = object({ org = string, space = string })
+  default = {
+    org   = "gsa-datagov"
+    space = "management"
+  }
+}
