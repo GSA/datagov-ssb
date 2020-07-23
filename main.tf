@@ -89,25 +89,16 @@ resource "cloudfoundry_route" "ssb_uri" {
 }
 
 # Register the broker in each of these spaces
-# TODO: Make this set DRY
 data "cloudfoundry_space" "spaces" {
-  for_each = {
-    development = "development"
-    staging     = "staging"
-    production  = "prod"
-  }
-  name     = each.value
-  org_name = "gsa-datagov"
+  for_each = local.spaces_in_orgs
+  name     = each.value.space
+  org_name = each.value.org
 }
 
-resource cloudfoundry_service_broker "ssb-broker" {
-  for_each = {
-    development = "development"
-    staging     = "staging"
-    production  = "prod"
-  }
+resource cloudfoundry_service_broker "space-scoped-broker" {
+  for_each = local.spaces_in_orgs
   fail_when_catalog_not_accessible = true
-  name                             = "ssb-${each.value}-${var.cf_username}"
+  name                             = "ssb-${each.value.org}-${each.value.space}"
   url                              = "https://${cloudfoundry_route.ssb_uri.endpoint}"
   username                         = random_uuid.client_username.result
   password                         = random_password.client_password.result
