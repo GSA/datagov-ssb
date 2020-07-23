@@ -2,9 +2,6 @@ terraform {
   backend "s3" {}
 }
 
-provider "random" {}
-provider "local" {}
-
 provider "cloudfoundry" {
   # Configure the CloudFoundry Provider
   api_url  = var.cf_api_url
