@@ -108,6 +108,20 @@ resource cloudfoundry_service_broker "space-scoped-broker" {
   ]
 }
 
+# If no client_spaces were specified, try to register this as broker globally.
+# This only works if the CF credentials provided belong to an administrator.
+resource cloudfoundry_service_broker "standard-broker" {
+  count = local.spaces_in_orgs == {} ? 1 : 0
+  fail_when_catalog_not_accessible = true
+  name                             = "ssb-standard"
+  url                              = "https://${cloudfoundry_route.ssb_uri.endpoint}"
+  username                         = random_uuid.client_username.result
+  password                         = random_password.client_password.result
+  depends_on = [
+    cloudfoundry_app.ssb
+  ]
+}
+
 # ---
 # TODO: Try to download the files we need as part of making Terraform go
 
