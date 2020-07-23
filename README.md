@@ -112,6 +112,7 @@ following into [the `Settings > Secrets` page](/settings/secrets) on your fork:
 
 Once these secrets are in place, any changes to the master branch will be
 deployed automatically.
+
 ---
 ## Contributing
 
