@@ -1,0 +1,10 @@
+bucket                = "<bucket>"
+region                = "<region>"
+key                   = "ssb-tfstate"
+encrypt               = true
+
+# Note the following will be ignored due to a bug...
+# https://github.com/hashicorp/terraform/issues/25649
+# Until it's fixed you must supply these values as env vars.
+AWS_ACCESS_KEY_ID     = "<key_id"
+AWS_SECRET_ACCESS_KEY = "<secret_key>"
