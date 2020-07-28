@@ -46,8 +46,7 @@ provisioned, bound, unbound, and unprovisioned.
 ## Dependencies
 
 The broker deployment is specified and managed using
-[Terraform](https://www.terraform.io/). You must have at least Terraform version
-`0.12.6` installed.
+[Docker](https://www.docker.com/products/docker-desktop).
 
 You must also [install the Terraform provider for Cloud
 Foundry](https://github.com/cloudfoundry-community/terraform-provider-cf/wiki#using-the-provider)
@@ -67,10 +66,16 @@ github_release and github_actions_secret in the github_provider!) -->
 
     ```
 
-1. Copy the `backend.tfvars-template` and edit in the values for the S3 bucket.
+1. Copy the `backend.tfvars-template` and edit in the non-sensitive values for the S3 bucket.
     ```
     cp backend.tfvars-template backend.tfvars
-    ${EDITOR} terraform.tfvars
+    ${EDITOR} backend.tfvars
+    ```
+
+1. Copy the `.env.secrets-template` and edit in the sensitive values for the S3 bucket.
+    ```
+    cp .env.secrets-template .env.secrets
+    ${EDITOR} .env.secrets
     ```
 
 1. Copy the `terraform.tfvars-template` and edit in the values for the Cloud
@@ -80,20 +85,19 @@ github_release and github_actions_secret in the github_provider!) -->
     ${EDITOR} terraform.tfvars
     ```
 
-1. Run Terraform init to set up the backend. You must provide the credentials
-   for the S3 bucket as environment variables.
+1. Run Terraform init to set up the backend.
     ```
-    AWS_ACCESS_KEY_ID="[redacted]" AWS_SECRET_ACCESS_KEY="[redacted]]" terraform init -backend-config=backend.tfvars
+    docker-compose run --rm terraform init
     ```
 1. Run Terraform apply and answer `yes` when prompted.
     ```
-    AWS_ACCESS_KEY_ID="[redacted]" AWS_SECRET_ACCESS_KEY="[redacted]]" terraform apply
+    docker-compose run --rm terraform apply
     ```
 
 # Uninstalling and deleting the broker
 Run Terraform destroy and answer `yes` when prompted.
 ```
-AWS_ACCESS_KEY_ID="[redacted]" AWS_SECRET_ACCESS_KEY="[redacted]]" terraform destroy
+docker-compose run --rm terraform destroy
 ```
 
 # Continuously deploying the broker
@@ -105,7 +109,7 @@ following into [the `Settings > Secrets` page](/settings/secrets) on your fork:
 | Secret Name | Description |
 |-------------|-------------|
 | AWS_ACCESS_KEY_ID | the S3 bucket key|
-| AWS_SECRET_ACCESS_KEY | the S3 bucket  |
+| AWS_SECRET_ACCESS_KEY | the S3 bucket secret |
 | BUCKET | the S3 bucket name |
 | TF_VAR_AWS_ACCESS_KEY_ID | the key for brokering resources in AWS |
 | TF_VAR_AWS_SECRET_ACCESS_KEY | the secret for brokering resources in AWS |

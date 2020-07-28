@@ -1,0 +1,12 @@
+version: '3.7'
+
+services:
+  terraform:
+    image: hashicorp/terraform:0.12.29
+    volumes:
+      - .:/code
+    working_dir: /code
+    environment:
+      TF_CLI_ARGS_init: -backend-config=backend.tfvars
+    env_file:
+    - .env.secrets
