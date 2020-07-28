@@ -48,12 +48,6 @@ provisioned, bound, unbound, and unprovisioned.
 The broker deployment is specified and managed using
 [Docker](https://www.docker.com/products/docker-desktop).
 
-You must also [install the Terraform provider for Cloud
-Foundry](https://github.com/cloudfoundry-community/terraform-provider-cf/wiki#using-the-provider)
-```
-bash -c "$(curl -fsSL https://raw.github.com/cloudfoundry-community/terraform-provider-cf/master/bin/install.sh)
-```
-
 ## Creating and installing the broker
 <!-- (TODO
 Try to do this automatically with terraform... It seems possible with

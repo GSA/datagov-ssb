@@ -42,9 +42,7 @@ jobs:
         (cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/sb-0.1.0-rc.34-aws-0.0.1-rc.108/cloud-service-broker)
         (cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/sb-0.1.0-rc.34-aws-0.0.1-rc.108/aws-services-0.0.1-rc.108.brokerpak)
         (cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/sb-0.1.0-rc.34-gcp-0.0.1-rc.73/google-services-0.0.1-rc.73.brokerpak)
-    # Install the latest version of the Terraform provider for Cloud Foundry (https://github.com/cloudfoundry-community/terraform-provider-cf/wiki)
-    - name: Install the Cloud Foundry Terraform provider
-      run: bash -c "$(curl -fsSL https://raw.github.com/cloudfoundry-community/terraform-provider-cf/master/bin/install.sh)"
+        chmod +x app/cloud-service-broker
     # Supply a (empty) .env.secrets file
     - name: Supply .env.secrets
       run: touch .env.secrets
