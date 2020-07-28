@@ -45,6 +45,9 @@ jobs:
     # Install the latest version of the Terraform provider for Cloud Foundry (https://github.com/cloudfoundry-community/terraform-provider-cf/wiki)
     - name: Install the Cloud Foundry Terraform provider
       run: bash -c "$(curl -fsSL https://raw.github.com/cloudfoundry-community/terraform-provider-cf/master/bin/install.sh)"
+    # Supply a (empty) .env.secrets file
+    - name: Supply .env.secrets
+      run: touch .env.secrets
     # Initialize the Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       env:
@@ -60,7 +63,9 @@ jobs:
         -backend-config=bucket="${{ env.BUCKET }}" 
         -backend-config=key="${{ env.KEY }}" 
         -backend-config=region="${{ env.REGION }}" 
-        -backend-config=encrypt="${{ env.ENCRYPT }}" 
+        -backend-config=encrypt="${{ env.ENCRYPT }}"
+        -backend-config=access_key="${{ secrets.AWS_ACCESS_KEY_ID }}"
+        -backend-config=secret_key="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
       # -backend-config=backend.tfvars
 
     # Check that all Terraform configuration files adhere to the canonical format
