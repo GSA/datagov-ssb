@@ -87,7 +87,7 @@ github_release and github_actions_secret in the github_provider!) -->
 
 1. Run Terraform init to set up the backend.
     ```
-    docker-compose run --rm terraform init
+    docker-compose run --rm terraform init -backend-config=backend.tfvars
     ```
 1. Run Terraform apply and answer `yes` when prompted.
     ```

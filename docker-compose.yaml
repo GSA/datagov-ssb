@@ -6,7 +6,5 @@ services:
     volumes:
       - .:/code
     working_dir: /code
-    environment:
-      TF_CLI_ARGS_init: -backend-config=backend.tfvars
     env_file:
     - .env.secrets

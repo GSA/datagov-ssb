@@ -66,7 +66,6 @@ jobs:
         -backend-config=encrypt="${{ env.ENCRYPT }}"
         -backend-config=access_key="${{ secrets.AWS_ACCESS_KEY_ID }}"
         -backend-config=secret_key="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-      # -backend-config=backend.tfvars
 
     # Check that all Terraform configuration files adhere to the canonical format
     - name: Terraform Format
