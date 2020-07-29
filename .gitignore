@@ -40,3 +40,4 @@ app/config.yml
 app.zip
 app/*
 backend.tfvars
+.env.secrets

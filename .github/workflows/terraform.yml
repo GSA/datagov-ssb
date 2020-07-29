@@ -1,46 +1,6 @@
-# This workflow installs the latest version of Terraform CLI and configures the Terraform CLI configuration file
-# with an API token for Terraform Cloud (app.terraform.io). On pull request events, this workflow will run
-# `terraform init`, `terraform fmt`, and `terraform plan` (speculative plan via Terraform Cloud). On push events
-# to the master branch, `terraform apply` will be executed.
-#
-# Documentation for `hashicorp/setup-terraform` is located here: https://github.com/hashicorp/setup-terraform
-#
-# To use this workflow, you will need to complete the following setup steps.
-#
-# 1. Create a `main.tf` file in the root of this repository with the `remote` backend and one or more resources defined.
-#   Example `main.tf`:
-#     # The configuration for the `remote` backend.
-#     terraform {
-#       backend "remote" {
-#         # The name of your Terraform Cloud organization.
-#         organization = "example-organization"
-#
-#         # The name of the Terraform Cloud workspace to store Terraform state files in.
-#         workspaces {
-#           name = "example-workspace"
-#         }
-#       }
-#     }
-#
-#     # An example resource that does nothing.
-#     resource "null_resource" "example" {
-#       triggers = {
-#         value = "A example resource that does nothing!"
-#       }
-#     }
-#
-#
-# 2. Generate a Terraform Cloud user API token and store it as a GitHub secret (e.g. TF_API_TOKEN) on this repository.
-#   Documentation:
-#     - https://www.terraform.io/docs/cloud/users-teams-organizations/api-tokens.html
-#     - https://help.github.com/en/actions/configuring-and-managing-workflows/creating-and-storing-encrypted-secrets
-#
-# 3. Reference the GitHub secret in step using the `hashicorp/setup-terraform` GitHub Action.
-#   Example:
-#     - name: Setup Terraform
-#       uses: hashicorp/setup-terraform@v1
-#       with:
-#         cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+# On pull request events, this workflow will run `terraform init`, `terraform
+# fmt`, and `terraform plan`. On push events to the master branch, `terraform
+# apply` will be executed.
 
 name: 'Terraform'
 
@@ -82,15 +42,11 @@ jobs:
         (cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/sb-0.1.0-rc.34-aws-0.0.1-rc.108/cloud-service-broker)
         (cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/sb-0.1.0-rc.34-aws-0.0.1-rc.108/aws-services-0.0.1-rc.108.brokerpak)
         (cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/sb-0.1.0-rc.34-gcp-0.0.1-rc.73/google-services-0.0.1-rc.73.brokerpak)
-    # Install the latest version of Terraform CLI and configure the Terraform CLI configuration file with a Terraform Cloud user API token
-    - name: Setup Terraform
-      uses: hashicorp/setup-terraform@v1
-      # with:
-      #   cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
-    # Install the latest version of the Terraform provider for Cloud Foundry (https://github.com/cloudfoundry-community/terraform-provider-cf/wiki)
-    - name: Install Unlisted Providers
-      run: bash -c "$(curl -fsSL https://raw.github.com/cloudfoundry-community/terraform-provider-cf/master/bin/install.sh)"
-    # Initialize a new or existing Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+        chmod +x app/cloud-service-broker
+    # Supply a (empty) .env.secrets file
+    - name: Supply .env.secrets
+      run: touch .env.secrets
+    # Initialize the Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
       env:
         BUCKET: "${{ secrets.BUCKET }}"
@@ -101,23 +57,35 @@ jobs:
       #   ${{ env.BACKEND_TFVARS }}
       # EOT
       run: > 
+        docker-compose run --rm 
         terraform init 
         -backend-config=bucket="${{ env.BUCKET }}" 
         -backend-config=key="${{ env.KEY }}" 
         -backend-config=region="${{ env.REGION }}" 
-        -backend-config=encrypt="${{ env.ENCRYPT }}" 
-      # -backend-config=
+        -backend-config=encrypt="${{ env.ENCRYPT }}"
+        -backend-config=access_key="${{ secrets.AWS_ACCESS_KEY_ID }}"
+        -backend-config=secret_key="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
 
-    # Checks that all Terraform configuration files adhere to a canonical format
+    # Check that all Terraform configuration files adhere to the canonical format
     - name: Terraform Format
-      run: terraform fmt -check
+      run: docker-compose run --rm terraform fmt -check
 
-    # Generates an execution plan for Terraform
+    # Generate an execution plan for Terraform
     - name: Terraform Plan
-      run: terraform plan -out=tfplan
+      run: >
+        docker-compose run --rm 
+        -e AWS_ACCESS_KEY_ID 
+        -e AWS_SECRET_ACCESS_KEY
+        -e TF_VAR_cf_username
+        -e TF_VAR_cf_password
+        -e TF_VAR_aws_access_key_id
+        -e TF_VAR_aws_secret_access_key
+        -e TF_VAR_gcp_credentials
+        -e TF_VAR_gcp_project
+        terraform plan -out=tfplan
 
       # On push to master, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
       if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-      run: terraform apply tfplan
+      run: docker-compose run --rm terraform apply tfplan

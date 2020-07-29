@@ -1,0 +1,11 @@
+version: '3.7'
+
+services:
+  terraform:
+    build: docker
+    volumes:
+      - .:/code
+    working_dir: /code
+    env_file:
+    - .env.secrets
+
