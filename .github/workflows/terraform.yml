@@ -37,11 +37,10 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Download broker and the AWS and GCP brokerpaks
+    - name: Download broker and the brokerpak(s)
       run: |
         (cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/sb-0.1.0-rc.34-aws-0.0.1-rc.108/cloud-service-broker)
-        (cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/sb-0.1.0-rc.34-aws-0.0.1-rc.108/aws-services-0.0.1-rc.108.brokerpak)
-        (cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/sb-0.1.0-rc.34-gcp-0.0.1-rc.73/google-services-0.0.1-rc.73.brokerpak)
+        (cd app && curl -L -O https://github.com/GSA/datagov-brokerpak/releases/download/v0.6.0/datagov-services-pak-1.0.0.brokerpak)
         chmod +x app/cloud-service-broker
     # Supply a (empty) .env.secrets file
     - name: Supply .env.secrets
