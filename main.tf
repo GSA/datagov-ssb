@@ -68,6 +68,7 @@ resource "cloudfoundry_app" "ssb" {
     DB_PORT     = cloudfoundry_service_key.key.credentials["port"],
     DB_USERNAME = cloudfoundry_service_key.key.credentials["username"],
     DB_NAME     = cloudfoundry_service_key.key.credentials["db_name"],
+    DB_TLS = "skip-verify",
   }
   routes {
     route = cloudfoundry_route.ssb_uri.id

@@ -39,7 +39,7 @@ jobs:
       uses: actions/checkout@v2
     - name: Download broker and the brokerpak(s)
       run: |
-        (cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/sb-0.1.0-rc.34-aws-0.0.1-rc.108/cloud-service-broker)
+        (cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/v0.8.2-beta/cloud-service-broker)
         (cd app && curl -L -O https://github.com/GSA/datagov-brokerpak/releases/download/v0.6.0/datagov-services-pak-1.0.0.brokerpak)
         chmod +x app/cloud-service-broker
     # Supply a (empty) .env.secrets file
