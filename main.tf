@@ -22,6 +22,7 @@ resource "cloudfoundry_service_instance" "db" {
   name         = "ssb-db"
   space        = data.cloudfoundry_space.broker_space.id
   service_plan = data.cloudfoundry_service.rds.service_plans["shared-mysql"]
+  tags         = ["mysql"]
 }
 
 resource "cloudfoundry_service_key" "key" {
@@ -53,6 +54,10 @@ resource "cloudfoundry_app" "ssb" {
   enable_ssh       = false
   source_code_hash = data.archive_file.app_zip.output_base64sha256
   strategy         = "blue-green"
+  service_binding {
+    service_instance = cloudfoundry_service_instance.db.id
+  }
+
   environment = {
     SECURITY_USER_NAME     = random_uuid.client_username.result,
     SECURITY_USER_PASSWORD = random_password.client_password.result,
@@ -61,14 +66,7 @@ resource "cloudfoundry_app" "ssb" {
     GCP_CREDENTIALS        = var.gcp_credentials,
     GCP_PROJECT            = var.gcp_project,
 
-    # TODO: Use a service_binding to provide the MySQL config once this issue is addressed: 
-    # https://github.com/pivotal/cloud-service-broker/issues/49
-    DB_HOST     = cloudfoundry_service_key.key.credentials["host"]
-    DB_PASSWORD = cloudfoundry_service_key.key.credentials["password"],
-    DB_PORT     = cloudfoundry_service_key.key.credentials["port"],
-    DB_USERNAME = cloudfoundry_service_key.key.credentials["username"],
-    DB_NAME     = cloudfoundry_service_key.key.credentials["db_name"],
-    DB_TLS = "skip-verify",
+    DB_TLS      = "skip-verify",
   }
   routes {
     route = cloudfoundry_route.ssb_uri.id
