@@ -96,7 +96,7 @@ resource "cloudfoundry_service_broker" "space-scoped-broker" {
   url                              = "https://${cloudfoundry_route.ssb_uri.endpoint}"
   username                         = random_uuid.client_username.result
   password                         = random_password.client_password.result
-  space                            = data.cloudfoundry_space.spaces["${each.key}"].id
+  space                            = data.cloudfoundry_space.spaces[each.key].id
   depends_on = [
     cloudfoundry_app.ssb
   ]
