@@ -25,11 +25,6 @@ resource "cloudfoundry_service_instance" "db" {
   tags         = ["mysql"]
 }
 
-resource "cloudfoundry_service_key" "key" {
-  name             = "ssb-key"
-  service_instance = cloudfoundry_service_instance.db.id
-}
-
 resource "random_uuid" "client_username" {}
 resource "random_password" "client_password" {
   length           = 16
