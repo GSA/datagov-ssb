@@ -2,6 +2,14 @@ terraform {
   backend "s3" {}
 }
 
+provider "aws" {
+  region     = "us-east-1"
+  access_key = var.aws_access_key_id
+  secret_key = var.aws_secret_access_key
+}
+resource "aws_route53_zone" "zone" {
+  name = "ssb.data.gov"
+}
 provider "cloudfoundry" {
   # Configure the CloudFoundry Provider
   api_url  = var.cf_api_url
