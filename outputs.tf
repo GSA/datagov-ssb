@@ -5,5 +5,5 @@ output "client_spaces" {
 
 output "route53_zone_nameservers" {
   description = "The nameservers that handle requests for the SSB subdomain"
-  value = aws_route53_zone.zone.name_servers
+  value       = aws_route53_zone.zone.name_servers
 }
