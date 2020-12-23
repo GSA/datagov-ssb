@@ -10,6 +10,9 @@ terraform {
     random = {
       version = "~> 3.0.0"
     }
+    aws = {
+      version = "~> 2.67"
+    }
   }
   required_version = ">= 0.13"
 }
