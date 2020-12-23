@@ -22,7 +22,7 @@ jobs:
       TF_VAR_cf_password: "${{ secrets.TF_VAR_cf_password }}"      
       # For managing brokered resources via the AWS brokerpak
       TF_VAR_aws_access_key_id: "${{ secrets.TF_VAR_aws_access_key_id }}"
-      TF_VAR_aws_secret_access_key: "${{ secrets.TF_VAR_aws_access_key_id }}"
+      TF_VAR_aws_secret_access_key: "${{ secrets.TF_VAR_aws_secret_access_key }}"
       # For managing brokered resources via the GCP brokerpak
       TF_VAR_gcp_credentials: "${{ secrets.TF_VAR_gcp_credentials }}"
       TF_VAR_gcp_project: "${{ secrets.TF_VAR_gcp_project }}"
