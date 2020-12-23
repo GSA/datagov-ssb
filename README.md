@@ -55,9 +55,9 @@ github_release and github_actions_secret in the github_provider!) -->
 1. Download the broker binary and any desired brokerpaks into the `/app`
    directory. 
     ```
-    (cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/sb-0.1.0-rc.34-aws-0.0.1-rc.108/cloud-service-broker)
-    (cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/sb-0.1.0-rc.34-aws-0.0.1-rc.108/aws-services-0.0.1-rc.108.brokerpak)
-
+    (cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/v0.8.2-beta/cloud-service-broker)
+    (cd app && curl -L -O https://github.com/GSA/datagov-brokerpak/releases/download/v0.6.0/datagov-services-pak-1.0.0.brokerpak)
+    chmod +x app/cloud-service-broker
     ```
 
 1. Copy the `backend.tfvars-template` and edit in the non-sensitive values for the S3 bucket.

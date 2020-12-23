@@ -25,11 +25,6 @@ resource "cloudfoundry_service_instance" "db" {
   tags         = ["mysql"]
 }
 
-resource "cloudfoundry_service_key" "key" {
-  name             = "ssb-key"
-  service_instance = cloudfoundry_service_instance.db.id
-}
-
 resource "random_uuid" "client_username" {}
 resource "random_password" "client_password" {
   length           = 16
@@ -37,7 +32,7 @@ resource "random_password" "client_password" {
   override_special = "_%@"
 }
 
-data archive_file "app_zip" {
+data "archive_file" "app_zip" {
   type        = "zip"
   source_dir  = "./app"
   output_path = "./app.zip"
@@ -66,7 +61,7 @@ resource "cloudfoundry_app" "ssb" {
     GCP_CREDENTIALS        = var.gcp_credentials,
     GCP_PROJECT            = var.gcp_project,
 
-    DB_TLS      = "skip-verify",
+    DB_TLS = "skip-verify",
   }
   routes {
     route = cloudfoundry_route.ssb_uri.id
@@ -94,14 +89,14 @@ data "cloudfoundry_space" "spaces" {
   org_name = each.value.org
 }
 
-resource cloudfoundry_service_broker "space-scoped-broker" {
+resource "cloudfoundry_service_broker" "space-scoped-broker" {
   for_each                         = local.spaces_in_orgs
   fail_when_catalog_not_accessible = true
   name                             = "ssb-${each.value.org}-${each.value.space}"
   url                              = "https://${cloudfoundry_route.ssb_uri.endpoint}"
   username                         = random_uuid.client_username.result
   password                         = random_password.client_password.result
-  space                            = data.cloudfoundry_space.spaces["${each.key}"].id
+  space                            = data.cloudfoundry_space.spaces[each.key].id
   depends_on = [
     cloudfoundry_app.ssb
   ]
@@ -109,7 +104,7 @@ resource cloudfoundry_service_broker "space-scoped-broker" {
 
 # If no client_spaces were specified, try to register this as broker globally.
 # This only works if the CF credentials provided belong to an administrator.
-resource cloudfoundry_service_broker "standard-broker" {
+resource "cloudfoundry_service_broker" "standard-broker" {
   count                            = local.spaces_in_orgs == {} ? 1 : 0
   fail_when_catalog_not_accessible = true
   name                             = "ssb-standard"
