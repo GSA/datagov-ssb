@@ -19,7 +19,7 @@ jobs:
       AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
       # For deploying and registering the broker in Cloud Foundry
       TF_VAR_cf_username: "${{ secrets.TF_VAR_cf_username }}"
-      TF_VAR_cf_password: "${{ secrets.TF_VAR_cf_password }}"      
+      TF_VAR_cf_password: "${{ secrets.TF_VAR_cf_password }}"
       # For managing brokered resources via the AWS brokerpak
       TF_VAR_aws_access_key_id: "${{ secrets.TF_VAR_aws_access_key_id }}"
       TF_VAR_aws_secret_access_key: "${{ secrets.TF_VAR_aws_secret_access_key }}"
@@ -48,6 +48,7 @@ jobs:
       run: touch .env.secrets
     # Initialize the Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
     - name: Terraform Init
+      id: init
       env:
         BUCKET: "${{ secrets.BUCKET }}"
         KEY: "ssb-tfstate"
@@ -68,10 +69,13 @@ jobs:
 
     # Check that all Terraform configuration files adhere to the canonical format
     - name: Terraform Format
+      id: fmt
       run: docker-compose run --rm terraform fmt -check
 
     # Generate an execution plan for Terraform
     - name: Terraform Plan
+      id: plan
+      if: github.event_name == 'pull_request'
       run: >
         docker-compose run --rm 
         -e AWS_ACCESS_KEY_ID 
@@ -82,10 +86,43 @@ jobs:
         -e TF_VAR_aws_secret_access_key
         -e TF_VAR_gcp_credentials
         -e TF_VAR_gcp_project
-        terraform plan -out=tfplan
+        terraform plan -no-color | tee tfplan.txt
+      continue-on-error: true  # Make sure to post the error to the PR
+
+    - name: Update Pull Request
+      uses: actions/github-script@v3
+      if: github.event_name == 'pull_request'
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const fs = require('fs');
+          const plan = fs.readFileSync('tfplan.txt', {encoding: 'utf8'});
+          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+          #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+          <details><summary>Show Plan</summary>
+
+          \`\`\`terraform
+          ${plan}
+          \`\`\`
+
+          </details>
+
+          *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+
+          github.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: output
+          });
+
+    - name: Terraform Plan Status
+      if: steps.plan.outcome == 'failure'
+      run: exit 1
 
       # On push to master, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
       if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-      run: docker-compose run --rm terraform apply tfplan
+      run: docker-compose run --rm terraform apply -auto-approve
