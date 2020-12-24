@@ -10,6 +10,9 @@ provider "aws" {
 resource "aws_route53_zone" "zone" {
   name = "ssb.data.gov"
 }
+resource "aws_route53_zone" "sandbox_zone" {
+  name = "ssb.datagov.us"
+}
 provider "cloudfoundry" {
   # Configure the CloudFoundry Provider
   api_url  = var.cf_api_url
