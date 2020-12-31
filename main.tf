@@ -126,30 +126,3 @@ resource "cloudfoundry_service_broker" "standard-broker" {
     cloudfoundry_app.ssb
   ]
 }
-
-# ---
-# TODO: Try to download the files we need as part of making Terraform go
-
-# provider "github" {
-#   anonymous     =   true
-#   individual    =   true
-#   version = "~> 2.9.2"
-# }
-
-# https://www.terraform.io/docs/providers/github/d/release.html
-# data "github_release" "broker" {
-#     repository  = "cloud-service-broker"
-#     owner       = "pivotal"
-#     retrieve_by = "tag"
-#     # TODO: Parameterize this tag later
-#     release_tag = "sb-0.1.0-rc.34-aws-0.0.1-rc.108"
-# }
-
-# provider "zipper" {
-#   skip_ssl_validation = false
-# }
-
-# resource "zipper_file" "csb-release" {
-#   source = "https://github.com/pivotal/cloud-service-broker.git#sb-0.1.0-rc.34-aws-0.0.1-rc.108"
-#   output_path = "./csb.zip"
-# }
