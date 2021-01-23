@@ -71,8 +71,8 @@ resource "cloudfoundry_app" "ssb" {
     AWS_SECRET_ACCESS_KEY  = var.aws_secret_access_key,
     GCP_CREDENTIALS        = var.gcp_credentials,
     GCP_PROJECT            = var.gcp_project,
-
-    DB_TLS = "skip-verify",
+    AWS_DEFAULT_REGION     = "us-east-1",
+    DB_TLS                 = "skip-verify",
   }
   routes {
     route = cloudfoundry_route.ssb_uri.id
