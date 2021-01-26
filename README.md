@@ -52,12 +52,10 @@ The broker deployment is specified and managed using
 <!-- (TODO
 Try to do this automatically with terraform... It seems possible with
 github_release and github_actions_secret in the github_provider!) -->
-1. Download the broker binary and any desired brokerpaks into the `/app`
-   directory. 
+1. Download the broker binary, desired brokerpaks, and prerequisite binaries
+   into the `/app` directory. 
     ```
-    (cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/v0.8.3-beta/cloud-service-broker)
-    (cd app && curl -L -O https://github.com/GSA/eks-brokerpak/releases/download/v0.5.0/eks-services-pack-1.0.0.brokerpak)
-    chmod +x app/cloud-service-broker
+    ./app-setup.sh
     ```
 
 1. Copy the `backend.tfvars-template` and edit in the non-sensitive values for the S3 bucket.
