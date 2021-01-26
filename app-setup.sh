@@ -21,7 +21,7 @@ echo 'export PATH="$PATH:${PWD}/bin"' > app/.profile
 chmod +x app/.profile
 
 # Add the cloud-service-broker binary
-(cd app && curl -LO https://github.com/pivotal/cloud-service-broker/releases/download/v0.8.3-beta/cloud-service-broker) && \
+(cd app && curl -L -o cloud-service-broker https://github.com/cloudfoundry-incubator/cloud-service-broker/releases/download/0.2.2/cloud-service-broker.linux) && \
     chmod +x app/cloud-service-broker
 
 # Add the brokerpak(s)
