@@ -54,7 +54,7 @@ resource "cloudfoundry_app" "ssb" {
   name             = "ssb"
   path             = "./app.zip"
   buildpack        = "binary_buildpack"
-  command          = "./cloud-service-broker serve"
+  command          = "source .profile && ./cloud-service-broker serve"
   instances        = 2
   memory           = 512
   disk_quota       = 2048
