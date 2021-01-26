@@ -26,6 +26,8 @@ chmod +x app/.profile
 
 # Add the brokerpak(s)
 (cd app && curl -LO https://github.com/GSA/eks-brokerpak/releases/download/v0.5.0/eks-services-pack-1.0.0.brokerpak)
+(cd app && curl -LO https://github.com/GSA/datagov-brokerpak/releases/download/v0.6.0/datagov-services-pak-1.0.0.brokerpak)
+(cd app && curl -LO https://github.com/cloudfoundry-incubator/csb-brokerpak-aws/releases/download/1.1.0-rc.5/aws-services-1.1.0-rc.5.brokerpak)
 
 # Install the Helm binary
 curl -L ${BASE_URL}/${TAR_FILE} |tar xvz && \
