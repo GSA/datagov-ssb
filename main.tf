@@ -56,7 +56,7 @@ resource "cloudfoundry_app" "ssb" {
   buildpack        = "binary_buildpack"
   command          = "./cloud-service-broker serve"
   instances        = 2
-  memory           = 128
+  memory           = 512
   disk_quota       = 2048
   enable_ssh       = false
   source_code_hash = data.archive_file.app_zip.output_base64sha256
