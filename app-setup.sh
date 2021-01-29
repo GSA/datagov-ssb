@@ -25,7 +25,7 @@ chmod +x app/.profile
     chmod +x app/cloud-service-broker
 
 # Add the brokerpak(s)
-(cd app && curl -f -LO https://github.com/GSA/eks-brokerpak/releases/download/v0.6.0/eks-services-pack-0.6.0.brokerpak)
+(cd app && curl -f -LO https://github.com/GSA/eks-brokerpak/releases/download/v0.7.0/eks-services-pack-0.7.0.brokerpak)
 (cd app && curl -f -LO https://github.com/GSA/datagov-brokerpak/releases/download/v0.6.0/datagov-services-pak-1.0.0.brokerpak)
 (cd app && curl -f -LO https://github.com/cloudfoundry-incubator/csb-brokerpak-aws/releases/download/1.1.0-rc.5/aws-services-1.1.0-rc.5.brokerpak)
 
