@@ -37,11 +37,9 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
-    - name: Download broker and the brokerpak(s)
-      run: |
-        (cd app && curl -L -O https://github.com/pivotal/cloud-service-broker/releases/download/v0.8.3-beta/cloud-service-broker)
-        (cd app && curl -L -O https://github.com/GSA/eks-brokerpak/releases/download/v0.5.0/eks-services-pack-1.0.0.brokerpak)
-        chmod +x app/cloud-service-broker
+    - name: Prepare the application
+      run: ./app-setup.sh
+    
     # Supply a (empty) .env.secrets file
     - name: Supply .env.secrets
       run: touch .env.secrets
@@ -126,7 +124,8 @@ jobs:
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply
       if: github.ref == 'refs/heads/master' && github.event_name == 'push'
-      run: docker-compose run --rm \
+      run: |
+        docker-compose run --rm \
         -e AWS_ACCESS_KEY_ID  \
         -e AWS_SECRET_ACCESS_KEY \
         -e TF_VAR_cf_username \
