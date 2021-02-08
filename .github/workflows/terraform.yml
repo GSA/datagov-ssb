@@ -120,6 +120,14 @@ jobs:
       if: steps.plan.outcome == 'failure'
       run: exit 1
 
+    # Uncomment the following step to get an interactive debugging session!
+    # Use the SSH key on your GitHub account to ssh to the address displayed in
+    # the Action's logs.
+#    - name: Start debugging session
+#      uses: mxschmitt/action-tmate@v3
+#      with:
+#        limit-access-to-actor: true
+
       # On push to master, build or change infrastructure according to Terraform configuration files
       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
     - name: Terraform Apply

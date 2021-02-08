@@ -1,7 +1,11 @@
 #!/bin/bash
+set -ex
+
+AWS_BROKERPAK_VERSION="1.1.0-rc.5"
+EKS_BROKERPAK_VERSION="0.14.0"
+DATAGOV_BROKERPAK_VERSION="0.10.0"
 
 # TODO: Check sha256 sums
-
 HELM_VERSION="3.2.1"
 KUBECTL_VERSION="1.17.5"
 KUSTOMIZE_VERSION="v3.8.1"
@@ -10,8 +14,6 @@ AWS_IAM_AUTH_VERSION_URL="https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.9/2
 
 BASE_URL="https://get.helm.sh"
 TAR_FILE="helm-v${HELM_VERSION}-linux-amd64.tar.gz"
-
-set -ex
 
 # Set up an app dir and bin dir
 mkdir -p app/bin
@@ -25,9 +27,11 @@ chmod +x app/.profile
     chmod +x app/cloud-service-broker
 
 # Add the brokerpak(s)
-(cd app && curl -f -LO https://github.com/GSA/eks-brokerpak/releases/download/v0.11.0/eks-services-pack-0.10.0.brokerpak)
-(cd app && curl -f -LO https://github.com/GSA/datagov-brokerpak/releases/download/v0.6.0/datagov-services-pak-1.0.0.brokerpak)
-(cd app && curl -f -LO https://github.com/cloudfoundry-incubator/csb-brokerpak-aws/releases/download/1.1.0-rc.5/aws-services-1.1.0-rc.5.brokerpak)
+(cd app && curl -f -LO https://github.com/GSA/eks-brokerpak/releases/download/v${EKS_BROKERPAK_VERSION}/eks-services-pack-${EKS_BROKERPAK_VERSION}.brokerpak)
+# Note the datagov-brokerpak filename isn't parameterized... It doesn't match
+# the release name upstream yet.
+(cd app && curl -f -LO https://github.com/GSA/datagov-brokerpak/releases/download/v${DATAGOV_BROKERPAK_VERSION}/datagov-services-pak-1.0.0.brokerpak)
+(cd app && curl -f -LO https://github.com/cloudfoundry-incubator/csb-brokerpak-aws/releases/download/${AWS_BROKERPAK_VERSION}/aws-services-${AWS_BROKERPAK_VERSION}.brokerpak)
 
 # Install the Helm binary
 curl -f -L ${BASE_URL}/${TAR_FILE} |tar xvz && \
