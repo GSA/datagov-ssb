@@ -31,7 +31,10 @@ chmod +x app/.profile
 # Note the datagov-brokerpak filename isn't parameterized... It doesn't match
 # the release name upstream yet.
 (cd app && curl -f -LO https://github.com/GSA/datagov-brokerpak/releases/download/v${DATAGOV_BROKERPAK_VERSION}/datagov-services-pak-1.0.0.brokerpak)
-(cd app && curl -f -LO https://github.com/adborden/csb-brokerpak-aws/releases/download/v${AWS_BROKERPAK_VERSION}/aws-services-${AWS_BROKERPAK_VERSION}.brokerpak)
+
+# Temporarily use Aaron's fork
+# (cd app && curl -f -LO https://github.com/adborden/csb-brokerpak-aws/releases/download/v${AWS_BROKERPAK_VERSION}/aws-services-${AWS_BROKERPAK_VERSION}.brokerpak)
+(cd app && curl -f -LO https://github.com/adborden/csb-brokerpak-aws/releases/download/v0.1.0-gsa/aws-services-0.1.0.brokerpak)
 
 # Install the Helm binary
 curl -f -L ${BASE_URL}/${TAR_FILE} |tar xvz && \
