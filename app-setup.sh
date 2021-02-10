@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-AWS_BROKERPAK_VERSION="0.1.0-gsa" # 1.1.0-rc5
+AWS_BROKERPAK_VERSION="1.1.0-rc.5"
 EKS_BROKERPAK_VERSION="0.16.0"
 DATAGOV_BROKERPAK_VERSION="0.10.0"
 
@@ -31,10 +31,7 @@ chmod +x app/.profile
 # Note the datagov-brokerpak filename isn't parameterized... It doesn't match
 # the release name upstream yet.
 (cd app && curl -f -LO https://github.com/GSA/datagov-brokerpak/releases/download/v${DATAGOV_BROKERPAK_VERSION}/datagov-services-pak-1.0.0.brokerpak)
-
-# Temporarily use Aaron's fork
-# (cd app && curl -f -LO https://github.com/adborden/csb-brokerpak-aws/releases/download/v${AWS_BROKERPAK_VERSION}/aws-services-${AWS_BROKERPAK_VERSION}.brokerpak)
-(cd app && curl -f -LO https://github.com/adborden/csb-brokerpak-aws/releases/download/v0.1.0-gsa/aws-services-0.1.0.brokerpak)
+(cd app && curl -f -LO https://github.com/cloudfoundry-incubator/csb-brokerpak-aws/releases/download/${AWS_BROKERPAK_VERSION}/aws-services-${AWS_BROKERPAK_VERSION}.brokerpak)
 
 # Install the Helm binary
 curl -f -L ${BASE_URL}/${TAR_FILE} |tar xvz && \
