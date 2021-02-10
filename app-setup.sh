@@ -31,7 +31,10 @@ chmod +x app/.profile
 # Note the datagov-brokerpak filename isn't parameterized... It doesn't match
 # the release name upstream yet.
 (cd app && curl -f -LO https://github.com/GSA/datagov-brokerpak/releases/download/v${DATAGOV_BROKERPAK_VERSION}/datagov-services-pak-1.0.0.brokerpak)
-(cd app && curl -f -LO https://github.com/cloudfoundry-incubator/csb-brokerpak-aws/releases/download/${AWS_BROKERPAK_VERSION}/aws-services-${AWS_BROKERPAK_VERSION}.brokerpak)
+
+# Temporarily using a hard-coded reference to a version of the AWS brokerpak that grants the rds_superuser role on bind
+# (cd app && curl -f -LO https://github.com/cloudfoundry-incubator/csb-brokerpak-aws/releases/download/${AWS_BROKERPAK_VERSION}/aws-services-${AWS_BROKERPAK_VERSION}.brokerpak)
+(cd app && curl -f -LO https://github.com/GSA/csb-brokerpak-aws/releases/download/1.1.0-rc.5-gsa/aws-services-1.1.0-rc.5-gsa.brokerpak)
 
 # Install the Helm binary
 curl -f -L ${BASE_URL}/${TAR_FILE} |tar xvz && \
