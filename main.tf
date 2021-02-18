@@ -66,16 +66,16 @@ resource "cloudfoundry_app" "ssb" {
   }
 
   environment = {
-    SECURITY_USER_NAME     = random_uuid.client_username.result,
-    SECURITY_USER_PASSWORD = random_password.client_password.result,
-    AWS_ACCESS_KEY_ID      = var.aws_access_key_id,
-    AWS_SECRET_ACCESS_KEY  = var.aws_secret_access_key,
-    GCP_CREDENTIALS        = var.gcp_credentials,
-    GCP_PROJECT            = var.gcp_project,
-    AWS_DEFAULT_REGION     = "us-east-1",
-    DB_TLS                 = "skip-verify",
+    SECURITY_USER_NAME                       = random_uuid.client_username.result,
+    SECURITY_USER_PASSWORD                   = random_password.client_password.result,
+    AWS_ACCESS_KEY_ID                        = var.aws_access_key_id,
+    AWS_SECRET_ACCESS_KEY                    = var.aws_secret_access_key,
+    GCP_CREDENTIALS                          = var.gcp_credentials,
+    GCP_PROJECT                              = var.gcp_project,
+    AWS_DEFAULT_REGION                       = "us-east-1",
+    DB_TLS                                   = "skip-verify",
     GSB_COMPATIBILITY_ENABLE_CATALOG_SCHEMAS = true,
-    GSB_COMPATIBILITY_ENABLE_CF_SHARING = true,
+    GSB_COMPATIBILITY_ENABLE_CF_SHARING      = true,
 
   }
   routes {
