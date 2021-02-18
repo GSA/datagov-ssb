@@ -75,6 +75,8 @@ resource "cloudfoundry_app" "ssb" {
     AWS_DEFAULT_REGION     = "us-east-1",
     DB_TLS                 = "skip-verify",
     GSB_COMPATIBILITY_ENABLE_CATALOG_SCHEMAS = true,
+    GSB_COMPATIBILITY_ENABLE_CF_SHARING = true,
+
   }
   routes {
     route = cloudfoundry_route.ssb_uri.id
