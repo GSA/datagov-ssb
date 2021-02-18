@@ -42,7 +42,7 @@ variable "client_spaces" {
 
   default = {
     # orgname    = [ "space1", "space2" ]
-    gsa-datagov = ["development", "staging", "prod"]
+    gsa-datagov = ["development", "staging", "prod", "management"]
   }
 }
 
