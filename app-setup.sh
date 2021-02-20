@@ -3,7 +3,7 @@ set -ex
 
 AWS_BROKERPAK_VERSION="1.1.0-rc.5"
 EKS_BROKERPAK_VERSION="0.18.0"
-DATAGOV_BROKERPAK_VERSION="0.10.0"
+DATAGOV_BROKERPAK_VERSION="0.13.0"
 
 # TODO: Check sha256 sums
 HELM_VERSION="3.2.1"
@@ -18,8 +18,20 @@ TAR_FILE="helm-v${HELM_VERSION}-linux-amd64.tar.gz"
 # Set up an app dir and bin dir
 mkdir -p app/bin
 
-# Add the bin dir the application's path at app startup
-echo 'export PATH="$PATH:${PWD}/bin"' > app/.profile
+# Generate a .profile to be run at startup for mapping VCAP_SERVICES to needed
+# environment variables
+cat > app/.profile << 'EOF'
+# Locate additional binaries needed by the deployed brokerpaks
+export PATH="$PATH:${PWD}/bin"
+
+# Export credentials for the k8s cluster and namespace where the Solr brokerpak
+# should manage instances of SolrCloud. We get these from the binding directly.
+export SOLR_SERVER=$(echo $VCAP_SERVICES | jq -r '.["aws-eks-service"][] | .credentials.server')
+export SOLR_CLUSTER_CA_CERTIFICATE=$(echo $VCAP_SERVICES | jq -r '.["aws-eks-service"][] | .credentials.certificate_authority_data')
+export SOLR_TOKEN=$(echo $VCAP_SERVICES | jq -r '.["aws-eks-service"][] | .credentials.token')
+export SOLR_NAMESPACE=$(echo $VCAP_SERVICES | jq -r '.["aws-eks-service"][] | .credentials.namespace')
+export SOLR_DOMAIN_NAME=$(echo $VCAP_SERVICES | jq -r '.["aws-eks-service"][] | .credentials.domain_name')
+EOF
 chmod +x app/.profile
 
 # Add the cloud-service-broker binary
@@ -28,9 +40,7 @@ chmod +x app/.profile
 
 # Add the brokerpak(s)
 (cd app && curl -f -LO https://github.com/GSA/eks-brokerpak/releases/download/v${EKS_BROKERPAK_VERSION}/eks-services-pack-${EKS_BROKERPAK_VERSION}.brokerpak)
-# Note the datagov-brokerpak filename isn't parameterized... It doesn't match
-# the release name upstream yet.
-(cd app && curl -f -LO https://github.com/GSA/datagov-brokerpak/releases/download/v${DATAGOV_BROKERPAK_VERSION}/datagov-services-pak-1.0.0.brokerpak)
+(cd app && curl -f -LO https://github.com/GSA/datagov-brokerpak/releases/download/v${DATAGOV_BROKERPAK_VERSION}/datagov-services-pak-${DATAGOV_BROKERPAK_VERSION}.brokerpak)
 
 # Temporarily using a hard-coded reference to a version of the AWS brokerpak that grants the rds_superuser role on bind
 # (cd app && curl -f -LO https://github.com/cloudfoundry-incubator/csb-brokerpak-aws/releases/download/${AWS_BROKERPAK_VERSION}/aws-services-${AWS_BROKERPAK_VERSION}.brokerpak)
