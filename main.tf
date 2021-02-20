@@ -29,11 +29,21 @@ data "cloudfoundry_service" "rds" {
   name = "aws-rds"
 }
 
+data "cloudfoundry_service" "k8s" {
+  name = "aws-eks-service"
+}
+
 resource "cloudfoundry_service_instance" "db" {
   name         = "ssb-db"
   space        = data.cloudfoundry_space.broker_space.id
   service_plan = data.cloudfoundry_service.rds.service_plans["shared-mysql"]
   tags         = ["mysql"]
+}
+resource "cloudfoundry_service_instance" "k8s" {
+  name         = "ssb-k8s"
+  space        = data.cloudfoundry_space.broker_space.id
+  service_plan = data.cloudfoundry_service.k8s.service_plans["raw"]
+  tags         = ["k8s"]
 }
 
 resource "random_uuid" "client_username" {}
@@ -63,6 +73,9 @@ resource "cloudfoundry_app" "ssb" {
   strategy         = "blue-green"
   service_binding {
     service_instance = cloudfoundry_service_instance.db.id
+  }
+  service_binding {
+    service_instance = cloudfoundry_service_instance.k8s.id
   }
 
   environment = {
