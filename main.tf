@@ -39,13 +39,6 @@ resource "cloudfoundry_service_instance" "db" {
   service_plan = data.cloudfoundry_service.rds.service_plans["shared-mysql"]
   tags         = ["mysql"]
 }
-resource "cloudfoundry_service_instance" "k8s" {
-  name         = "ssb-k8s"
-  space        = data.cloudfoundry_space.broker_space.id
-  service_plan = data.cloudfoundry_service.k8s.service_plans["raw"]
-  tags         = ["k8s"]
-}
-
 resource "random_uuid" "client_username" {}
 resource "random_password" "client_password" {
   length           = 16
@@ -74,9 +67,9 @@ resource "cloudfoundry_app" "ssb" {
   service_binding {
     service_instance = cloudfoundry_service_instance.db.id
   }
-  service_binding {
-    service_instance = cloudfoundry_service_instance.k8s.id
-  }
+  # service_binding {
+  #   service_instance = cloudfoundry_service_instance.k8s.id
+  # }
 
   environment = {
     SECURITY_USER_NAME                       = random_uuid.client_username.result,
@@ -143,3 +136,26 @@ resource "cloudfoundry_service_broker" "standard-broker" {
     cloudfoundry_app.ssb
   ]
 }
+
+# resource "cloudfoundry_service_instance" "k8s-for-space-scoped-broker" {
+#   count        = local.spaces_in_orgs == {} ? 0 : 1
+#   name         = "ssb-k8s"
+#   space        = data.cloudfoundry_space.broker_space.id
+#   service_plan = data.cloudfoundry_service.k8s.service_plans["raw"]
+#   tags         = ["k8s"]
+#   depends_on = [
+#     cloudfoundry_service_broker.space-scoped-broker
+#   ]
+# }
+
+# resource "cloudfoundry_service_instance" "k8s-for-global-scoped-broker" {
+#   count        = local.spaces_in_orgs == {} ? 1 : 0
+#   name         = "ssb-k8s"
+#   space        = data.cloudfoundry_space.broker_space.id
+#   service_plan = data.cloudfoundry_service.k8s.service_plans["raw"]
+#   tags         = ["k8s"]
+#   depends_on = [
+#     cloudfoundry_service_broker.standard-broker
+#   ]
+# }
+
