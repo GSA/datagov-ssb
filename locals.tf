@@ -20,4 +20,29 @@ locals {
       space = os.space
     }
   }
+
+  broker_names = ["aws", "eks", "solr"]
+
+  broker_set = [
+    for key, name in local.broker_names : {
+      key  = key
+      name = name
+    }
+  ]
+
+  space_set = [
+    for key, space in local.spaces_in_orgs : {
+      key   = key
+      space = space
+    }
+  ]
+
+  broker_registrations = [
+    # in pair, element zero is a broker and element one is a space,
+    for pair in setproduct(local.broker_set, local.space_set) : {
+      name   = "ssb-${pair[1].space.org}-${pair[1].space.space}-${pair[0].name}"
+      broker = pair[0].name
+      space  = pair[1].key
+    }
+  ]
 }

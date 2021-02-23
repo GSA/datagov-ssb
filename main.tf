@@ -33,7 +33,8 @@ data "cloudfoundry_service" "rds" {
 # }
 
 resource "cloudfoundry_service_instance" "db" {
-  name         = "ssb-db"
+  for_each     = toset(local.broker_names)
+  name         = "ssb-db-${each.key}"
   space        = data.cloudfoundry_space.broker_space.id
   service_plan = data.cloudfoundry_service.rds.service_plans["shared-mysql"]
   tags         = ["mysql"]
@@ -46,25 +47,27 @@ resource "random_password" "client_password" {
 }
 
 data "archive_file" "app_zip" {
+  for_each    = toset(local.broker_names)
   type        = "zip"
-  source_dir  = "./app"
-  output_path = "./app.zip"
+  source_dir  = "./app-${each.key}"
+  output_path = "./app-${each.key}.zip"
 }
 
 resource "cloudfoundry_app" "ssb" {
+  for_each         = toset(local.broker_names)
   space            = data.cloudfoundry_space.broker_space.id
-  name             = "ssb"
-  path             = "./app.zip"
+  name             = "ssb-${each.key}"
+  path             = data.archive_file.app_zip[each.key].output_path
   buildpack        = "binary_buildpack"
   command          = "source .profile && ./cloud-service-broker serve"
   instances        = var.ssb_app_instances
   memory           = var.ssb_app_memory
   disk_quota       = var.ssb_app_disk_quota
   enable_ssh       = false
-  source_code_hash = data.archive_file.app_zip.output_base64sha256
+  source_code_hash = data.archive_file.app_zip[each.key].output_base64sha256
   strategy         = "blue-green"
   service_binding {
-    service_instance = cloudfoundry_service_instance.db.id
+    service_instance = cloudfoundry_service_instance.db[each.key].id
   }
   # service_binding {
   #   service_instance = cloudfoundry_service_instance.k8s.id
@@ -82,11 +85,8 @@ resource "cloudfoundry_app" "ssb" {
 
   }
   routes {
-    route = cloudfoundry_route.ssb_uri.id
+    route = cloudfoundry_route.ssb_uri[each.key].id
   }
-  depends_on = [
-    data.archive_file.app_zip
-  ]
 }
 
 # Give the broker a random route
@@ -95,9 +95,10 @@ data "cloudfoundry_domain" "apps" {
 }
 resource "random_pet" "client_hostname" {}
 resource "cloudfoundry_route" "ssb_uri" {
+  for_each = toset(local.broker_names)
   domain   = data.cloudfoundry_domain.apps.id
   space    = data.cloudfoundry_space.broker_space.id
-  hostname = "ssb-${random_pet.client_hostname.id}"
+  hostname = "ssb-${random_pet.client_hostname.id}-${each.key}"
 }
 
 # Register the broker in each of these spaces
@@ -108,13 +109,20 @@ data "cloudfoundry_space" "spaces" {
 }
 
 resource "cloudfoundry_service_broker" "space-scoped-broker" {
-  for_each                         = local.spaces_in_orgs
+
+  # local.broker_registrations is a list, so we must project it into a map
+  # where each key is unique.
+  # See https://www.terraform.io/docs/language/functions/setproduct.html#finding-combinations-for-for_each
+  for_each = {
+    for registration in local.broker_registrations : registration.name => registration
+  }
   fail_when_catalog_not_accessible = true
-  name                             = "ssb-${each.value.org}-${each.value.space}"
-  url                              = "https://${cloudfoundry_route.ssb_uri.endpoint}"
+  name                             = each.value.name
+  url                              = "https://${cloudfoundry_route.ssb_uri[each.value.broker].endpoint}"
   username                         = random_uuid.client_username.result
   password                         = random_password.client_password.result
-  space                            = data.cloudfoundry_space.spaces[each.key].id
+  space                            = data.cloudfoundry_space.spaces[each.value.space].id
+
   depends_on = [
     cloudfoundry_app.ssb
   ]
@@ -126,7 +134,7 @@ resource "cloudfoundry_service_broker" "standard-broker" {
   count                            = local.spaces_in_orgs == {} ? 1 : 0
   fail_when_catalog_not_accessible = true
   name                             = "ssb-standard"
-  url                              = "https://${cloudfoundry_route.ssb_uri.endpoint}"
+  url                              = "https://${cloudfoundry_route.ssb_uri[0].endpoint}"
   username                         = random_uuid.client_username.result
   password                         = random_password.client_password.result
   depends_on = [
