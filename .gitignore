@@ -41,3 +41,6 @@ app.zip
 app/*
 backend.tfvars
 .env.secrets
+app-aws
+app-eks
+app-solr

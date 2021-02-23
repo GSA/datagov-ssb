@@ -42,8 +42,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Prepare the application
-      run: ./app-setup.sh
+    - name: Prepare the applications
+      run: |
+        ./app-setup-eks.sh
+        ./app-setup-solr.sh
+        ./app-setup-aws.sh
     - uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: 0.14.x
@@ -95,8 +98,11 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Prepare the application
-      run: ./app-setup.sh
+    - name: Prepare the applications
+      run: |
+        ./app-setup-eks.sh
+        ./app-setup-solr.sh
+        ./app-setup-aws.sh
     - uses: hashicorp/setup-terraform@v1
       with:
         terraform_version: 0.14.x
