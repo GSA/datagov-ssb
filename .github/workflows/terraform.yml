@@ -10,23 +10,46 @@ on:
     - 'master'
   pull_request:
 
+env:
+  # All environments
+  # For storing the Terraform state for the deployment
+  AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
+  AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+  # For deploying and registering the broker in Cloud Foundry
+  TF_VAR_cf_username: "${{ secrets.TF_VAR_cf_username }}"
+  TF_VAR_cf_password: "${{ secrets.TF_VAR_cf_password }}"
+
+  # Per environment
+  # For managing brokered resources via the AWS brokerpak
+  TF_VAR_aws_access_key_id: "${{ secrets.TF_VAR_aws_access_key_id }}"
+  TF_VAR_aws_secret_access_key: "${{ secrets.TF_VAR_aws_secret_access_key }}"
+
 jobs:
-  terraform:
-    name: 'Terraform'
-    env:
-      # For storing the Terraform state for the deployment
-      AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
-      AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-      # For deploying and registering the broker in Cloud Foundry
-      TF_VAR_cf_username: "${{ secrets.TF_VAR_cf_username }}"
-      TF_VAR_cf_password: "${{ secrets.TF_VAR_cf_password }}"
-      # For managing brokered resources via the AWS brokerpak
-      TF_VAR_aws_access_key_id: "${{ secrets.TF_VAR_aws_access_key_id }}"
-      TF_VAR_aws_secret_access_key: "${{ secrets.TF_VAR_aws_secret_access_key }}"
-      # For managing brokered resources via the GCP brokerpak
-      TF_VAR_gcp_credentials: "${{ secrets.TF_VAR_gcp_credentials }}"
-      TF_VAR_gcp_project: "${{ secrets.TF_VAR_gcp_project }}"
+  linting:
+    name: 'Terraform linting'
     runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    # Supply a (empty) .env.secrets file
+    - name: Supply .env.secrets
+      run: touch .env.secrets
+
+    # Check that all Terraform configuration files adhere to the canonical format
+    - name: Terraform Format
+      run: docker-compose run --rm terraform fmt -check
+
+    # Check that all Terraform configuration is semantically valid
+    - name: Terraform Validate
+      run: docker-compose run --rm terraform validate
+    
+  terraform-production:
+    name: 'Terraform'
+    runs-on: ubuntu-latest
+    env:
+      TERRAFORM_WORKSPACE: "default"
 
     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
     defaults:
@@ -64,10 +87,8 @@ jobs:
         -backend-config=access_key="${{ secrets.AWS_ACCESS_KEY_ID }}"
         -backend-config=secret_key="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
 
-    # Check that all Terraform configuration files adhere to the canonical format
-    - name: Terraform Format
-      id: fmt
-      run: docker-compose run --rm terraform fmt -check
+    - name: Set the Terraform workspace
+      run: docker-compose run --rm terraform workspace select ${{ env.TERRAFORM_WORKSPACE }}
 
     # Generate an execution plan for Terraform
     - name: Terraform Plan
