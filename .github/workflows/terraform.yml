@@ -20,109 +20,160 @@ env:
   ENCRYPT: "true"
 
 jobs:
-  review:
-    name: 'Terraform linting and review'
+  review-staging:
     runs-on: ubuntu-latest
+    name: 'Staging validation and plan generation'
+
+    environment: staging
+    env:
+      TF_WORKSPACE: staging
+      TF_VAR_cf_username: ${{ secrets.TF_VAR_cf_username }}
+      TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
+      TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
+      TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
+      TF_VAR_broker_space: |
+        {
+          org   = "gsa-datagov"
+          space = "management-staging"
+        }
+      TF_VAR_client_spaces: |
+        {
+          gsa-datagov = ["management-staging"]
+        }
+      # TF_VAR_broker_space: '${{ secrets.TF_VAR_broker_space }}'
+      # TF_VAR_client_spaces: '${{ secrets.TF_VAR_client_spaces }}'
+
+    outputs:
+      plan-stdout: ${{ steps.plan.outputs.stdout }}
+      plan-outcome: ${{ steps.plan.outcome }}
+      format-outcome: ${{ steps.fmt.outcome }}
+      init-outcome: ${{ steps.init.outcome }}
+      validate-stdout: ${{ steps.validate.outputs.stdout }}
 
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
     - name: Prepare the application
       run: ./app-setup.sh
-    
-    # Supply a (empty) .env.secrets file
-    - name: Supply .env.secrets
-      run: touch .env.secrets
-    # Initialize the Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
+    - uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 0.14.x
+
+    - name: Terraform fmt
+      id: fmt
+      run: terraform fmt -check
+      continue-on-error: true
+
+    - name: Terraform init
       id: init
       run: > 
-        docker-compose run --rm 
-        terraform init 
-        -backend-config=bucket="${{ env.BUCKET }}" 
+        terraform init -backend-config=bucket="${{ env.BUCKET }}" 
         -backend-config=key="${{ env.KEY }}" 
         -backend-config=region="${{ env.REGION }}" 
         -backend-config=encrypt="${{ env.ENCRYPT }}"
-        -backend-config=access_key="${{ secrets.AWS_ACCESS_KEY_ID }}"
-        -backend-config=secret_key="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+        -backend-config=access_key="${{ env.AWS_ACCESS_KEY_ID }}"
+        -backend-config=secret_key="${{ env.AWS_SECRET_ACCESS_KEY }}"
 
-    # Check that all Terraform configuration files adhere to the canonical format
-    - name: Terraform Format
-      run: docker-compose run --rm terraform fmt -check
+    - name: Terraform validate
+      id: validate
+      run: terraform validate -no-color
 
-    # Check that all Terraform configuration is semantically valid
-    - name: Terraform Validate
-      run: docker-compose run --rm terraform validate
+    - name: Terraform plan
+      id: plan
+      run: terraform plan -no-color
+      continue-on-error: true
 
-    # Generate an execution plan for Terraform
-    - name: Terraform Plan (staging)
-      id: plan-staging
-      if: github.event_name == 'pull_request'
-      env:
-        TF_WORKSPACE: staging
-      run: >
-        tfplan_file=$(mktemp)
-        docker-compose run --rm
-        -e AWS_ACCESS_KEY_ID
-        -e AWS_SECRET_ACCESS_KEY
-        -e TF_VAR_cf_username
-        -e TF_VAR_cf_password
-        -e TF_VAR_aws_access_key_id
-        -e TF_VAR_aws_secret_access_key
-        terraform plan -no-color | tee $tfplan_file
+  review-production:
+    runs-on: ubuntu-latest
+    name: 'Production validation and plan generation'
 
-        echo "::set-output name=tfplan::$tfplan_file"
-      continue-on-error: true  # Make sure to post the error to the PR
+    environment: production
+    env:
+      TF_WORKSPACE: default
+      TF_VAR_cf_username: ${{ secrets.TF_VAR_cf_username }}
+      TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
+      TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
+      TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
+      TF_VAR_broker_space: '${{ secrets.TF_VAR_broker_space }}'
+      TF_VAR_client_spaces: '${{ secrets.TF_VAR_client_spaces }}'
 
-    # Generate an execution plan for Terraform
-    - name: Terraform Plan (production)
-      id: plan-production
-      if: github.event_name == 'pull_request'
-      env:
-        TF_WORKSPACE: default
-      run: >
-        tfplan_file=$(mktemp)
-        docker-compose run --rm
-        -e AWS_ACCESS_KEY_ID
-        -e AWS_SECRET_ACCESS_KEY
-        -e TF_VAR_cf_username
-        -e TF_VAR_cf_password
-        -e TF_VAR_aws_access_key_id
-        -e TF_VAR_aws_secret_access_key
-        terraform plan -no-color | tee $tfplan_file
+    outputs:
+      plan-stdout: ${{ steps.plan.outputs.stdout }}
+      plan-outcome: ${{ steps.plan.outcome }}
+      format-outcome: ${{ steps.fmt.outcome }}
+      init-outcome: ${{ steps.init.outcome }}
+      validate-stdout: ${{ steps.validate.outputs.stdout }}
 
-        echo "::set-output name=tfplan::$tfplan_file"     
-      continue-on-error: true  # Make sure to post the error to the PR
+    steps:
+    - uses: actions/checkout@v2
+    - name: Prepare the application
+      run: ./app-setup.sh
+    - uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 0.14.x
 
+    - name: Terraform fmt
+      id: fmt
+      run: terraform fmt -check
+      continue-on-error: true
+
+    - name: Terraform init
+      id: init
+      run: > 
+        terraform init -backend-config=bucket="${{ env.BUCKET }}" 
+        -backend-config=key="${{ env.KEY }}" 
+        -backend-config=region="${{ env.REGION }}" 
+        -backend-config=encrypt="${{ env.ENCRYPT }}"
+        -backend-config=access_key="${{ env.AWS_ACCESS_KEY_ID }}"
+        -backend-config=secret_key="${{ env.AWS_SECRET_ACCESS_KEY }}"
+
+    - name: Terraform validate
+      id: validate
+      run: terraform validate -no-color
+
+    - name: Terraform plan
+      id: plan
+      run: terraform plan -no-color
+      continue-on-error: true
+
+  post-to-pr:
+    name: 'Post plans for review'
+    runs-on: ubuntu-latest
+    needs: 
+      - review-staging
+      - review-production
+    steps:
+    - name: Show plans
+      run: |
+        echo staging:\n${{ needs.review-staging.outputs.plan-stdout }}
+        echo production:\n${{ needs.review-production.outputs.plan-stdout }}
     - name: Update Pull Request
       uses: actions/github-script@v3
       if: github.event_name == 'pull_request'
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const fs = require('fs');
-          const plan_staging = fs.readFileSync('${{ steps.plan-staging.outputs.tfplan }}', {encoding: 'utf8'});
-          const plan_production = fs.readFileSync('${{ steps.plan-production.outputs.tfplan }}', {encoding: 'utf8'});
-          const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
-          #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
-          #### Staging Plan 📖\`${{ steps.plan-staging.outcome }}\`
-          <details><summary>Show staging plan</summary>
+          const output = `#### Terraform Format and Style 🖌\`${{ needs.review-staging.outputs.format-outcome }}\`
+          #### Terraform Initialization ⚙️\`${{ needs.review-staging.outputs.init-outcome }}\`
+          #### Plan 📖\`${{ needs.review-staging.outputs.plan-outcome }}\`
+          <details><summary>Show plan</summary>
 
           \`\`\`terraform
-          ${plan_staging}
+          ${{ needs.review-staging.outputs.plan-stdout }}
           \`\`\`
 
           </details>
 
-          #### Production Plan 📖\`${{ steps.plan-production.outcome }}\`
-          <details><summary>Show production plan</summary>
+          #### Terraform Format and Style 🖌\`${{ needs.review-production.outputs.format-outcome }}\`
+          #### Terraform Initialization ⚙️\`${{ needs.review-production.outputs.init-outcome }}\`
+          #### Plan 📖\`${{ needs.review-production.outputs.plan-outcome }}\`
+          <details><summary>Show plan</summary>
 
           \`\`\`terraform
-          ${plan_production}
+          ${{ needs.review-production.outputs.plan-stdout }}
           \`\`\`
 
-          </details>
-
+          </details>          
+          
           *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
 
           github.issues.createComment({
@@ -133,128 +184,69 @@ jobs:
           });
 
     - name: Terraform Plan Status
-      if: steps.plan-staging.outcome == 'failure' || steps.plan-production.outcome == 'failure'
+      if: needs.review-staging.outputs.plan-outcome == 'failure' || needs.review-production.outputs.plan-outcome == 'failure'
       run: exit 1
 
 
-  deploy-staging:
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    name: Deploy Terraform (staging)
-    runs-on: ubuntu-latest
-    environment: staging
-    needs:
-      - review
-    env:
-      TF_WORKSPACE: staging
+#   deploy:
+#     if: github.event_name == 'push'
+#     name: Deploy to branch environment
+#     needs:
+#       - review
+#     runs-on: ubuntu-latest
 
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
+#     environment: "${{ (github.ref == 'refs/heads/main') ? 'production' : 'staging' }}"
+#     env:
+#       TF_WORKSPACE: "${{ (github.ref == 'refs/heads/main') ? 'default' : 'staging' }}"
+#     environment: staging
 
-    # Checkout the repository to the GitHub Actions runner
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Prepare the application
-      run: ./app-setup.sh
+#     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+#     defaults:
+#       run:
+#         shell: bash
 
-    # Supply a (empty) .env.secrets file
-    - name: Supply .env.secrets
-      run: touch .env.secrets
+#     # Checkout the repository to the GitHub Actions runner
+#     steps:
+#     - name: Checkout
+#       uses: actions/checkout@v2
+#     - name: Prepare the application
+#       run: ./app-setup.sh
 
-    # Initialize the Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      id: init
-      run: > 
-        docker-compose run --rm 
-        terraform init 
-        -backend-config=access_key="${{ secrets.AWS_ACCESS_KEY_ID }}"
-        -backend-config=secret_key="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-        -backend-config=bucket="${{ env.BUCKET }}" 
-        -backend-config=region="${{ env.REGION }}" 
-        -backend-config=key="${{ env.KEY }}" 
-        -backend-config=encrypt="${{ env.ENCRYPT }}"
+#     # Initialize the Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
+#     - name: Terraform Init
+#       id: init
+#       run: > 
+#         docker-compose run --rm 
+#         terraform init 
+#         -backend-config=access_key="${{ secrets.AWS_ACCESS_KEY_ID }}"
+#         -backend-config=secret_key="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+#         -backend-config=bucket="${{ env.BUCKET }}" 
+#         -backend-config=region="${{ env.REGION }}" 
+#         -backend-config=key="${{ env.KEY }}" 
+#         -backend-config=encrypt="${{ env.ENCRYPT }}"
 
-    # Uncomment the following step to get an interactive debugging session!
-    # Use the SSH key on your GitHub account to ssh to the address displayed in
-    # the Action's logs.
-#    - name: Start debugging session
-#      uses: mxschmitt/action-tmate@v3
-#      with:
-#        limit-access-to-actor: true
+#     # Uncomment the following step to get an interactive debugging session!
+#     # Use the SSH key on your GitHub account to ssh to the address displayed in
+#     # the Action's logs.
+# #    - name: Start debugging session
+# #      uses: mxschmitt/action-tmate@v3
+# #      with:
+# #        limit-access-to-actor: true
 
-      # On push to main, build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    - name: Terraform Apply
-      run: >
-        docker-compose run --rm
-        -e AWS_ACCESS_KEY_ID
-        -e AWS_SECRET_ACCESS_KEY
-        -e TF_VAR_cf_username
-        -e TF_VAR_cf_password
-        -e TF_VAR_aws_access_key_id
-        -e TF_VAR_aws_secret_access_key
-        terraform apply -auto-approve
-    - name: Test
-      run: echo ok  # TODO staging smoke test
+#       # On push to main, build or change infrastructure according to Terraform configuration files
+#       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
+#     - name: Terraform Apply
+#       run: >
+#         touch .env.secrets
 
-  deploy-production:
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    name: Deploy Terraform (production)
-    runs-on: ubuntu-latest
-    environment: production
-    needs:
-      - deploy-staging
-    env:
-      TF_WORKSPACE: default
+#         docker-compose run --rm
+#         -e AWS_ACCESS_KEY_ID
+#         -e AWS_SECRET_ACCESS_KEY
+#         -e TF_VAR_cf_username
+#         -e TF_VAR_cf_password
+#         -e TF_VAR_aws_access_key_id
+#         -e TF_VAR_aws_secret_access_key
+#         terraform apply -auto-approve
+#     - name: Test
+#       run: echo ok  # TODO staging smoke test
 
-    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-    defaults:
-      run:
-        shell: bash
-
-    # Checkout the repository to the GitHub Actions runner
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Prepare the application
-      run: ./app-setup.sh
-
-    # Supply a (empty) .env.secrets file
-    - name: Supply .env.secrets
-      run: touch .env.secrets
-
-    # Initialize the Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-    - name: Terraform Init
-      id: init
-      run: > 
-        docker-compose run --rm 
-        terraform init 
-        -backend-config=bucket="${{ env.BUCKET }}" 
-        -backend-config=key="${{ env.KEY }}" 
-        -backend-config=region="${{ env.REGION }}" 
-        -backend-config=encrypt="${{ env.ENCRYPT }}"
-        -backend-config=access_key="${{ secrets.AWS_ACCESS_KEY_ID }}"
-        -backend-config=secret_key="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-
-    # Uncomment the following step to get an interactive debugging session!
-    # Use the SSH key on your GitHub account to ssh to the address displayed in
-    # the Action's logs.
-#    - name: Start debugging session
-#      uses: mxschmitt/action-tmate@v3
-#      with:
-#        limit-access-to-actor: true
-
-      # On push to main, build or change infrastructure according to Terraform configuration files
-      # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-    - name: Terraform Apply
-      run: >
-        docker-compose run --rm
-        -e AWS_ACCESS_KEY_ID
-        -e AWS_SECRET_ACCESS_KEY
-        -e TF_VAR_cf_username
-        -e TF_VAR_cf_password
-        -e TF_VAR_aws_access_key_id
-        -e TF_VAR_aws_secret_access_key
-        terraform apply -auto-approve

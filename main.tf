@@ -29,9 +29,9 @@ data "cloudfoundry_service" "rds" {
   name = "aws-rds"
 }
 
-data "cloudfoundry_service" "k8s" {
-  name = "aws-eks-service"
-}
+# data "cloudfoundry_service" "k8s" {
+#   name = "aws-eks-service"
+# }
 
 resource "cloudfoundry_service_instance" "db" {
   name         = "ssb-db"
