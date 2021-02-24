@@ -98,11 +98,21 @@ This repository includes a GitHub Action that can continuously deploy the
 `main` branch for you. To configure it, fork this repository in GitHub, then enter the
 following into [the `Settings > Secrets` page](/settings/secrets) on your fork:
 
+### Global secrets
+
 | Secret Name | Description |
 |-------------|-------------|
-| AWS_ACCESS_KEY_ID | the S3 bucket key|
-| AWS_SECRET_ACCESS_KEY | the S3 bucket secret |
-| BUCKET | the S3 bucket name |
+| AWS_ACCESS_KEY_ID | the S3 bucket key for Terraform state|
+| AWS_SECRET_ACCESS_KEY | the S3 bucket secret for Terraform state |
+| BUCKET | the S3 bucket name for Terraform state |
+
+
+### Per-environment secrets
+
+We are assuming you are using "staging" and "production" GitHub environments.
+
+| Secret Name | Description |
+|-------------|-------------|
 | TF_VAR_AWS_ACCESS_KEY_ID | the key for brokering resources in AWS |
 | TF_VAR_AWS_SECRET_ACCESS_KEY | the secret for brokering resources in AWS |
 | TF_VAR_cf_username | the cloud-gov-service-account space-deployer username |
