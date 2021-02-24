@@ -95,7 +95,7 @@ docker-compose run --rm terraform destroy
 # Continuously deploying the broker
 
 This repository includes a GitHub Action that can continuously deploy the
-`master` branch for you. To configure it, fork this repository in GitHub, then enter the
+`main` branch for you. To configure it, fork this repository in GitHub, then enter the
 following into [the `Settings > Secrets` page](/settings/secrets) on your fork:
 
 | Secret Name | Description |
@@ -106,7 +106,7 @@ following into [the `Settings > Secrets` page](/settings/secrets) on your fork:
 | TF_VAR_AWS_ACCESS_KEY_ID | the key for brokering resources in AWS |
 | TF_VAR_AWS_SECRET_ACCESS_KEY | the secret for brokering resources in AWS |
 
-Once these secrets are in place, any changes to the master branch will be
+Once these secrets are in place, any changes to the main branch will be
 deployed automatically.
 
 ---
