@@ -5,10 +5,3 @@ cf_password = "your_cf_password"
 
 aws_access_key_id       = "your_access_key_id"
 aws_secret_access_key   =  "your_secret_access_key"
-
-gcp_project          = "your_project_name"
-gcp_credentials      = <<EOT
-<your credential file JSON content here>
-EOT
-
-
