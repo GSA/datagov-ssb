@@ -19,14 +19,6 @@ variable "aws_secret_access_key" {
   description = "AWS secret for the access key"
 }
 
-# Vars for provisioning and managing resources in GCP
-variable "gcp_credentials" {
-  description = "GCP service account JSON. Policy requirements: https://github.com/pivotal/cloud-service-broker/blob/master/docs/gcp-installation.md#gcp-service-credentials"
-}
-variable "gcp_project" {
-  description = "GCP project name"
-}
-
 variable "broker_space" {
   description = "The space where the broker itself should be deployed"
   type        = object({ org = string, space = string })

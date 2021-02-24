@@ -76,8 +76,6 @@ resource "cloudfoundry_app" "ssb" {
     SECURITY_USER_PASSWORD                   = random_password.client_password.result,
     AWS_ACCESS_KEY_ID                        = var.aws_access_key_id,
     AWS_SECRET_ACCESS_KEY                    = var.aws_secret_access_key,
-    GCP_CREDENTIALS                          = var.gcp_credentials,
-    GCP_PROJECT                              = var.gcp_project,
     AWS_DEFAULT_REGION                       = "us-east-1",
     DB_TLS                                   = "skip-verify",
     GSB_COMPATIBILITY_ENABLE_CATALOG_SCHEMAS = true,
