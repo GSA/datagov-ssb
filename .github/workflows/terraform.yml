@@ -150,7 +150,7 @@ jobs:
 
   deploy-staging:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    name: 'Deploy Terraform'
+    name: Deploy Terraform (staging)
     runs-on: ubuntu-latest
     environment: staging
     needs:
@@ -220,7 +220,7 @@ jobs:
 
   deploy-production:
     if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    name: 'Deploy Terraform'
+    name: Deploy Terraform (production)
     runs-on: ubuntu-latest
     environment: production
     needs:
