@@ -105,6 +105,8 @@ following into [the `Settings > Secrets` page](/settings/secrets) on your fork:
 | BUCKET | the S3 bucket name |
 | TF_VAR_AWS_ACCESS_KEY_ID | the key for brokering resources in AWS |
 | TF_VAR_AWS_SECRET_ACCESS_KEY | the secret for brokering resources in AWS |
+| TF_VAR_cf_username | the cloud-gov-service-account space-deployer username |
+| TF_VAR_cf_password | the cloud-gov-service-account space-deployer password |
 
 Once these secrets are in place, any changes to the main branch will be
 deployed automatically.
