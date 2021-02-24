@@ -228,7 +228,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: production
     needs:
-      - staging
+      - deploy-staging
     env:
       TF_WORKSPACE: default
 
