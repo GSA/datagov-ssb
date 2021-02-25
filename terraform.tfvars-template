@@ -8,3 +8,5 @@ broker_space = {
     org = "someorg"
     space = "somespace"
 }
+broker_zone = "brokerdomain"
+manage_zone = true
