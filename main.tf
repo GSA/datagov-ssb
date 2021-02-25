@@ -8,11 +8,10 @@ provider "aws" {
   secret_key = var.aws_secret_access_key
 }
 resource "aws_route53_zone" "zone" {
-  name = "ssb.data.gov"
+  count = var.manage_zone ? 1 : 0
+  name  = var.broker_zone
 }
-resource "aws_route53_zone" "sandbox_zone" {
-  name = "ssb.datagov.us"
-}
+
 provider "cloudfoundry" {
   # Configure the CloudFoundry Provider
   api_url  = var.cf_api_url
@@ -29,9 +28,9 @@ data "cloudfoundry_service" "rds" {
   name = "aws-rds"
 }
 
-data "cloudfoundry_service" "k8s" {
-  name = "aws-eks-service"
-}
+# data "cloudfoundry_service" "k8s" {
+#   name = "aws-eks-service"
+# }
 
 resource "cloudfoundry_service_instance" "db" {
   name         = "ssb-db"
