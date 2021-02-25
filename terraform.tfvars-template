@@ -1,7 +1,8 @@
 # See vars.tf for more information
-
-cf_username = "your_cf_username"
-cf_password = "your_cf_password"
-
-aws_access_key_id       = "your_access_key_id"
-aws_secret_access_key   =  "your_secret_access_key"
+client_spaces = {
+    someorg = ["firstspace", "otherspace"]
+}
+broker_space = {
+    org = "someorg"
+    space = "somespace"
+}
