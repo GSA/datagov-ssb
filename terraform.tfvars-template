@@ -1,4 +1,6 @@
-# See vars.tf for more information
+# See vars.tf for documentation on these options and the other options
+# available. 
+
 client_spaces = {
     someorg = ["firstspace", "otherspace"]
 }

@@ -24,24 +24,25 @@ provisioned, bound, unbound, and unprovisioned.
     credentials](https://cloud.gov/docs/services/s3/#interacting-with-your-s3-bucket-from-outside-cloudgov)
     for use.
 
-1. cloud.gov credentials with permission to register the service broker in the
+1. Cloud Foundry credentials with permission to register the service broker in the
    spaces where it should be available.
 
     For example, you can create a `space-deployer` [cloud.gov Service
     Account](https://cloud.gov/docs/services/cloud-gov-service-account/) in one
-    of the spaces. 
-    
-    Then you can grant the `SpaceDeveloper` role to the service account for additional
-    spaces as needed: 
-    
-    ```
-    cf set-space-role <accountname> <orgname> <spacename> SpaceDeveloper
+    of the spaces, then grant the `SpaceDeveloper` role to the service account for additional
+    spaces as needed:
+
+    ```bash
+    cf create-service cloud-gov-service-account space-deployer ci-deployer
+    cf create-service-key ci-deployer ssb-deployer-key
+    cf service-key ci-deployer ssb-deployer-key
+    cf set-space-role <accountname> <orgname> <additional-spacename> SpaceDeveloper
     ```
 
 1. Credentials to be used for managing resources in AWS
 
     See the instructions [for the necessary IAM
-    policies](https://github.com/pivotal/cloud-service-broker/blob/master/docs/aws-installation.md#aws-service-credentials).
+    policies](https://github.com/cloudfoundry-incubator/cloud-service-broker/blob/master/docs/aws-installation.md#aws-service-credentials).
 
 ## Dependencies
 
@@ -49,79 +50,116 @@ The broker deployment is specified and managed using
 [Docker](https://www.docker.com/products/docker-desktop).
 
 ## Creating and installing the broker
+
 <!-- (TODO
 Try to do this automatically with terraform... It seems possible with
 github_release and github_actions_secret in the github_provider!) -->
+
 1. Download the broker binary, desired brokerpaks, and prerequisite binaries
-   into the `/app` directory. 
-    ```
+   into the `/app` directory.
+
+    ```bash
     ./app-setup.sh
     ```
 
 1. Copy the `backend.tfvars-template` and edit in the non-sensitive values for the S3 bucket.
-    ```
+
+    ```bash
     cp backend.tfvars-template backend.tfvars
     ${EDITOR} backend.tfvars
     ```
 
-1. Copy the `.env.secrets-template` and edit in the sensitive values for the S3 bucket.
-    ```
-    cp .env.secrets-template .env.secrets
-    ${EDITOR} .env.secrets
+1. Copy the `.backend.secrets-template` and edit in the sensitive values for the S3 bucket.
+
+    ```bash
+    cp .backend.secrets-template .backend.secrets
+    ${EDITOR} .backend.secrets
     ```
 
-1. Copy the `terraform.tfvars-template` and edit in the values for the Cloud
-   Foundry service account and your IaaS deployer accounts.
-    ```
+1. Copy the `terraform.tfvars-template` and edit in any variable customizations.
+
+    ```bash
     cp terraform.tfvars-template terraform.tfvars
     ${EDITOR} terraform.tfvars
     ```
 
-1. Run Terraform init to set up the backend.
-    ```
-    docker-compose run --rm terraform init -backend-config=backend.tfvars
-    ```
-1. Run Terraform apply and answer `yes` when prompted.
-    ```
-    docker-compose run --rm terraform apply
+1. Copy the `.env.secrets-template` and edit in the values for the Cloud
+   Foundry service account and your IaaS deployer account.
+
+    ```bash
+    cp .env.secrets-template .env.secrets
+    ${EDITOR} .env.secrets
     ```
 
-# Uninstalling and deleting the broker
+1. Run Terraform init to set up the backend.
+
+    ```bash
+    docker-compose run --rm --env-file=.backend.secrets terraform init -backend-config=backend.tfvars
+    ```
+
+1. Run Terraform apply, review the plan, and answer `yes` when prompted.
+
+    ```bash
+    docker-compose run --rm --env-file=.env.secrets terraform apply
+    ```
+
+## Uninstalling and deleting the broker
+
 Run Terraform destroy and answer `yes` when prompted.
-```
+
+```bash
 docker-compose run --rm terraform destroy
 ```
 
-# Continuously deploying the broker
+## Continuously deploying the broker
 
 This repository includes a GitHub Action that can continuously deploy the
-`main` branch for you. To configure it, fork this repository in GitHub, then enter the
-following into [the `Settings > Secrets` page](/settings/secrets) on your fork:
+`main` branch for you. To configure it, fork this repository in GitHub, then follow these steps.
 
-### Global secrets
+### Create a workspace for the staging environment
+
+Set up a new workspace in the Terraform state for the staging environment.
+
+```bash
+docker-compose run --rm terraform workspace new staging
+```
+
+### Set up global secrets (used for sharing the Terraform state)
+
+Enter the following into [GitHub's `Settings > Secrets` page](/settings/secrets) on your fork:
 
 | Secret Name | Description |
 |-------------|-------------|
 | AWS_ACCESS_KEY_ID | the S3 bucket key for Terraform state|
 | AWS_SECRET_ACCESS_KEY | the S3 bucket secret for Terraform state |
-| BUCKET | the S3 bucket name for Terraform state |
 
+### Set up environment secrets (used to deploy and configure the broker)
 
-### Per-environment secrets
-
-We are assuming you are using "staging" and "production" GitHub environments.
+Create "staging" and "production" environments in [GitHub's `Settings > Environments` page](/settings/environments) on your fork. In each environment, enter the following secrets:
 
 | Secret Name | Description |
 |-------------|-------------|
 | TF_VAR_AWS_ACCESS_KEY_ID | the key for brokering resources in AWS |
 | TF_VAR_AWS_SECRET_ACCESS_KEY | the secret for brokering resources in AWS |
-| TF_VAR_cf_username | the cloud-gov-service-account space-deployer username |
-| TF_VAR_cf_password | the cloud-gov-service-account space-deployer password |
+| TF_VAR_cf_username | the username for a Cloud Foundry user with `SpaceDeveloper` access to the target spaces |
+| TF_VAR_cf_password | the password for a Cloud Foundry user with `SpaceDeveloper` access to the target spaces |
 
-Once these secrets are in place, any changes to the main branch will be
-deployed automatically.
+Finally, edit the `terraform.staging.tfvars` and `terraform.production.tfvars` files to supply the target orgs and spaces for the deployment.
+
+Once these secrets are in place, the GitHub Action should be operational.
+
+* Any pull-requests will
+  1. test the Terraform format
+  1. test the Terraform validity for the staging environment
+  1. test the Terraform validity for the production environment
+  1. post a summary of the planned changes for each environment on the pull-request
+* Any merges to the `main` branch will
+  1. deploy the changes to the staging environment
+  1. run tests on the broker in the staging environment
+  1. (if successful) deploy the changes to the production environment
 
 ---
+
 ## Contributing
 
 See [CONTRIBUTING](CONTRIBUTING.md) for additional information.
