@@ -19,22 +19,28 @@ variable "aws_secret_access_key" {
   description = "AWS secret for the access key"
 }
 
+variable "broker_zone" {
+  description = "DNS zone to use for managed resources"
+}
+
+variable "manage_zone" {
+  description = "Whether to create the broker_zone"
+  type        = bool
+}
+
 variable "broker_space" {
   description = "The space where the broker itself should be deployed"
-  type        = object({ org = string, space = string })
-  default = {
-    org   = "gsa-datagov"
-    space = "management"
-  }
+  type = object({
+    org   = string
+    space = string
+  })
 }
 
 variable "client_spaces" {
   description = "The spaces where the broker should be available. A map where keys are org names, and the values are sets of spaces in that org. If none, the broker will not be restricted to a space"
   type        = map(set(string))
-
   default = {
     # orgname    = [ "space1", "space2" ]
-    gsa-datagov = ["development", "staging", "prod", "management"]
   }
 }
 
