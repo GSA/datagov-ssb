@@ -174,65 +174,110 @@ jobs:
       run: exit 1
 
 
-#   deploy:
-#     if: github.event_name == 'push'
-#     name: Deploy to branch environment
-#     needs:
-#       - review
-#     runs-on: ubuntu-latest
+  deploy-staging:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    name: Deploy and test in staging
+    needs: 
+    - review-staging
+    - review-production
 
-#     environment: "${{ (github.ref == 'refs/heads/main') ? 'production' : 'staging' }}"
-#     env:
-#       TF_WORKSPACE: "${{ (github.ref == 'refs/heads/main') ? 'default' : 'staging' }}"
-#     environment: staging
+    environment: staging
+    env:
+      VAR_FILE: terraform.staging.tfvars
+      TF_WORKSPACE: staging
+      TF_VAR_cf_username: ${{ secrets.TF_VAR_cf_username }}
+      TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
+      TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
+      TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
 
-#     # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
-#     defaults:
-#       run:
-#         shell: bash
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
 
-#     # Checkout the repository to the GitHub Actions runner
-#     steps:
-#     - name: Checkout
-#       uses: actions/checkout@v2
-#     - name: Prepare the application
-#       run: ./app-setup.sh
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v2
+    - name: Prepare the application
+      run: ./app-setup.sh
+    - uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 0.14.x
 
-#     # Initialize the Terraform working directory by creating initial files, loading any remote state, downloading modules, etc.
-#     - name: Terraform Init
-#       id: init
-#       run: > 
-#         docker-compose run --rm 
-#         terraform init 
-#         -backend-config=access_key="${{ secrets.AWS_ACCESS_KEY_ID }}"
-#         -backend-config=secret_key="${{ secrets.AWS_SECRET_ACCESS_KEY }}"
-#         -backend-config=bucket="${{ env.BUCKET }}" 
-#         -backend-config=region="${{ env.REGION }}" 
-#         -backend-config=key="${{ env.KEY }}" 
-#         -backend-config=encrypt="${{ env.ENCRYPT }}"
+    - name: Terraform init
+      id: init
+      run: > 
+        terraform init -backend-config=bucket="${{ env.BUCKET }}" 
+        -backend-config=key="${{ env.KEY }}" 
+        -backend-config=region="${{ env.REGION }}" 
+        -backend-config=encrypt="${{ env.ENCRYPT }}"
+        -backend-config=access_key="${{ env.AWS_ACCESS_KEY_ID }}"
+        -backend-config=secret_key="${{ env.AWS_SECRET_ACCESS_KEY }}"
 
-#     # Uncomment the following step to get an interactive debugging session!
-#     # Use the SSH key on your GitHub account to ssh to the address displayed in
-#     # the Action's logs.
-# #    - name: Start debugging session
-# #      uses: mxschmitt/action-tmate@v3
-# #      with:
-# #        limit-access-to-actor: true
+    # Uncomment the following step to get an interactive debugging session!
+    # Use the SSH key on your GitHub account to ssh to the address displayed in
+    # the GitHub Action logs.
+#    - name: Start debugging session
+#      uses: mxschmitt/action-tmate@v3
+#      with:
+#        limit-access-to-actor: true
 
-#       # On push to main, build or change infrastructure according to Terraform configuration files
-#       # Note: It is recommended to set up a required "strict" status check in your repository for "Terraform Cloud". See the documentation on "strict" required status checks for more information: https://help.github.com/en/github/administering-a-repository/types-of-required-status-checks
-#     - name: Terraform Apply
-#       run: >
-#         touch .env.secrets
+    - name: Terraform apply
+      id: plan
+      run: terraform apply -no-color -auto-approve -var-file=${{ env.VAR_FILE }}
 
-#         docker-compose run --rm
-#         -e AWS_ACCESS_KEY_ID
-#         -e AWS_SECRET_ACCESS_KEY
-#         -e TF_VAR_cf_username
-#         -e TF_VAR_cf_password
-#         -e TF_VAR_aws_access_key_id
-#         -e TF_VAR_aws_secret_access_key
-#         terraform apply -auto-approve
-#     - name: Test
-#       run: echo ok  # TODO staging smoke test
+    - name: Test
+      run: echo ok  # TODO staging smoke test
+
+  deploy-production:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    name: Deploy into production
+    needs: deploy-staging
+
+    environment: production
+    env:
+      VAR_FILE: terraform.production.tfvars
+      TF_WORKSPACE: workspace
+      TF_VAR_cf_username: ${{ secrets.TF_VAR_cf_username }}
+      TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
+      TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
+      TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
+
+    # Use the Bash shell regardless whether the GitHub Actions runner is ubuntu-latest, macos-latest, or windows-latest
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+    - name: Checkout source
+      uses: actions/checkout@v2
+    - name: Prepare the application
+      run: ./app-setup.sh
+    - uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 0.14.x
+
+    - name: Terraform init
+      id: init
+      run: > 
+        terraform init -backend-config=bucket="${{ env.BUCKET }}" 
+        -backend-config=key="${{ env.KEY }}" 
+        -backend-config=region="${{ env.REGION }}" 
+        -backend-config=encrypt="${{ env.ENCRYPT }}"
+        -backend-config=access_key="${{ env.AWS_ACCESS_KEY_ID }}"
+        -backend-config=secret_key="${{ env.AWS_SECRET_ACCESS_KEY }}"
+
+    # Uncomment the following step to get an interactive debugging session!
+    # Use the SSH key on your GitHub account to ssh to the address displayed in
+    # the GitHub Action logs.
+#    - name: Start debugging session
+#      uses: mxschmitt/action-tmate@v3
+#      with:
+#        limit-access-to-actor: true
+
+    - name: Terraform apply
+      id: plan
+      run: terraform apply -no-color -auto-approve -var-file=${{ env.VAR_FILE }}
 
