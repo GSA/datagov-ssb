@@ -239,7 +239,7 @@ jobs:
     environment: production
     env:
       VAR_FILE: terraform.production.tfvars
-      TF_WORKSPACE: workspace
+      TF_WORKSPACE: default
       TF_VAR_cf_username: ${{ secrets.TF_VAR_cf_username }}
       TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
       TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
