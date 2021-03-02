@@ -44,3 +44,17 @@ variable "client_spaces" {
   }
 }
 
+variable "ssb_app_disk_quota" {
+  default     = 2048
+  description = "Disk quota (MiB) to allocate for ssb application."
+}
+
+variable "ssb_app_instances" {
+  default     = 1
+  description = "Number of application instances to run."
+}
+
+variable "ssb_app_memory" {
+  default     = 256
+  description = "Memory (MiB) to allocate for ssb application."
+}

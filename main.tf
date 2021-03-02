@@ -57,9 +57,9 @@ resource "cloudfoundry_app" "ssb" {
   path             = "./app.zip"
   buildpack        = "binary_buildpack"
   command          = "source .profile && ./cloud-service-broker serve"
-  instances        = 2
-  memory           = 512
-  disk_quota       = 2048
+  instances        = var.ssb_app_instances
+  memory           = var.ssb_app_memory
+  disk_quota       = var.ssb_app_disk_quota
   enable_ssh       = false
   source_code_hash = data.archive_file.app_zip.output_base64sha256
   strategy         = "blue-green"
