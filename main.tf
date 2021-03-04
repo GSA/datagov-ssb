@@ -28,9 +28,9 @@ data "cloudfoundry_service" "rds" {
   name = "aws-rds"
 }
 
-# data "cloudfoundry_service" "k8s" {
-#   name = "aws-eks-service"
-# }
+data "cloudfoundry_service" "k8s" {
+  name = "aws-eks-service"
+}
 
 resource "cloudfoundry_service_instance" "db" {
   for_each     = toset(local.broker_names)
@@ -143,25 +143,25 @@ resource "cloudfoundry_service_broker" "standard-broker" {
   ]
 }
 
-# resource "cloudfoundry_service_instance" "k8s-for-space-scoped-broker" {
-#   count        = local.spaces_in_orgs == {} ? 0 : 1
-#   name         = "ssb-k8s"
-#   space        = data.cloudfoundry_space.broker_space.id
-#   service_plan = data.cloudfoundry_service.k8s.service_plans["raw"]
-#   tags         = ["k8s"]
-#   depends_on = [
-#     cloudfoundry_service_broker.space-scoped-broker
-#   ]
-# }
+resource "cloudfoundry_service_instance" "k8s-for-space-scoped-broker" {
+  count        = local.spaces_in_orgs == {} ? 0 : 1
+  name         = "ssb-k8s"
+  space        = data.cloudfoundry_space.broker_space.id
+  service_plan = data.cloudfoundry_service.k8s.service_plans["raw"]
+  tags         = ["k8s"]
+  depends_on = [
+    cloudfoundry_service_broker.space-scoped-broker
+  ]
+}
 
-# resource "cloudfoundry_service_instance" "k8s-for-global-scoped-broker" {
-#   count        = local.spaces_in_orgs == {} ? 1 : 0
-#   name         = "ssb-k8s"
-#   space        = data.cloudfoundry_space.broker_space.id
-#   service_plan = data.cloudfoundry_service.k8s.service_plans["raw"]
-#   tags         = ["k8s"]
-#   depends_on = [
-#     cloudfoundry_service_broker.standard-broker
-#   ]
-# }
+resource "cloudfoundry_service_instance" "k8s-for-global-scoped-broker" {
+  count        = local.spaces_in_orgs == {} ? 1 : 0
+  name         = "ssb-k8s"
+  space        = data.cloudfoundry_space.broker_space.id
+  service_plan = data.cloudfoundry_service.k8s.service_plans["raw"]
+  tags         = ["k8s"]
+  depends_on = [
+    cloudfoundry_service_broker.standard-broker
+  ]
+}
 
