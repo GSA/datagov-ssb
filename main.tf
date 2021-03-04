@@ -132,9 +132,10 @@ resource "cloudfoundry_service_broker" "space-scoped-broker" {
 # This only works if the CF credentials provided belong to an administrator.
 resource "cloudfoundry_service_broker" "standard-broker" {
   count                            = local.spaces_in_orgs == {} ? 1 : 0
+  for_each                         = toset(local.broker_names)
   fail_when_catalog_not_accessible = true
-  name                             = "ssb-standard"
-  url                              = "https://${cloudfoundry_route.ssb_uri[0].endpoint}"
+  name                             = "ssb-standard-${each.key}"
+  url                              = "https://${cloudfoundry_route.ssb_uri[each.key].endpoint}"
   username                         = random_uuid.client_username.result
   password                         = random_password.client_password.result
   depends_on = [
