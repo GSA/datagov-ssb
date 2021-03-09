@@ -33,11 +33,11 @@ module "broker_eks" {
 module "broker_solr" {
   source = "./broker"
 
-  name = "ssb-solr"
-  path = "./app-solr"
-  broker_space = var.broker_space
+  name          = "ssb-solr"
+  path          = "./app-solr"
+  broker_space  = var.broker_space
   client_spaces = var.client_spaces
-  services = [ cloudfoundry_service_instance.k8s_cluster.id ] 
+  services      = [cloudfoundry_service_instance.k8s_cluster.id]
 }
 data "cloudfoundry_service" "k8s" {
   name = "aws-eks-service"
