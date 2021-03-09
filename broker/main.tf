@@ -42,7 +42,7 @@ resource "cloudfoundry_app" "ssb" {
   service_binding {
     service_instance = cloudfoundry_service_instance.db.id
   }
-  
+
   dynamic "service_binding" {
     for_each = var.services
     content {
