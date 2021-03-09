@@ -1,22 +1,6 @@
-terraform {
-  backend "s3" {}
-}
-
-provider "aws" {
-  region     = "us-east-1"
-  access_key = var.aws_access_key_id
-  secret_key = var.aws_secret_access_key
-}
 resource "aws_route53_zone" "zone" {
   count = var.manage_zone ? 1 : 0
   name  = var.broker_zone
-}
-
-provider "cloudfoundry" {
-  # Configure the CloudFoundry Provider
-  api_url  = var.cf_api_url
-  user     = var.cf_username
-  password = var.cf_password
 }
 
 data "cloudfoundry_space" "broker_space" {
