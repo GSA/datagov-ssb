@@ -5,7 +5,7 @@ output "app_id" {
 
 output "broker_registrations" {
   value       = [ 
-    cloudfoundry_service_broker.space_scoped_broker.*.id, 
-    cloudfoundry_service_broker.standard_broker.*.id 
+    cloudfoundry_service_broker.space_scoped_broker, 
+    cloudfoundry_service_broker.standard_broker.*
   ]
 }
