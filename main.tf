@@ -41,6 +41,9 @@ module "broker_solr" {
 }
 data "cloudfoundry_service" "k8s" {
   name = "aws-eks-service"
+  depends_on = [
+    module.broker_eks.broker_registrations
+  ]
 }
 
 # This is the back-end k8s instance to be used by the ssb-solr app
@@ -49,7 +52,4 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
   space        = data.cloudfoundry_space.broker_space.id
   service_plan = data.cloudfoundry_service.k8s.service_plans["raw"]
   tags         = ["k8s"]
-  depends_on = [
-    module.broker_eks.broker_registrations
-  ]
 }
