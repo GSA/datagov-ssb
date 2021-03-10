@@ -91,7 +91,7 @@ data "cloudfoundry_space" "spaces" {
 resource "cloudfoundry_service_broker" "space_scoped_broker" {
   for_each                         = local.spaces_in_orgs
   fail_when_catalog_not_accessible = true
-  name                             = "ssb-${each.value.org}-${each.value.space}"
+  name                             = "ssb-${var.name}-${each.value.org}-${each.value.space}"
   url                              = "https://${cloudfoundry_route.ssb_uri.endpoint}"
   username                         = random_uuid.client_username.result
   password                         = random_password.client_password.result
