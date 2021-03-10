@@ -50,6 +50,6 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
   service_plan = data.cloudfoundry_service.k8s.service_plans["raw"]
   tags         = ["k8s"]
   depends_on = [
-    module.broker_eks.app_id
+    module.broker_eks.broker_registrations
   ]
 }
