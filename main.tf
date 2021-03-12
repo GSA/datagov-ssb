@@ -52,4 +52,7 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
   space        = data.cloudfoundry_space.broker_space.id
   service_plan = data.cloudfoundry_service.k8s.service_plans["raw"]
   tags         = ["k8s"]
+  timeouts {
+    create = "30m"
+  }
 }
