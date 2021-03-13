@@ -17,6 +17,10 @@ module "broker_aws" {
   client_spaces         = var.client_spaces
   aws_access_key_id     = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
+  aws_zone              = var.broker_zone
+  depends_on = [
+    aws_route53_zone.zone
+  ]
 }
 
 module "broker_eks" {
@@ -29,6 +33,10 @@ module "broker_eks" {
   memory                = 512
   aws_access_key_id     = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
+  aws_zone              = var.broker_zone
+  depends_on = [
+    aws_route53_zone.zone
+  ]
 }
 
 module "broker_solr" {
