@@ -26,7 +26,7 @@ module "broker_eks" {
   path                  = "./app-eks"
   broker_space          = var.broker_space
   client_spaces         = var.client_spaces
-  memory                = "512M"
+  memory                = 512
   aws_access_key_id     = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
 }
