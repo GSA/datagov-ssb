@@ -1,0 +1,87 @@
+---
+on:
+  push:
+    branches:
+      - main
+
+env:
+  AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
+  AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+  BUCKET: "${{ secrets.BUCKET }}"
+  REGION: "${{ secrets.REGION }}"
+  KEY: "ssb-tfstate"
+  ENCRYPT: "true"
+
+jobs:
+
+  apply-staging:
+    name: apply (staging)
+    runs-on: ubuntu-latest
+    environment: staging
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TF_VAR_cf_username: ${{ secrets.TF_VAR_cf_username }}
+      TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
+      TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
+      TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: prep applications
+        run: |
+          ./app-setup-eks.sh
+          ./app-setup-solr.sh
+          ./app-setup-aws.sh
+      - name: terraform apply (staging)
+        uses: dflook/terraform-apply@v1
+        with:
+          path: .
+          label: staging
+          workspace: staging
+          var_file: terraform.staging.tfvars
+          backend_config: >
+            bucket=${{ env.BUCKET }},
+            key=${{ env.KEY }},
+            region=${{ env.REGION }}, 
+            encrypt=${{ env.ENCRYPT }},
+            access_key=${{ env.AWS_ACCESS_KEY_ID }},
+            secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}   
+      - name: test staging environment
+        run: echo staging tests ok  # TODO staging smoke tests
+
+  apply-production:
+    needs: apply-staging
+
+    name: apply (production)
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TF_VAR_cf_username: ${{ secrets.TF_VAR_cf_username }}
+      TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
+      TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
+      TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: prep applications
+        run: |
+          ./app-setup-eks.sh
+          ./app-setup-solr.sh
+          ./app-setup-aws.sh
+      - name: terraform apply (production)
+        uses: dflook/terraform-apply@v1
+        with:
+          path: .
+          label: production
+          workspace: default
+          var_file: terraform.production.tfvars
+          backend_config: >
+            bucket=${{ env.BUCKET }},
+            key=${{ env.KEY }},
+            region=${{ env.REGION }}, 
+            encrypt=${{ env.ENCRYPT }},
+            access_key=${{ env.AWS_ACCESS_KEY_ID }},
+            secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}
