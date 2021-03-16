@@ -63,3 +63,8 @@ variable "aws_region" {
   description = "AWS region in which to manage resources."
   default     = "us-east-1"
 }
+
+variable "aws_zone" {
+  description = "Route53 zone to use for SSB-provisioned resources"
+  default     = ""
+}
