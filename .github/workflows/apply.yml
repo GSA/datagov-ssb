@@ -46,7 +46,12 @@ jobs:
             region=${{ env.REGION }}, 
             encrypt=${{ env.ENCRYPT }},
             access_key=${{ env.AWS_ACCESS_KEY_ID }},
-            secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}   
+            secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}
+      - name: Setup tmate session
+        if: ${{ failure() }}
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: true
       - name: test staging environment
         run: echo staging tests ok  # TODO staging smoke tests
 
