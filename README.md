@@ -160,6 +160,48 @@ Once these secrets are in place, the GitHub Action should be operational.
   1. run tests on the broker in the staging environment
   1. (if successful) deploy the changes to the production environment
 
+
+## Force cleanup of orphaned resources
+
+If the broker fails to provision or bind a service unexpectedly, Cloud Foundry's error-handling of the situation is not great. You might end up in a situation where the broker has provisioned resources or created a binding that Cloud Foundry doesn't know about. Or, you may find Cloud Foundry knows about the b0rked service (eg last operation shows "create failed"), but you're unable to `cf delete-service` without then landing in a "delete failed" state.
+
+In those situations, don't panic. Here's how you can clean up!
+
+
+1. Get the GUID for the problem service instance.
+
+    ``` bash
+    $ cf service <servicename> --guid
+    ```
+
+2. Get a shell going inside an application instance.
+
+    ``` bash
+    $ cf ssh ssb-<brokerpakname>
+    $ /tmp/lifecycle/shell
+    ```
+
+3. Invoke the deprovision operation directly. 
+
+    ``` bash
+    $ ./cloud-service-broker client deprovision --serviceid <serviceid> --planid <planid> --instanceid <instanceid>
+    ```
+
+    * The `instanceid` is the GUID you extracted in step 1. 
+    * The `serviceid` and `planid` are the GUIDs from the service catalog.
+
+4. Log out of the SSH session
+
+    ```bash
+    $ exit
+    ```
+
+5. Locally, purge the Cloud Foundry-side record of the service
+
+    ``` bash
+    $ cf purge-service-instance <servicename>
+    ```
+
 ---
 
 ## Contributing
