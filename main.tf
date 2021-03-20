@@ -49,7 +49,8 @@ module "broker_solr" {
   services      = [cloudfoundry_service_instance.k8s_cluster.id]
 }
 data "cloudfoundry_service" "k8s" {
-  name = "aws-eks-service"
+  name  = "aws-eks-service"
+  space = data.cloudfoundry_space.broker_space.id
   depends_on = [
     module.broker_eks.broker_registrations
   ]
