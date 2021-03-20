@@ -3,9 +3,6 @@ output "app_id" {
   value       = cloudfoundry_app.ssb.id
 }
 
-output "broker_registrations" {
-  value = [
-    cloudfoundry_service_broker.space_scoped_broker,
-    cloudfoundry_service_broker.standard_broker.*
-  ]
+output "plans" {
+  value = cloudfoundry_service_broker.space_scoped_broker["${var.broker_space.org}/${var.broker_space.space}"].service_plans
 }
