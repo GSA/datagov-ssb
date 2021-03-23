@@ -16,9 +16,8 @@ resource "cloudfoundry_service_instance" "db" {
 
 resource "random_uuid" "client_username" {}
 resource "random_password" "client_password" {
-  length           = 16
-  special          = true
-  override_special = "_%@"
+  length  = 16
+  special = true
 }
 
 data "archive_file" "app_zip" {
@@ -52,7 +51,7 @@ resource "cloudfoundry_app" "ssb" {
 
   environment = {
     SECURITY_USER_NAME                       = random_uuid.client_username.result,
-    SECURITY_USER_PASSWORD                   = random_password.client_password.result,
+    SECURITY_USER_PASSWORD                   = local.processed_password,
     AWS_ACCESS_KEY_ID                        = var.aws_access_key_id,
     AWS_SECRET_ACCESS_KEY                    = var.aws_secret_access_key,
     AWS_DEFAULT_REGION                       = var.aws_region,
@@ -95,7 +94,7 @@ resource "cloudfoundry_service_broker" "space_scoped_broker" {
   name                             = "${var.name}-${each.value.org}-${each.value.space}"
   url                              = "https://${cloudfoundry_route.ssb_uri.endpoint}"
   username                         = random_uuid.client_username.result
-  password                         = random_password.client_password.result
+  password                         = local.processed_password
   space                            = data.cloudfoundry_space.spaces[each.key].id
   depends_on = [
     cloudfoundry_app.ssb
@@ -110,7 +109,7 @@ resource "cloudfoundry_service_broker" "standard_broker" {
   name                             = "ssb-standard"
   url                              = "https://${cloudfoundry_route.ssb_uri.endpoint}"
   username                         = random_uuid.client_username.result
-  password                         = random_password.client_password.result
+  password                         = local.processed_password
   depends_on = [
     cloudfoundry_app.ssb
   ]
