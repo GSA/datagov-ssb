@@ -74,11 +74,11 @@ resource "cloudfoundry_app" "ssb" {
 data "cloudfoundry_domain" "apps" {
   sub_domain = "app"
 }
-resource "random_pet" "client_hostname" {}
+
 resource "cloudfoundry_route" "ssb_uri" {
   domain   = data.cloudfoundry_domain.apps.id
   space    = data.cloudfoundry_space.broker_space.id
-  hostname = "ssb-${random_pet.client_hostname.id}"
+  hostname = "${var.name}-${var.broker_space.org}-${var.broker_space.space}"
 }
 
 # Register the broker in each of these spaces
