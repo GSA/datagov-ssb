@@ -181,7 +181,15 @@ In those situations, don't panic. Here's how you can clean up!
     $ /tmp/lifecycle/shell
     ```
 
-3. Invoke the deprovision operation directly. 
+3. If [this upstream bug](https://github.com/cloudfoundry-incubator/cloud-service-broker/issues/210) has not been fixed, make sure the client uses a URL-encoded version of the password.
+
+    1. [URL-encode](https://www.google.com/search?q=url+encode) the value of the `SECURITY_USER_PASSWORD` environment variable, then
+
+    2. Set that encoded result as the new value
+
+           export SECURITY_USER_PASSWORD=${the-encoded-value}
+
+4. Invoke the deprovision operation directly. 
 
     ``` bash
     $ ./cloud-service-broker client deprovision --serviceid <serviceid> --planid <planid> --instanceid <instanceid>
