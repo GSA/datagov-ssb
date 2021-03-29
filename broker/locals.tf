@@ -20,10 +20,4 @@ locals {
       space = os.space
     }
   }
-
-  # By URL-encoding the password, we can ensure that upon `cf ssh`,
-  # `cloud-service-broker client` will be functional without having to adjust
-  # environment variables.
-  processed_password = urlencode(random_password.client_password.result)
-
 }
