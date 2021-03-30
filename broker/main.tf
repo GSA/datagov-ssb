@@ -90,7 +90,7 @@ data "cloudfoundry_space" "spaces" {
 
 resource "cloudfoundry_service_broker" "space_scoped_broker" {
   for_each                         = local.spaces_in_orgs
-  fail_when_catalog_not_accessible = true
+  fail_when_catalog_not_accessible = false
   name                             = "${var.name}-${each.value.org}-${each.value.space}"
   url                              = "https://${cloudfoundry_route.ssb_uri.endpoint}"
   username                         = random_uuid.client_username.result
@@ -105,7 +105,7 @@ resource "cloudfoundry_service_broker" "space_scoped_broker" {
 # This only works if the CF credentials provided belong to an administrator.
 resource "cloudfoundry_service_broker" "standard_broker" {
   count                            = local.spaces_in_orgs == {} ? 1 : 0
-  fail_when_catalog_not_accessible = true
+  fail_when_catalog_not_accessible = false
   name                             = "ssb-standard"
   url                              = "https://${cloudfoundry_route.ssb_uri.endpoint}"
   username                         = random_uuid.client_username.result
