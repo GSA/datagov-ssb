@@ -56,7 +56,7 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
   service_plan = module.broker_eks.plans["aws-eks-service/raw"]
   tags         = ["k8s"]
   timeouts {
-    create = "30m"
+    create = "40m"
     delete = "30m"
   }
 }
