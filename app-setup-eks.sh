@@ -5,7 +5,7 @@ EKS_BROKERPAK_VERSION="0.24.0"
 
 # TODO: Check sha256 sums
 HELM_VERSION="3.2.1"
-KUBECTL_VERSION="1.17.5"
+KUBECTL_VERSION="1.20.5"
 KUSTOMIZE_VERSION="v3.8.1"
 
 AWS_IAM_AUTH_VERSION_URL="https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.9/2020-08-04/bin/linux/amd64/aws-iam-authenticator"
