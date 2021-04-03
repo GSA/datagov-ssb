@@ -11,6 +11,9 @@ mkdir -p app-aws/bin
 cat > app-aws/.profile << 'EOF'
 # Locate additional binaries needed by the deployed brokerpaks
 export PATH="$PATH:${PWD}/bin"
+
+# Use a tmpfs while working with Terraform state
+export TMPDIR="/dev/shm"
 EOF
 chmod +x app-aws/.profile
 
