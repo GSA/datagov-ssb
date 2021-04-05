@@ -58,7 +58,7 @@ resource "cloudfoundry_app" "ssb" {
     DB_TLS                                   = "skip-verify",
     GSB_COMPATIBILITY_ENABLE_CATALOG_SCHEMAS = true,
     GSB_COMPATIBILITY_ENABLE_CF_SHARING      = true,
-    AWS_ZONE                                 = var.aws_zone,
+    AWS_ZONE                                 = var.aws_zone
   }
 
   routes {

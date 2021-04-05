@@ -20,9 +20,6 @@ cat > app-solr/.profile << 'EOF'
 # Locate additional binaries needed by the deployed brokerpaks
 export PATH="$PATH:${PWD}/bin"
 
-# Use a tmpfs while working with Terraform state
-export TMPDIR="/dev/shm"
-
 # Export credentials for the k8s cluster and namespace where the Solr brokerpak
 # should manage instances of SolrCloud. We get these from the binding directly.
 export SOLR_SERVER=$(echo $VCAP_SERVICES | jq -r '.["aws-eks-service"][] | .credentials.server')
