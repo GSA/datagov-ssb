@@ -61,7 +61,7 @@ variable "aws_secret_access_key" {
 
 variable "aws_region" {
   description = "AWS region in which to manage resources."
-  default     = "us-east-1"
+  default     = "us-west-2"
 }
 
 variable "aws_zone" {
