@@ -67,7 +67,7 @@ module "broker_solr" {
 
 # This is the back-end k8s instance to be used by the ssb-solr app
 resource "cloudfoundry_service_instance" "k8s_cluster" {
-  name         = "ssb-k8s"
+  name         = "ssb-solr-k8s"
   space        = data.cloudfoundry_space.broker_space.id
   service_plan = module.broker_eks.plans["aws-eks-service/raw"]
   tags         = ["k8s"]
