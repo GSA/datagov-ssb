@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-DATAGOV_BROKERPAK_VERSION="0.17.0"
+DATAGOV_BROKERPAK_VERSION="0.19.0"
 
 # TODO: Check sha256 sums
 HELM_VERSION="3.2.1"
@@ -35,7 +35,7 @@ chmod +x app-solr/.profile
     chmod +x app-solr/cloud-service-broker
 
 # Add the brokerpak(s)
-(cd app-solr && curl -f -LO https://github.com/GSA/datagov-brokerpak/releases/download/v${DATAGOV_BROKERPAK_VERSION}/datagov-services-pak-${DATAGOV_BROKERPAK_VERSION}.brokerpak)
+(cd app-solr && curl -f -LO https://github.com/GSA/datagov-brokerpak/releases/download/${DATAGOV_BROKERPAK_VERSION}/datagov-services-pak-${DATAGOV_BROKERPAK_VERSION}.brokerpak)
 
 # Install the Helm binary
 curl -f -L ${BASE_URL}/${TAR_FILE} |tar xvz && \
