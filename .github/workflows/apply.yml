@@ -36,6 +36,7 @@ jobs:
       - name: terraform apply (staging)
         uses: dflook/terraform-apply@v1
         with:
+          auto_approve: true
           path: .
           label: staging
           workspace: staging
@@ -79,6 +80,7 @@ jobs:
       - name: terraform apply (production)
         uses: dflook/terraform-apply@v1
         with:
+          auto_approve: true
           path: .
           label: production
           workspace: default
