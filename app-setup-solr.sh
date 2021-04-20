@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-DATAGOV_BROKERPAK_VERSION="0.19.0"
+DATAGOV_BROKERPAK_VERSION="0.19.1"
 
 # TODO: Check sha256 sums
 HELM_VERSION="3.2.1"
