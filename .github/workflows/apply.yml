@@ -36,7 +36,6 @@ jobs:
       - name: terraform apply (staging)
         uses: dflook/terraform-apply@v1
         with:
-          auto_approve: true
           path: .
           label: staging
           workspace: staging
@@ -48,11 +47,11 @@ jobs:
             encrypt=${{ env.ENCRYPT }},
             access_key=${{ env.AWS_ACCESS_KEY_ID }},
             secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}
-      - name: Setup tmate session
-        if: ${{ failure() }}
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: true
+      # - name: Setup tmate session
+      #   if: ${{ failure() }}
+      #   uses: mxschmitt/action-tmate@v3
+      #   with:
+      #     limit-access-to-actor: true
       - name: test staging environment
         run: echo staging tests ok  # TODO staging smoke tests
 
@@ -80,7 +79,6 @@ jobs:
       - name: terraform apply (production)
         uses: dflook/terraform-apply@v1
         with:
-          auto_approve: true
           path: .
           label: production
           workspace: default
