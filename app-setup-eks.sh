@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-EKS_BROKERPAK_VERSION="0.26.0"
+EKS_BROKERPAK_VERSION="v0.26.0"
 
 # TODO: Check sha256 sums
 HELM_VERSION="3.2.1"
@@ -29,7 +29,7 @@ chmod +x app-eks/.profile
     chmod +x app-eks/cloud-service-broker
 
 # Add the brokerpak(s)
-(cd app-eks && curl -f -LO https://github.com/GSA/eks-brokerpak/releases/download/v${EKS_BROKERPAK_VERSION}/eks-services-pak-${EKS_BROKERPAK_VERSION}.brokerpak)
+(cd app-eks && curl -f -LO https://github.com/GSA/eks-brokerpak/releases/download/${EKS_BROKERPAK_VERSION}/eks-services-pak-${EKS_BROKERPAK_VERSION}.brokerpak)
 
 # Install the Helm binary
 curl -f -L ${BASE_URL}/${TAR_FILE} |tar xvz && \
