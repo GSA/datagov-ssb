@@ -74,6 +74,7 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
   json_params  = "{ \"cluster_name\": \"k8s-brokered\" }"
   timeouts {
     create = "40m"
+    update = "90m" # in case of an EKS destroy/create
     delete = "30m"
   }
 }
