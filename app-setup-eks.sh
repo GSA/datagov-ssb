@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-EKS_BROKERPAK_VERSION="v0.26.0"
+EKS_BROKERPAK_VERSION="v0.27.0"
 
 # TODO: Check sha256 sums
 HELM_VERSION="3.2.1"
