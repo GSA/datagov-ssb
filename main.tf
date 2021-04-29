@@ -71,6 +71,7 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
   space        = data.cloudfoundry_space.broker_space.id
   service_plan = module.broker_eks.plans["aws-eks-service/raw"]
   tags         = ["k8s"]
+  json_params  = "{ \"cluster_name\": \"k8s-brokered\" }"
   timeouts {
     create = "40m"
     delete = "30m"
