@@ -31,6 +31,7 @@ module "broker_aws" {
   path                  = "./app-aws"
   broker_space          = var.broker_space
   client_spaces         = var.client_spaces
+  enable_ssh            = var.enable_ssh
   aws_access_key_id     = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
   aws_zone              = var.broker_zone
@@ -46,6 +47,7 @@ module "broker_eks" {
   path                  = "./app-eks"
   broker_space          = var.broker_space
   client_spaces         = var.client_spaces
+  enable_ssh            = var.enable_ssh
   memory                = 512
   aws_access_key_id     = var.aws_access_key_id
   aws_secret_access_key = var.aws_secret_access_key
@@ -62,6 +64,7 @@ module "broker_solr" {
   path          = "./app-solr"
   broker_space  = var.broker_space
   client_spaces = var.client_spaces
+  enable_ssh    = var.enable_ssh
   services      = [cloudfoundry_service_instance.k8s_cluster.id]
 }
 
