@@ -8,3 +8,4 @@ broker_space = {
 }
 broker_zone = "ssb.data.gov"
 manage_zone = true
+enable_ssh  = false
