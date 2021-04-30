@@ -35,7 +35,7 @@ resource "cloudfoundry_app" "ssb" {
   instances        = var.instances
   memory           = var.memory
   disk_quota       = var.disk
-  enable_ssh       = false
+  enable_ssh       = var.enable_ssh
   source_code_hash = data.archive_file.app_zip.output_base64sha256
   strategy         = "blue-green"
   service_binding {

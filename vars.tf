@@ -58,3 +58,8 @@ variable "ssb_app_memory" {
   default     = 256
   description = "Memory (MiB) to allocate for ssb application."
 }
+
+variable "enable_ssh" {
+  default     = true
+  description = "Whether `cf ssh` should be enabled for the broker app"
+}
