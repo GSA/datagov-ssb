@@ -32,7 +32,6 @@ jobs:
         run: |
           ./app-setup-eks.sh
           ./app-setup-solr.sh
-          ./app-setup-aws.sh
       - name: terraform plan (staging)
         uses: dflook/terraform-plan@v1
         with:
@@ -65,7 +64,6 @@ jobs:
         run: |
           ./app-setup-eks.sh
           ./app-setup-solr.sh
-          ./app-setup-aws.sh
       - name: terraform plan (production)
         uses: dflook/terraform-plan@v1
         with:
