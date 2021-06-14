@@ -24,22 +24,6 @@ resource "aws_servicequotas_service_quota" "minimum_quotas" {
   value        = each.value
 }
 
-module "broker_aws" {
-  source = "./broker"
-
-  name                  = "ssb-aws"
-  path                  = "./app-aws"
-  broker_space          = var.broker_space
-  client_spaces         = var.client_spaces
-  enable_ssh            = var.enable_ssh
-  aws_access_key_id     = var.aws_access_key_id
-  aws_secret_access_key = var.aws_secret_access_key
-  aws_zone              = var.broker_zone
-  depends_on = [
-    aws_route53_zone.zone
-  ]
-}
-
 module "broker_eks" {
   source = "./broker"
 
