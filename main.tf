@@ -64,7 +64,4 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
     update = "90m" # in case of an EKS destroy/create
     delete = "30m"
   }
-  depends_on = [
-    module.broker_eks
-  ]
 }
