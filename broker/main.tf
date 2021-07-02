@@ -12,7 +12,15 @@ resource "cloudfoundry_service_instance" "db" {
   space                          = data.cloudfoundry_space.broker_space.id
   service_plan                   = data.cloudfoundry_service.rds.service_plans["small-mysql-redundant"]
   tags                           = ["mysql"]
-  replace_on_service_plan_change = true
+  lifecycle {
+    prevent_destroy = true
+  }
+  timeouts {
+    create = "30m"
+    update = "30m"
+    delete = "30m"
+  }
+
 }
 
 resource "random_uuid" "client_username" {}
