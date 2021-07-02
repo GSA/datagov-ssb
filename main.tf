@@ -52,6 +52,22 @@ module "broker_solr" {
   services      = [cloudfoundry_service_instance.k8s_cluster.id]
 }
 
+module "broker_smtp" {
+  source = "./broker"
+
+  name                  = "ssb-smtp"
+  path                  = "./app-smtp"
+  broker_space          = var.broker_space
+  client_spaces         = var.client_spaces
+  enable_ssh            = var.enable_ssh
+  aws_access_key_id     = var.aws_access_key_id
+  aws_secret_access_key = var.aws_secret_access_key
+  aws_zone              = var.broker_zone
+  depends_on = [
+    aws_route53_zone.zone
+  ]
+}
+
 # This is the back-end k8s instance to be used by the ssb-solr app
 resource "cloudfoundry_service_instance" "k8s_cluster" {
   name         = "ssb-solr-k8s"
