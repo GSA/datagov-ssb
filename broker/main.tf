@@ -8,10 +8,10 @@ data "cloudfoundry_service" "rds" {
 }
 
 resource "cloudfoundry_service_instance" "db" {
-  name                           = "${var.name}-db"
-  space                          = data.cloudfoundry_space.broker_space.id
-  service_plan                   = data.cloudfoundry_service.rds.service_plans["small-mysql-redundant"]
-  tags                           = ["mysql"]
+  name         = "${var.name}-db"
+  space        = data.cloudfoundry_space.broker_space.id
+  service_plan = data.cloudfoundry_service.rds.service_plans["small-mysql-redundant"]
+  tags         = ["mysql"]
   lifecycle {
     prevent_destroy = true
   }
