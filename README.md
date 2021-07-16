@@ -1,11 +1,12 @@
 # datagov-ssb
 
-The Supplementary Service Broker (SSB) fills gaps in cloud.gov's brokered
-services.
+The Supplementary Service Broker (SSB) fills gaps in [cloud.gov](https://cloud.gov)'s brokered services. The SSB can also be used from the command-line with [`eden`](https://github.com/starkandwayne/eden), or integrated into other platforms that make use of the [OSBAPI](https://www.openservicebrokerapi.org).
 
+The SSB currently provides [SMTP](https://github.com/GSA/datagov-brokerpak-smtp), [Solr](https://github.com/GSA/datagov-brokerpak), and [(limited) Kubernetes](https://github.com/GSA/eks-brokerpak) services.
+ 
 Services are defined in a
 [brokerpaks](https://github.com/pivotal/cloud-service-broker/blob/master/docs/brokerpak-intro.md),
-bundles of Terraform and YAML that specifies the service should be advertised,
+bundles of Terraform and YAML that specify how each service should be advertised,
 provisioned, bound, unbound, and unprovisioned.
 
 ## Prerequisites
