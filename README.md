@@ -65,6 +65,7 @@ github_release and github_actions_secret in the github_provider!) -->
 
     ```bash
     ./app-setup-eks.sh
+    ./app-setup-smtp.sh
     ./app-setup-solr.sh
     ```
 
@@ -100,13 +101,13 @@ github_release and github_actions_secret in the github_provider!) -->
 1. Run Terraform init to set up the backend.
 
     ```bash
-    docker-compose run --rm --env-file=.backend.secrets terraform init -backend-config=backend.tfvars
+    docker-compose --env-file .backend.secrets run --rm terraform init -backend-config backend.tfvars
     ```
 
 1. Run Terraform apply, review the plan, and answer `yes` when prompted.
 
     ```bash
-    docker-compose run --rm --env-file=.env.secrets terraform apply
+    docker-compose --env-file=.env.secrets run --rm terraform apply
     ```
 
 ## Uninstalling and deleting the broker
