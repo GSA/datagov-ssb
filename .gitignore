@@ -36,11 +36,9 @@ override.tf.json
 .DS_Store
 /todo.txt
 terraform.tfvars
-app/config.yml
-app.zip
-app/*
 backend.tfvars
 .env.secrets
-app-aws
+app-smtp
 app-eks
 app-solr
+app-ssb-*.zip
