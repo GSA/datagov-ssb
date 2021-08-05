@@ -42,3 +42,4 @@ app-smtp
 app-eks
 app-solr
 app-ssb-*.zip
+.backend.secrets
