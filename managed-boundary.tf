@@ -1,3 +1,7 @@
+locals {
+  trusted_aws_account = 133032889584
+}
+
 resource "aws_servicequotas_service_quota" "minimum_quotas" {
   for_each = {
     "vpc/L-45FE3B85" = 20 # egress-only internet gateways per region
@@ -17,5 +21,25 @@ resource "aws_servicequotas_service_quota" "minimum_quotas" {
 resource "aws_route53_zone" "zone" {
   count = var.manage_zone ? 1 : 0
   name  = var.broker_zone
+}
+
+module "iam_assumable_roles" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-roles"
+  version = "~> 4.2.0"
+
+  trusted_role_arns = [
+    "arn:aws:iam::${local.trusted_aws_account}:root",
+  ]
+
+  # Note both of these require MFA by default
+  create_admin_role     = true
+  create_poweruser_role = true
+  admin_role_name       = "ssb-administrator"
+  poweruser_role_name   = "ssb-developer"
+
+  poweruser_role_policy_arns = [
+    "arn:aws:iam::aws:policy/PowerUserAccess",
+  ]
+
 }
 
