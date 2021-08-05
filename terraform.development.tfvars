@@ -7,4 +7,4 @@ broker_space = {
   space = "development"
 }
 broker_zone = "ssb-dev.datagov.us"
-manage_zone = false
+manage_zone = true
