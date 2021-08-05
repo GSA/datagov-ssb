@@ -43,3 +43,16 @@ module "iam_assumable_roles" {
 
 }
 
+module "ssb-eks-broker-user" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-user"
+  version = "~> 4.2.0"
+
+  create_iam_user_login_profile = false
+  force_destroy                 = true
+  name                          = "ssb-eks-broker"
+}
+
+resource "aws_iam_user_policy_attachment" "eks-broker-policy" {
+  user       = module.ssb-eks-broker-user.iam_user_name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+}
