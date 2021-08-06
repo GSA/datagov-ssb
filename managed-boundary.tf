@@ -34,13 +34,8 @@ module "iam_assumable_roles" {
   # Note both of these require MFA by default
   create_admin_role     = true
   create_poweruser_role = true
-  admin_role_name       = "ssb-administrator"
-  poweruser_role_name   = "ssb-developer"
-
-  poweruser_role_policy_arns = [
-    "arn:aws:iam::aws:policy/PowerUserAccess",
-  ]
-
+  admin_role_name       = "SSBAdmin"
+  poweruser_role_name   = "SSBDev"
 }
 
 module "ssb-eks-broker-user" {
