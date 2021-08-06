@@ -52,6 +52,14 @@ resource "aws_iam_user_policy_attachment" "eks-broker-policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }
 
+# Temporarily give this account the Administrator policy until we can identify
+# the exact set of least-privilege permissions required to operate the EKS
+# broker
+resource "aws_iam_user_policy_attachment" "eks-admin-policy" {
+  user       = module.ssb-eks-broker-user.iam_user_name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+}
+
 module "ssb-smtp-broker-user" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-user"
   version = "~> 4.2.0"
@@ -89,4 +97,12 @@ module "smtp_broker_policy" {
 resource "aws_iam_user_policy_attachment" "smtp-broker-policy" {
   user       = module.ssb-smtp-broker-user.iam_user_name
   policy_arn = module.smtp_broker_policy.arn
+}
+
+# Temporarily give this account the Administrator policy until we can identify
+# the exact set of least-privilege permissions required to operate the SMTP
+# broker
+resource "aws_iam_user_policy_attachment" "smtp-admin-policy" {
+  user       = module.ssb-smtp-broker-user.iam_user_name
+  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
