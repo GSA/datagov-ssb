@@ -7,8 +7,11 @@ services:
       - .:/code
     working_dir: /code
     environment:
+      # Terraform backend bucket creds
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
+      
+      # Secrets for the appropriate Terraform workspace
       - TF_VAR_aws_access_key_id
       - TF_VAR_aws_secret_access_key
       - TF_VAR_cf_username
