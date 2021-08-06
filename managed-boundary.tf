@@ -1,5 +1,5 @@
 locals {
-  trusted_aws_account = 133032889584
+  trusted_aws_account_id = 133032889584 # <- tts-prod (parameterize later)
 }
 
 resource "aws_servicequotas_service_quota" "minimum_quotas" {
@@ -28,7 +28,7 @@ module "iam_assumable_roles" {
   version = "~> 4.2.0"
 
   trusted_role_arns = [
-    "arn:aws:iam::${local.trusted_aws_account}:root",
+    "arn:aws:iam::${local.trusted_aws_account_id}:root",
   ]
 
   # Note both of these require MFA by default
@@ -55,4 +55,43 @@ module "ssb-eks-broker-user" {
 resource "aws_iam_user_policy_attachment" "eks-broker-policy" {
   user       = module.ssb-eks-broker-user.iam_user_name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
+}
+
+module "ssb-smtp-broker-user" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-user"
+  version = "~> 4.2.0"
+
+  create_iam_user_login_profile = false
+  force_destroy                 = true
+  name                          = "ssb-smtp-broker"
+}
+
+
+module "smtp_broker_policy" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
+  version = "~> 4.2.0"
+
+  name        = "smtp_broker"
+  path        = "/"
+  description = "SMTP broker policy (covers SES, Route53, etc)"
+
+  policy = <<-EOF
+  {
+    "Version":"2012-10-17",
+    "Statement":[
+        {
+        "Effect":"Allow",
+        "Action":[
+            "ses:*"
+        ],
+        "Resource":"*"
+        }
+    ]
+  }
+  EOF
+}
+
+resource "aws_iam_user_policy_attachment" "smtp-broker-policy" {
+  user       = module.ssb-smtp-broker-user.iam_user_name
+  policy_arn = module.smtp_broker_policy.arn
 }

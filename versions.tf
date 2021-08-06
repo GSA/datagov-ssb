@@ -15,7 +15,7 @@ terraform {
     }
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 2.67"
+      version = "~> 3.35"
     }
   }
 }
