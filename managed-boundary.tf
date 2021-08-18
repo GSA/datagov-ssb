@@ -51,19 +51,19 @@ module "ssb-smtp-broker-user" {
 }
 
 resource "aws_iam_user_policy_attachment" "smtp_broker_policies" {
-  for_each = toset( [
-                      // ACM manager: for aws_acm_certificate, aws_acm_certificate_validation
-                      "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess",
+  for_each = toset([
+    // ACM manager: for aws_acm_certificate, aws_acm_certificate_validation
+    "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess",
 
-                      // Route53 manager: for aws_route53_record, aws_route53_zone
-                      "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
+    // Route53 manager: for aws_route53_record, aws_route53_zone
+    "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
 
-                      // AWS SES policy defined below
-                      "arn:aws:iam::${local.this_aws_account_id}:policy/${module.smtp_broker_policy.name}",
+    // AWS SES policy defined below
+    "arn:aws:iam::${local.this_aws_account_id}:policy/${module.smtp_broker_policy.name}",
 
-                      // Uncomment if we are still missing stuff and need to get it working again
-                      // "arn:aws:iam::aws:policy/AdministratorAccess"
-                    ] )
+    // Uncomment if we are still missing stuff and need to get it working again
+    // "arn:aws:iam::aws:policy/AdministratorAccess"
+  ])
   user       = module.ssb-smtp-broker-user.iam_user_name
   policy_arn = each.key
 }
@@ -136,28 +136,28 @@ module "ssb-eks-broker-user" {
 }
 
 resource "aws_iam_user_policy_attachment" "eks_broker_policies" {
-  for_each = toset( [
-                      // ACM manager: for aws_acm_certificate, aws_acm_certificate_validation
-                      "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess",
+  for_each = toset([
+    // ACM manager: for aws_acm_certificate, aws_acm_certificate_validation
+    "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess",
 
-                      // EKS manager: for aws_eks_cluster
-                      "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+    // EKS manager: for aws_eks_cluster
+    "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
 
-                      // Route53 manager: for aws_route53_record, aws_route53_zone
-                      "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
+    // Route53 manager: for aws_route53_record, aws_route53_zone
+    "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
 
-                      // WAF2: for aws_wafv2_web_acl
-                      "arn:aws:iam::aws:policy/AWSWAFFullAccess",
+    // WAF2: for aws_wafv2_web_acl
+    "arn:aws:iam::aws:policy/AWSWAFFullAccess",
 
-                      // AWS EKS module policy defined below
-                      "arn:aws:iam::${local.this_aws_account_id}:policy/${module.eks_module_policy.name}",
+    // AWS EKS module policy defined below
+    "arn:aws:iam::${local.this_aws_account_id}:policy/${module.eks_module_policy.name}",
 
-                      // AWS EKS brokerpak policy defined below
-                      "arn:aws:iam::${local.this_aws_account_id}:policy/${module.eks_brokerpak_policy.name}",
+    // AWS EKS brokerpak policy defined below
+    "arn:aws:iam::${local.this_aws_account_id}:policy/${module.eks_brokerpak_policy.name}",
 
-                      // Uncomment if we are still missing stuff and need to get it working again
-                      // "arn:aws:iam::aws:policy/AdministratorAccess"
-                    ] )
+    // Uncomment if we are still missing stuff and need to get it working again
+    // "arn:aws:iam::aws:policy/AdministratorAccess"
+  ])
   user       = module.ssb-eks-broker-user.iam_user_name
   policy_arn = each.key
 }
@@ -169,7 +169,7 @@ module "eks_brokerpak_policy" {
   name        = "eks_brokerpak_policy"
   path        = "/"
   description = "Policy granting additional permissions needed by the EKS brokerpak"
-  policy = <<-EOF
+  policy      = <<-EOF
     {
       "Version": "2012-10-17",
       "Statement": [
