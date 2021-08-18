@@ -1,6 +1,9 @@
 locals {
   trusted_aws_account_id = 133032889584 # <- tts-prod (parameterize later)
+  this_aws_account_id    = data.aws_caller_identity.current.account_id
 }
+
+data "aws_caller_identity" "current" {}
 
 resource "aws_servicequotas_service_quota" "minimum_quotas" {
   for_each = {
@@ -56,7 +59,7 @@ resource "aws_iam_user_policy_attachment" "smtp_broker_policies" {
                       "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
 
                       // AWS SES policy defined below
-                      module.smtp_broker_policy.arn,
+                      "arn:aws:iam::${local.this_aws_account_id}:policy/${module.smtp_broker_policy.name}",
 
                       // Uncomment if we are still missing stuff and need to get it working again
                       // "arn:aws:iam::aws:policy/AdministratorAccess"
@@ -147,10 +150,10 @@ resource "aws_iam_user_policy_attachment" "eks_broker_policies" {
                       "arn:aws:iam::aws:policy/AWSWAFFullAccess",
 
                       // AWS EKS module policy defined below
-                      module.eks_module_policy.arn,
+                      "arn:aws:iam::${local.this_aws_account_id}:policy/${module.eks_module_policy.name}",
 
                       // AWS EKS brokerpak policy defined below
-                      module.eks_brokerpak_policy.arn,
+                      "arn:aws:iam::${local.this_aws_account_id}:policy/${module.eks_brokerpak_policy.name}",
 
                       // Uncomment if we are still missing stuff and need to get it working again
                       // "arn:aws:iam::aws:policy/AdministratorAccess"
