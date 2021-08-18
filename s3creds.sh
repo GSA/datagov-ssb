@@ -7,8 +7,8 @@
 # If your S3 service instance has a different name, or you want a different key
 # name, edit the following two lines.
 
-SERVICE_INSTANCE_NAME=terraform-s3
-KEY_NAME=terraform-s3-key
+SERVICE_INSTANCE_NAME="${SERVICE_INSTANCE_NAME:-terraform-s3}"
+KEY_NAME="${SERVICE_INSTANCE_NAME}-s3-key"
 
 cf create-service-key "${SERVICE_INSTANCE_NAME}" "${KEY_NAME}"
 S3_CREDENTIALS=`cf service-key "${SERVICE_INSTANCE_NAME}" "${KEY_NAME}" | tail -n +2`
