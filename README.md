@@ -27,10 +27,10 @@ provisioned, bound, unbound, and unprovisioned.
     cloud.gov](https://cloud.gov/docs/services/s3/#how-to-create-an-instance)
     using the `basic` plan, then [extract the
     credentials](https://cloud.gov/docs/services/s3/#interacting-with-your-s3-bucket-from-outside-cloudgov)
-    for use.
+    for use. Running `SERVICE_INSTANCE_NAME=<servicename> ./s3creds.sh` will create the service-key and provide the necessary environment variables. 
 
-1. Cloud Foundry credentials with permission to register the service broker in the
-   spaces where it should be available.
+1. Cloud Foundry credentials with permission to register the service broker in
+   the spaces where it should be available.
 
     For example, you can create a `space-deployer` [cloud.gov Service
     Account](https://cloud.gov/docs/services/cloud-gov-service-account/) in one
@@ -46,8 +46,7 @@ provisioned, bound, unbound, and unprovisioned.
 
 1. Credentials to be used for managing resources in AWS
 
-    See the instructions [for the necessary IAM
-    policies](https://github.com/cloudfoundry-incubator/cloud-service-broker/blob/master/docs/aws-installation.md#aws-service-credentials).
+    To configure domains and create service accounts with the correct permissions, deployment requires an AWS access key id and secret for a user with at least IAM and Route53 policies. 
 
 ## Dependencies
 
@@ -83,19 +82,25 @@ github_release and github_actions_secret in the github_provider!) -->
     ${EDITOR} .backend.secrets
     ```
 
-1. Copy the `terraform.tfvars-template` and edit in any variable customizations.
+1. Set a variable with the name of the environment you want to work with
 
     ```bash
-    cp terraform.tfvars-template terraform.tfvars
-    ${EDITOR} terraform.tfvars
+    export ENV_NAME=[environment_name]
+    ```
+
+1. Copy the `terraform.tfvars-template` and edit in any variable customizations for the target environment.
+
+    ```bash
+    cp terraform.tfvars-template terraform.${ENV_NAME}.tfvars
+    ${EDITOR} terraform.${ENV_NAME}.tfvars
     ```
 
 1. Copy the `.env.secrets-template` and edit in the values for the Cloud
-   Foundry service account and your IaaS deployer account.
+   Foundry service account and your AWS deployment user.
 
     ```bash
-    cp .env.secrets-template .env.secrets
-    ${EDITOR} .env.secrets
+    cp .env.secrets-template .env.${ENV_NAME}.secrets
+    ${EDITOR} .env.${ENV_NAME}.secrets
     ```
 
 1. Run Terraform init to set up the backend.
@@ -104,10 +109,17 @@ github_release and github_actions_secret in the github_provider!) -->
     docker-compose --env-file .backend.secrets run --rm terraform init -backend-config backend.tfvars
     ```
 
+1. Create a Terraform workspace for your environment and switch to it
+
+    ```bash
+    docker-compose --env-file=.backend.secrets run --rm terraform workspace new ${ENV_NAME}
+    docker-compose --env-file=.backend.secrets run --rm terraform workspace select ${ENV_NAME}    
+    ```
+
 1. Run Terraform apply, review the plan, and answer `yes` when prompted.
 
     ```bash
-    docker-compose --env-file=.env.secrets run --rm terraform apply
+    docker-compose --env-file=.env.${ENV_NAME}.secrets run --rm terraform apply -var-file=terraform.${ENV_NAME}.tfvars
     ```
 
 ## Uninstalling and deleting the broker
@@ -115,7 +127,7 @@ github_release and github_actions_secret in the github_provider!) -->
 Run Terraform destroy and answer `yes` when prompted.
 
 ```bash
-docker-compose run --rm terraform destroy
+docker-compose --env-file=.env.${ENV_NAME}.secrets run --rm terraform destroy -var-file=terraform.${ENV_NAME}.tfvars
 ```
 
 ## Continuously deploying the broker
