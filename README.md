@@ -46,7 +46,7 @@ provisioned, bound, unbound, and unprovisioned.
 
 1. Credentials to be used for managing resources in AWS
 
-    To configure domains and create service accounts with the correct permissions, deployment requires an AWS access key id and secret for a user with at least IAM and Route53 policies. 
+    To configure domains, set quotas, and create service accounts with the correct permissions, deployment requires an AWS access key id and secret for a user with at least IAM and Route53 policies, and the ability to make support requests. 
 
 ## Dependencies
 
