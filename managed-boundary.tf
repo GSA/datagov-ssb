@@ -38,28 +38,6 @@ module "iam_assumable_roles" {
   poweruser_role_name   = "SSBDev"
 }
 
-module "ssb-eks-broker-user" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-user"
-  version = "~> 4.2.0"
-
-  create_iam_user_login_profile = false
-  force_destroy                 = true
-  name                          = "ssb-eks-broker"
-}
-
-resource "aws_iam_user_policy_attachment" "eks-broker-policy" {
-  user       = module.ssb-eks-broker-user.iam_user_name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-}
-
-# Temporarily give this account the Administrator policy until we can identify
-# the exact set of least-privilege permissions required to operate the EKS
-# broker
-resource "aws_iam_user_policy_attachment" "eks-admin-policy" {
-  user       = module.ssb-eks-broker-user.iam_user_name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
-}
-
 module "ssb-smtp-broker-user" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-user"
   version = "~> 4.2.0"
@@ -69,6 +47,23 @@ module "ssb-smtp-broker-user" {
   name                          = "ssb-smtp-broker"
 }
 
+resource "aws_iam_user_policy_attachment" "smtp_broker_policies" {
+  for_each = toset( [
+                      // ACM manager: for aws_acm_certificate, aws_acm_certificate_validation
+                      "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess",
+
+                      // Route53 manager: for aws_route53_record, aws_route53_zone
+                      "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
+
+                      // AWS SES policy defined below
+                      module.smtp_broker_policy.arn,
+
+                      // Uncomment if we are still missing stuff and need to get it working again
+                      // "arn:aws:iam::aws:policy/AdministratorAccess"
+                    ] )
+  user       = module.ssb-smtp-broker-user.iam_user_name
+  policy_arn = each.key
+}
 
 module "smtp_broker_policy" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
@@ -76,33 +71,273 @@ module "smtp_broker_policy" {
 
   name        = "smtp_broker"
   path        = "/"
-  description = "SMTP broker policy (covers SES, Route53, etc)"
+  description = "SMTP broker policy (covers SES, IAM, and supplementary Route53)"
 
   policy = <<-EOF
   {
     "Version":"2012-10-17",
-    "Statement":[
+    "Statement":
+      [
         {
-        "Effect":"Allow",
-        "Action":[
+          "Effect":"Allow",
+          "Action":[
             "ses:*"
-        ],
-        "Resource":"*"
+          ],
+          "Resource":"*"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+              "iam:CreateUser",
+              "iam:DeleteUser",
+              "iam:GetUser",
+
+              "iam:CreateAccessKey",
+              "iam:DeleteAccessKey",
+
+              "iam:GetUserPolicy",
+              "iam:PutUserPolicy",
+              "iam:DeleteUserPolicy",
+
+              "iam:CreatePolicy",
+              "iam:DeletePolicy",
+              "iam:GetPolicy",
+              "iam:AttachUserPolicy",
+              "iam:DetachUserPolicy",
+
+              "iam:List*"
+          ],
+          "Resource": "*"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+              "route53:ListHostedZones"
+          ],
+          "Resource": "*"
         }
     ]
   }
   EOF
 }
 
-resource "aws_iam_user_policy_attachment" "smtp-broker-policy" {
-  user       = module.ssb-smtp-broker-user.iam_user_name
-  policy_arn = module.smtp_broker_policy.arn
+
+
+module "ssb-eks-broker-user" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-user"
+  version = "~> 4.2.0"
+
+  create_iam_user_login_profile = false
+  force_destroy                 = true
+  name                          = "ssb-eks-broker"
 }
 
-# Temporarily give this account the Administrator policy until we can identify
-# the exact set of least-privilege permissions required to operate the SMTP
-# broker
-resource "aws_iam_user_policy_attachment" "smtp-admin-policy" {
-  user       = module.ssb-smtp-broker-user.iam_user_name
-  policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
+resource "aws_iam_user_policy_attachment" "eks_broker_policies" {
+  for_each = toset( [
+                      // ACM manager: for aws_acm_certificate, aws_acm_certificate_validation
+                      "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess",
+
+                      // EKS manager: for aws_eks_cluster
+                      "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
+
+                      // Route53 manager: for aws_route53_record, aws_route53_zone
+                      "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
+
+                      // WAF2: for aws_wafv2_web_acl
+                      "arn:aws:iam::aws:policy/AWSWAFFullAccess",
+
+                      // AWS EKS module policy defined below
+                      module.eks_module_policy.arn,
+
+                      // AWS EKS brokerpak policy defined below
+                      module.eks_brokerpak_policy.arn,
+
+                      // Uncomment if we are still missing stuff and need to get it working again
+                      // "arn:aws:iam::aws:policy/AdministratorAccess"
+                    ] )
+  user       = module.ssb-eks-broker-user.iam_user_name
+  policy_arn = each.key
+}
+
+module "eks_brokerpak_policy" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
+  version = "~> 4.2.0"
+
+  name        = "eks_brokerpak_policy"
+  path        = "/"
+  description = "Policy granting additional permissions needed by the EKS brokerpak"
+  policy = <<-EOF
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ec2:DeleteVpcEndpoints"
+            ],
+            "Resource": "*"
+          }
+      ]
+    }
+  EOF
+}
+
+
+module "eks_module_policy" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
+  version = "~> 4.2.0"
+
+  name        = "eks_module_policy"
+  path        = "/"
+  description = "Policy granting permissions needed by the AWS EKS Terraform module"
+
+  # The policy content below comes from the URL below on 2021/08/09: 
+  # https://github.com/terraform-aws-modules/terraform-aws-eks/blob/master/docs/iam-permissions.md
+  policy = <<-EOF
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "VisualEditor0",
+                "Effect": "Allow",
+                "Action": [
+                    "autoscaling:AttachInstances",
+                    "autoscaling:CreateAutoScalingGroup",
+                    "autoscaling:CreateLaunchConfiguration",
+                    "autoscaling:CreateOrUpdateTags",
+                    "autoscaling:DeleteAutoScalingGroup",
+                    "autoscaling:DeleteLaunchConfiguration",
+                    "autoscaling:DeleteTags",
+                    "autoscaling:Describe*",
+                    "autoscaling:DetachInstances",
+                    "autoscaling:SetDesiredCapacity",
+                    "autoscaling:UpdateAutoScalingGroup",
+                    "autoscaling:SuspendProcesses",
+                    "ec2:AllocateAddress",
+                    "ec2:AssignPrivateIpAddresses",
+                    "ec2:Associate*",
+                    "ec2:AttachInternetGateway",
+                    "ec2:AttachNetworkInterface",
+                    "ec2:AuthorizeSecurityGroupEgress",
+                    "ec2:AuthorizeSecurityGroupIngress",
+                    "ec2:CreateDefaultSubnet",
+                    "ec2:CreateDhcpOptions",
+                    "ec2:CreateEgressOnlyInternetGateway",
+                    "ec2:CreateInternetGateway",
+                    "ec2:CreateNatGateway",
+                    "ec2:CreateNetworkInterface",
+                    "ec2:CreateRoute",
+                    "ec2:CreateRouteTable",
+                    "ec2:CreateSecurityGroup",
+                    "ec2:CreateSubnet",
+                    "ec2:CreateTags",
+                    "ec2:CreateVolume",
+                    "ec2:CreateVpc",
+                    "ec2:CreateVpcEndpoint",
+                    "ec2:DeleteDhcpOptions",
+                    "ec2:DeleteEgressOnlyInternetGateway",
+                    "ec2:DeleteInternetGateway",
+                    "ec2:DeleteNatGateway",
+                    "ec2:DeleteNetworkInterface",
+                    "ec2:DeleteRoute",
+                    "ec2:DeleteRouteTable",
+                    "ec2:DeleteSecurityGroup",
+                    "ec2:DeleteSubnet",
+                    "ec2:DeleteTags",
+                    "ec2:DeleteVolume",
+                    "ec2:DeleteVpc",
+                    "ec2:DeleteVpnGateway",
+                    "ec2:Describe*",
+                    "ec2:DetachInternetGateway",
+                    "ec2:DetachNetworkInterface",
+                    "ec2:DetachVolume",
+                    "ec2:Disassociate*",
+                    "ec2:ModifySubnetAttribute",
+                    "ec2:ModifyVpcAttribute",
+                    "ec2:ModifyVpcEndpoint",
+                    "ec2:ReleaseAddress",
+                    "ec2:RevokeSecurityGroupEgress",
+                    "ec2:RevokeSecurityGroupIngress",
+                    "ec2:UpdateSecurityGroupRuleDescriptionsEgress",
+                    "ec2:UpdateSecurityGroupRuleDescriptionsIngress",
+                    "ec2:CreateLaunchTemplate",
+                    "ec2:CreateLaunchTemplateVersion",
+                    "ec2:DeleteLaunchTemplate",
+                    "ec2:DeleteLaunchTemplateVersions",
+                    "ec2:DescribeLaunchTemplates",
+                    "ec2:DescribeLaunchTemplateVersions",
+                    "ec2:GetLaunchTemplateData",
+                    "ec2:ModifyLaunchTemplate",
+                    "ec2:RunInstances",
+                    "eks:CreateCluster",
+                    "eks:DeleteCluster",
+                    "eks:DescribeCluster",
+                    "eks:ListClusters",
+                    "eks:UpdateClusterConfig",
+                    "eks:UpdateClusterVersion",
+                    "eks:DescribeUpdate",
+                    "eks:TagResource",
+                    "eks:UntagResource",
+                    "eks:ListTagsForResource",
+                    "eks:CreateFargateProfile",
+                    "eks:DeleteFargateProfile",
+                    "eks:DescribeFargateProfile",
+                    "eks:ListFargateProfiles",
+                    "eks:CreateNodegroup",
+                    "eks:DeleteNodegroup",
+                    "eks:DescribeNodegroup",
+                    "eks:ListNodegroups",
+                    "eks:UpdateNodegroupConfig",
+                    "eks:UpdateNodegroupVersion",
+                    "iam:AddRoleToInstanceProfile",
+                    "iam:AttachRolePolicy",
+                    "iam:CreateInstanceProfile",
+                    "iam:CreateOpenIDConnectProvider",
+                    "iam:CreateServiceLinkedRole",
+                    "iam:CreatePolicy",
+                    "iam:CreatePolicyVersion",
+                    "iam:CreateRole",
+                    "iam:DeleteInstanceProfile",
+                    "iam:DeleteOpenIDConnectProvider",
+                    "iam:DeletePolicy",
+                    "iam:DeletePolicyVersion",
+                    "iam:DeleteRole",
+                    "iam:DeleteRolePolicy",
+                    "iam:DeleteServiceLinkedRole",
+                    "iam:DetachRolePolicy",
+                    "iam:GetInstanceProfile",
+                    "iam:GetOpenIDConnectProvider",
+                    "iam:GetPolicy",
+                    "iam:GetPolicyVersion",
+                    "iam:GetRole",
+                    "iam:GetRolePolicy",
+                    "iam:List*",
+                    "iam:PassRole",
+                    "iam:PutRolePolicy",
+                    "iam:RemoveRoleFromInstanceProfile",
+                    "iam:TagOpenIDConnectProvider",
+                    "iam:TagRole",
+                    "iam:UntagRole",
+                    "iam:UpdateAssumeRolePolicy",
+                    "logs:CreateLogGroup",
+                    "logs:DescribeLogGroups",
+                    "logs:DeleteLogGroup",
+                    "logs:ListTagsLogGroup",
+                    "logs:PutRetentionPolicy",
+                    "kms:CreateAlias",
+                    "kms:CreateGrant",
+                    "kms:CreateKey",
+                    "kms:DeleteAlias",
+                    "kms:DescribeKey",
+                    "kms:GetKeyPolicy",
+                    "kms:GetKeyRotationStatus",
+                    "kms:ListAliases",
+                    "kms:ListResourceTags",
+                    "kms:ScheduleKeyDeletion"
+                ],
+                "Resource": "*"
+            }
+        ]
+    }
+  EOF
 }
