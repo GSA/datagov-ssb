@@ -1,9 +1,9 @@
 locals {
   trusted_aws_account_id = 657786969144 # <- tts-prod (parameterize later)
   this_aws_account_id    = data.aws_caller_identity.current.account_id
-  ns_record = var.manage_zone ? tolist([ "NS", var.broker_zone, "[ ${join(", \n", [for s in aws_route53_zone.zone[0].name_servers : format("%q", s)])} ]" ]): null
-  ds_record = var.manage_zone ? tolist([ "DS", var.broker_zone, aws_route53_key_signing_key.zone[0].ds_record ]) : null
-  instructions = var.manage_zone ? "Create NS and DS records in the ${regex("\\..*", var.broker_zone)} zone with the values indicated." : null
+  ns_record              = var.manage_zone ? tolist(["NS", var.broker_zone, "[ ${join(", \n", [for s in aws_route53_zone.zone[0].name_servers : format("%q", s)])} ]"]) : null
+  ds_record              = var.manage_zone ? tolist(["DS", var.broker_zone, aws_route53_key_signing_key.zone[0].ds_record]) : null
+  instructions           = var.manage_zone ? "Create NS and DS records in the ${regex("\\..*", var.broker_zone)} zone with the values indicated." : null
 }
 
 data "aws_caller_identity" "current" {}
