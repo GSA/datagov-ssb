@@ -3,7 +3,17 @@ output "client_spaces" {
   value       = keys(local.spaces_in_orgs)
 }
 
-output "route53_zone_nameservers" {
-  description = "The nameservers that handle requests for the SSB subdomain"
-  value       = aws_route53_zone.zone.*.name_servers
+output "ns_record" {
+  description = "A NS record to place in the parent zone of the SSB subdomain (for delegation)"
+  value       = local.ns_record
+}
+
+output "ds_record" {
+  description = "A DS record to place in the parent zone of the SSB subdomain (for DNSSEC)"
+  value       = local.ds_record
+}
+
+output "instructions" {
+  description = "Instructions for what to do with the DNS record output"
+  value       = local.instructions
 }
