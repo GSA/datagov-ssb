@@ -1,5 +1,5 @@
 locals {
-  trusted_aws_account_id = 133032889584 # <- tts-prod (parameterize later)
+  trusted_aws_account_id = 657786969144 # <- tts-prod (parameterize later)
   this_aws_account_id    = data.aws_caller_identity.current.account_id
 }
 
