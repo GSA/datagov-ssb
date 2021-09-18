@@ -118,12 +118,12 @@ module "assumable_admin_role" {
     "sts:SetSourceIdentity"
   ]
 
-  create_role = true
-  role_name = "SSBAdmin"
+  create_role         = true
+  role_name           = "SSBAdmin"
   attach_admin_policy = true
 
   # MFA is enforced at the jump account, not here
-  role_requires_mfa     = false
+  role_requires_mfa = false
 
   tags = {
     Role = "Admin"
@@ -141,12 +141,12 @@ module "assumable_poweruser_role" {
     "sts:SetSourceIdentity"
   ]
 
-  create_role = true
-  role_name = "SSBDev"
+  create_role             = true
+  role_name               = "SSBDev"
   attach_poweruser_policy = true
 
   # MFA is enforced at the jump account, not here
-  role_requires_mfa     = false
+  role_requires_mfa = false
 
   tags = {
     Role = "PowerUser"
