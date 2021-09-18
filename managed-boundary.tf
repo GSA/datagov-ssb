@@ -107,20 +107,50 @@ resource "aws_route53_hosted_zone_dnssec" "zone" {
 }
 
 
-# Set up roles to be assumed by users from the trusted jump account. These are in alignment with SSP definitions.
-module "iam_assumable_roles" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-roles"
-  version = "~> 4.2.0"
-
+module "assumable_admin_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
+  version = "~> 4.5.0"
   trusted_role_arns = [
     "arn:aws:iam::${local.trusted_aws_account_id}:root",
   ]
+  trusted_role_actions = [
+    "sts:AssumeRole",
+    "sts:SetSourceIdentity"
+  ]
 
-  # Note both of these require MFA by default
-  create_admin_role     = true
-  create_poweruser_role = true
-  admin_role_name       = "SSBAdmin"
-  poweruser_role_name   = "SSBDev"
+  create_role = true
+  role_name = "SSBAdmin"
+  attach_admin_policy = true
+
+  # MFA is enforced at the jump account, not here
+  role_requires_mfa     = false
+
+  tags = {
+    Role = "Admin"
+  }
+}
+
+module "assumable_poweruser_role" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
+  version = "~> 4.5.0"
+  trusted_role_arns = [
+    "arn:aws:iam::${local.trusted_aws_account_id}:root",
+  ]
+  trusted_role_actions = [
+    "sts:AssumeRole",
+    "sts:SetSourceIdentity"
+  ]
+
+  create_role = true
+  role_name = "SSBDev"
+  attach_poweruser_policy = true
+
+  # MFA is enforced at the jump account, not here
+  role_requires_mfa     = false
+
+  tags = {
+    Role = "PowerUser"
+  }
 }
 
 module "ssb-smtp-broker-user" {
