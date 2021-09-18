@@ -33,8 +33,14 @@ module "iam_assumable_roles" {
   trusted_role_arns = [
     "arn:aws:iam::${local.trusted_aws_account_id}:root",
   ]
+  trusted_role_actions = [
+    "sts:AssumeRole",
+    "sts:SetSourceIdentity"
+  ]
 
-  # Note both of these require MFA by default
+  # MFA is enforced at the jump account, not here
+  role_requires_mfa     = false
+
   create_admin_role     = true
   create_poweruser_role = true
   admin_role_name       = "SSBAdmin"
