@@ -42,11 +42,11 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
   space        = data.cloudfoundry_space.broker_space.id
   service_plan = module.broker_eks.plans["aws-eks-service/raw"]
   tags         = ["k8s"]
-  json_params  = "{ \"subdomain\": \"k8s-brokered\" }"
+  #  json_params  = "{ \"subdomain\": \"k8s-brokered\" }"
   timeouts {
-    create = "40m"
+    create = "60m"
     update = "90m" # in case of an EKS destroy/create
-    delete = "30m"
+    delete = "40m"
   }
   depends_on = [
     module.broker_eks
