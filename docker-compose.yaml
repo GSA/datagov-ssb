@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   terraform:
-    image: hashicorp/terraform:1.0.4
+    image: hashicorp/terraform:1.0.8
     volumes:
       - .:/code
     working_dir: /code
