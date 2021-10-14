@@ -227,6 +227,11 @@ In those situations, don't panic. Here's how you can clean up!
     $ cf purge-service-instance <servicename>
     ```
 
+6. Purge any resources that the broker provisioned which are now orphaned in the backend service. (For example, you may need to manually delete resources that were created in AWS.)
+
+    The set of resources will vary by brokerpak and service/plan. See the README for the brokerpak for the appropriate steps to take.
+
+
 ---
 
 ## Contributing
