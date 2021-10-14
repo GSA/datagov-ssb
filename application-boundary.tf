@@ -15,9 +15,6 @@ module "broker_eks" {
   aws_access_key_id     = module.ssb-eks-broker-user.iam_access_key_id
   aws_secret_access_key = module.ssb-eks-broker-user.iam_access_key_secret
   aws_zone              = var.broker_zone
-  depends_on = [
-    aws_route53_zone.zone
-  ]
 }
 
 module "broker_smtp" {
@@ -31,9 +28,6 @@ module "broker_smtp" {
   aws_access_key_id     = module.ssb-smtp-broker-user.iam_access_key_id
   aws_secret_access_key = module.ssb-smtp-broker-user.iam_access_key_secret
   aws_zone              = var.broker_zone
-  depends_on = [
-    aws_route53_zone.zone
-  ]
 }
 
 # This is the back-end k8s instance to be used by the ssb-solr app
@@ -50,7 +44,6 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
   depends_on = [
     module.broker_eks
   ]
-
 }
 
 module "broker_solr" {
