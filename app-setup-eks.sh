@@ -1,14 +1,13 @@
 #!/bin/bash
 set -ex
 
-EKS_BROKERPAK_VERSION="v0.29.1"
+EKS_BROKERPAK_VERSION="v1.0.0"
 
 # TODO: Check sha256 sums
-HELM_VERSION="3.2.1"
-KUBECTL_VERSION="1.20.5"
-KUSTOMIZE_VERSION="v3.8.1"
+HELM_VERSION="3.7.1"
+KUBECTL_VERSION="1.22.3"
 
-AWS_IAM_AUTH_VERSION_URL="https://amazon-eks.s3.us-west-2.amazonaws.com/1.17.9/2020-08-04/bin/linux/amd64/aws-iam-authenticator"
+AWS_IAM_AUTH_VERSION_URL="https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/aws-iam-authenticator"
 
 BASE_URL="https://get.helm.sh"
 TAR_FILE="helm-v${HELM_VERSION}-linux-amd64.tar.gz"
@@ -25,11 +24,11 @@ EOF
 chmod +x app-eks/.profile
 
 # Add the cloud-service-broker binary
-(cd app-eks && curl -f -L -o cloud-service-broker https://github.com/cloudfoundry-incubator/cloud-service-broker/releases/download/0.2.2/cloud-service-broker.linux) && \
+(cd app-eks && curl -f -L -o cloud-service-broker https://github.com/cloudfoundry-incubator/cloud-service-broker/releases/download/0.4.0/cloud-service-broker.linux) && \
     chmod +x app-eks/cloud-service-broker
 
 # Add the brokerpak(s)
-(cd app-eks && curl -f -LO https://github.com/GSA/eks-brokerpak/releases/download/${EKS_BROKERPAK_VERSION}/eks-services-pak-${EKS_BROKERPAK_VERSION}.brokerpak)
+(cd app-eks && curl -f -LO https://github.com/GSA/datagov-brokerpak-eks/releases/download/${EKS_BROKERPAK_VERSION}/datagov-brokerpak-eks-${EKS_BROKERPAK_VERSION}.brokerpak)
 
 # Install the Helm binary
 curl -f -L ${BASE_URL}/${TAR_FILE} |tar xvz && \

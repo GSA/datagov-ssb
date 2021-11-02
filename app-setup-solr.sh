@@ -1,12 +1,11 @@
 #!/bin/bash
 set -ex
 
-DATAGOV_BROKERPAK_VERSION="0.20.0"
+DATAGOV_BROKERPAK_SOLR_VERSION="v1.0.2"
 
 # TODO: Check sha256 sums
-HELM_VERSION="3.2.1"
-KUBECTL_VERSION="1.20.5"
-KUSTOMIZE_VERSION="v3.8.1"
+HELM_VERSION="3.7.1"
+KUBECTL_VERSION="1.22.3"
 
 BASE_URL="https://get.helm.sh"
 TAR_FILE="helm-v${HELM_VERSION}-linux-amd64.tar.gz"
@@ -31,11 +30,11 @@ EOF
 chmod +x app-solr/.profile
 
 # Add the cloud-service-broker binary
-(cd app-solr && curl -f -L -o cloud-service-broker https://github.com/cloudfoundry-incubator/cloud-service-broker/releases/download/0.2.2/cloud-service-broker.linux) && \
+(cd app-solr && curl -f -L -o cloud-service-broker https://github.com/cloudfoundry-incubator/cloud-service-broker/releases/download/0.4.0/cloud-service-broker.linux) && \
     chmod +x app-solr/cloud-service-broker
 
 # Add the brokerpak(s)
-(cd app-solr && curl -f -LO https://github.com/GSA/datagov-brokerpak/releases/download/${DATAGOV_BROKERPAK_VERSION}/datagov-services-pak-${DATAGOV_BROKERPAK_VERSION}.brokerpak)
+(cd app-solr && curl -f -LO https://github.com/GSA/datagov-brokerpak-solr/releases/download/${DATAGOV_BROKERPAK_SOLR_VERSION}/datagov-brokerpak-solr-${DATAGOV_BROKERPAK_SOLR_VERSION}.brokerpak)
 
 # Install the Helm binary
 curl -f -L ${BASE_URL}/${TAR_FILE} |tar xvz && \
