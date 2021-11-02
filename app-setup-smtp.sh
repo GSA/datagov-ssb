@@ -19,4 +19,4 @@ chmod +x app-smtp/.profile
     chmod +x app-smtp/cloud-service-broker
 
 # Add the brokerpak(s)
-(cd app-smtp && curl -f -LO https://github.com/GSA/datagov-brokerpak-smtp/releases/download/${SMTP_BROKERPAK_VERSION}/smtp-services-pak-${SMTP_BROKERPAK_VERSION}.brokerpak)
+(cd app-smtp && curl -f -LO https://github.com/GSA/datagov-brokerpak-smtp/releases/download/${SMTP_BROKERPAK_VERSION}/datagov-brokerpak-smtp-${SMTP_BROKERPAK_VERSION}.brokerpak)
