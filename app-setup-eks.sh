@@ -1,6 +1,7 @@
 #!/bin/bash
 set -ex
 
+CSB_VERSION="0.4.1"
 EKS_BROKERPAK_VERSION="v1.0.0"
 
 # TODO: Check sha256 sums
@@ -24,7 +25,7 @@ EOF
 chmod +x app-eks/.profile
 
 # Add the cloud-service-broker binary
-(cd app-eks && curl -f -L -o cloud-service-broker https://github.com/cloudfoundry-incubator/cloud-service-broker/releases/download/0.4.0/cloud-service-broker.linux) && \
+(cd app-eks && curl -f -L -o cloud-service-broker https://github.com/cloudfoundry-incubator/cloud-service-broker/releases/download/${CSB_VERSION}/cloud-service-broker.linux) && \
     chmod +x app-eks/cloud-service-broker
 
 # Add the brokerpak(s)

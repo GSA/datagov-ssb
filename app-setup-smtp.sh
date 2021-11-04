@@ -1,6 +1,7 @@
 #!/bin/bash
 set -ex
 
+CSB_VERSION="0.4.1"
 SMTP_BROKERPAK_VERSION="v1.1.1"
 
 # Set up an app dir and bin dir
@@ -15,7 +16,7 @@ EOF
 chmod +x app-smtp/.profile
 
 # Add the cloud-service-broker binary
-(cd app-smtp && curl -f -L -o cloud-service-broker https://github.com/cloudfoundry-incubator/cloud-service-broker/releases/download/0.4.0/cloud-service-broker.linux) && \
+(cd app-smtp && curl -f -L -o cloud-service-broker https://github.com/cloudfoundry-incubator/cloud-service-broker/releases/download/${CSB_VERSION}/cloud-service-broker.linux) && \
     chmod +x app-smtp/cloud-service-broker
 
 # Add the brokerpak(s)
