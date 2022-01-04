@@ -32,6 +32,7 @@ jobs:
         run: |
           ./app-setup-eks.sh
           ./app-setup-solr.sh
+          ./app-setup-solrcloud.sh
           ./app-setup-smtp.sh
       - name: terraform plan (staging)
         uses: dflook/terraform-plan@v1
@@ -65,6 +66,7 @@ jobs:
         run: |
           ./app-setup-eks.sh
           ./app-setup-solr.sh
+          ./app-setup-solrcloud.sh
           ./app-setup-smtp.sh
       - name: terraform plan (production)
         uses: dflook/terraform-plan@v1
