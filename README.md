@@ -66,6 +66,7 @@ github_release and github_actions_secret in the github_provider!) -->
     ./app-setup-eks.sh
     ./app-setup-smtp.sh
     ./app-setup-solr.sh
+    ./app-setup-solrcloud.sh
     ```
 
 1. Copy the `backend.tfvars-template` and edit in the non-sensitive values for the S3 bucket.

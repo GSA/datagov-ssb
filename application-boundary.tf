@@ -46,6 +46,32 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
   ]
 }
 
+resource "cloudfoundry_service_instance" "solrcloud_broker_k8s_cluster" {
+  name         = "ssb-solrcloud-k8s"
+  space        = data.cloudfoundry_space.broker_space.id
+  service_plan = module.broker_eks.plans["aws-eks-service/raw"]
+  tags         = ["k8s"]
+  timeouts {
+    create = "60m"
+    update = "90m" # in case of an EKS destroy/create
+    delete = "40m"
+  }
+  depends_on = [
+    module.broker_eks
+  ]
+}
+
+module "broker_solrcloud" {
+  source = "./broker"
+
+  name          = "ssb-solrcloud"
+  path          = "./app-solrcloud"
+  broker_space  = var.broker_space
+  client_spaces = var.client_spaces
+  enable_ssh    = var.enable_ssh
+  services      = [cloudfoundry_service_instance.solrcloud_broker_k8s_cluster.id]
+}
+
 module "broker_solr" {
   source = "./broker"
 
