@@ -288,7 +288,18 @@ module "eks_brokerpak_policy" {
           {
             "Effect": "Allow",
             "Action": [
-              "ec2:DeleteVpcEndpoints"
+              "ec2:DeleteVpcEndpoints",
+              "eks:CreateAddon",
+              "eks:DeleteAddon",
+              "eks:ListAddons",
+              "eks:UpdateAddon",
+              "eks:DescribeAddon",
+              "eks:DescribeAddonVersions",
+              "eks:CreateNodegroup",
+              "eks:DescribeNodegroup",
+              "eks:ListNodegroups",
+              "eks:UpdateNodegroupConfig",
+              "eks:UpdateNodegroupVersion"
             ],
             "Resource": "*"
           }
