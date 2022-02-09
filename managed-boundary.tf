@@ -369,6 +369,101 @@ module "eks_brokerpak_pv_policy" {
       {
         "Effect": "Allow",
         "Action": [
+          "ec2:CreateVolume"
+        ],
+        "Resource": "*",
+        "Condition": {
+          "StringLike": {
+            "aws:RequestTag/ebs.csi.aws.com/cluster": "true"
+          }
+        }
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ec2:CreateVolume"
+        ],
+        "Resource": "*",
+        "Condition": {
+          "StringLike": {
+            "aws:RequestTag/CSIVolumeName": "*"
+          }
+        }
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ec2:CreateVolume"
+        ],
+        "Resource": "*",
+        "Condition": {
+          "StringLike": {
+            "aws:RequestTag/kubernetes.io/cluster/*": "owned"
+          }
+        }
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ec2:DeleteVolume"
+        ],
+        "Resource": "*",
+        "Condition": {
+          "StringLike": {
+            "ec2:ResourceTag/ebs.csi.aws.com/cluster": "true"
+          }
+        }
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ec2:DeleteVolume"
+        ],
+        "Resource": "*",
+        "Condition": {
+          "StringLike": {
+            "ec2:ResourceTag/CSIVolumeName": "*"
+          }
+        }
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ec2:DeleteVolume"
+        ],
+        "Resource": "*",
+        "Condition": {
+          "StringLike": {
+            "ec2:ResourceTag/kubernetes.io/cluster/*": "owned"
+          }
+        }
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ec2:DeleteSnapshot"
+        ],
+        "Resource": "*",
+        "Condition": {
+          "StringLike": {
+            "ec2:ResourceTag/CSIVolumeSnapshotName": "*"
+          }
+        }
+      },
+      {
+        "Effect": "Allow",
+        "Action": [
+          "ec2:DeleteSnapshot"
+        ],
+        "Resource": "*",
+        "Condition": {
+          "StringLike": {
+            "ec2:ResourceTag/ebs.csi.aws.com/cluster": "true"
+          }
+        }
+      }
+    ]
+  }
   EOF
 }
 
