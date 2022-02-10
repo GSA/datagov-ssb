@@ -11,7 +11,7 @@ module "broker_eks" {
   broker_space          = var.broker_space
   client_spaces         = var.client_spaces
   enable_ssh            = var.enable_ssh
-  memory                = 512
+  memory                = 1024
   aws_access_key_id     = module.ssb-eks-broker-user.iam_access_key_id
   aws_secret_access_key = module.ssb-eks-broker-user.iam_access_key_secret
   aws_zone              = var.broker_zone
