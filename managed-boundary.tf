@@ -255,6 +255,10 @@ resource "aws_iam_user_policy_attachment" "eks_broker_policies" {
     // EKS manager: for aws_eks_cluster
     "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
 
+    // EKS: manipulate node groups
+    "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy", 
+    "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly", 
+
     // Route53 manager: for aws_route53_record, aws_route53_zone
     "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
 
