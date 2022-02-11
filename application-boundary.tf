@@ -43,7 +43,8 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
     delete = "40m"
   }
   depends_on = [
-    module.broker_eks
+    module.broker_eks,
+    cloudfoundry_service_instance.solrcloud_broker_k8s_cluster
   ]
 }
 
