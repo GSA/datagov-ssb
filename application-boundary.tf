@@ -53,6 +53,7 @@ resource "cloudfoundry_service_instance" "solrcloud_broker_k8s_cluster" {
   space        = data.cloudfoundry_space.broker_space.id
   service_plan = module.broker_eks.plans["aws-eks-service/raw"]
   tags         = ["k8s"]
+  json_params  = "{\"mng_min_capacity\": 8, \"mng_max_capacity\": 12, \"mng_desired_capacity\": 10}"
   timeouts {
     create = "60m"
     update = "90m" # in case of an EKS destroy/create
