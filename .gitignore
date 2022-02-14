@@ -41,6 +41,7 @@ backend.tfvars
 app-smtp
 app-eks
 app-solr
+app-solrcloud
 app-ssb-*.zip
 .backend.secrets
 .env.*.secrets
