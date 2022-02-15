@@ -24,7 +24,7 @@ jobs:
       TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
       TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
       TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
- 
+
     steps:
       - name: checkout
         uses: actions/checkout@v2
@@ -44,7 +44,7 @@ jobs:
           backend_config: >
             bucket=${{ env.BUCKET }},
             key=${{ env.KEY }},
-            region=${{ env.REGION }}, 
+            region=${{ env.REGION }},
             encrypt=${{ env.ENCRYPT }},
             access_key=${{ env.AWS_ACCESS_KEY_ID }},
             secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}
@@ -78,7 +78,7 @@ jobs:
           backend_config: >
             bucket=${{ env.BUCKET }},
             key=${{ env.KEY }},
-            region=${{ env.REGION }}, 
+            region=${{ env.REGION }},
             encrypt=${{ env.ENCRYPT }},
             access_key=${{ env.AWS_ACCESS_KEY_ID }},
             secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}
