@@ -23,7 +23,7 @@ jobs:
 
   test-deployment:
     if: github.ref == 'refs/heads/develop'
-    name: plan (development)
+    name: plan & apply (development)
     runs-on: ubuntu-latest
     environment: development
     env:
