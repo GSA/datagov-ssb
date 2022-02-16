@@ -3,6 +3,14 @@ name: commit
 
 on: [push]
 
+env:
+  AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
+  AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+  BUCKET: "${{ secrets.BUCKET }}"
+  REGION: "${{ secrets.REGION }}"
+  KEY: "ssb-tfstate"
+  ENCRYPT: "true"
+  
 jobs:
   test:
     name: test format and validity
