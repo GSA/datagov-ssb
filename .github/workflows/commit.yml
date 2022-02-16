@@ -50,20 +50,6 @@ jobs:
           ./app-setup-solr.sh
           ./app-setup-solrcloud.sh
           ./app-setup-smtp.sh
-      - name: terraform plan (development)
-        uses: dflook/terraform-plan@v1
-        with:
-          path: .
-          label: development
-          workspace: development
-          var_file: terraform.development.tfvars
-          backend_config: >
-            bucket=${{ env.BUCKET }},
-            key=${{ env.KEY }},
-            region=${{ env.REGION }},
-            encrypt=${{ env.ENCRYPT }},
-            access_key=${{ env.AWS_ACCESS_KEY_ID }},
-            secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}
 
       - name: terraform apply (development)
         uses: dflook/terraform-apply@v1
@@ -71,6 +57,7 @@ jobs:
           path: .
           label: development
           workspace: development
+          auto_approve: true
           var_file: terraform.development.tfvars
           backend_config: >
             bucket=${{ env.BUCKET }},
