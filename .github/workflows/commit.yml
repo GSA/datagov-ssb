@@ -3,6 +3,14 @@ name: commit
 
 on: [push]
 
+env:
+  AWS_ACCESS_KEY_ID: "${{ secrets.AWS_ACCESS_KEY_ID }}"
+  AWS_SECRET_ACCESS_KEY: "${{ secrets.AWS_SECRET_ACCESS_KEY }}"
+  BUCKET: "${{ secrets.BUCKET }}"
+  REGION: "${{ secrets.REGION }}"
+  KEY: "ssb-tfstate"
+  ENCRYPT: "true"
+  
 jobs:
   test:
     name: test format and validity
@@ -21,3 +29,47 @@ jobs:
         with:
           path: .
 
+  test-deployment:
+    if: github.ref == 'refs/heads/develop'
+    name: plan & apply (development)
+    runs-on: ubuntu-latest
+    environment: development
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TF_VAR_cf_username: ${{ secrets.TF_VAR_cf_username }}
+      TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
+      TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
+      TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
+
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: prep applications
+        run: |
+          ./app-setup-eks.sh
+          ./app-setup-solr.sh
+          ./app-setup-solrcloud.sh
+          ./app-setup-smtp.sh
+
+      - name: terraform apply (development)
+        uses: dflook/terraform-apply@v1
+        with:
+          path: .
+          label: development
+          workspace: development
+          auto_approve: true
+          var_file: terraform.development.tfvars
+          backend_config: >
+            bucket=${{ env.BUCKET }},
+            key=${{ env.KEY }},
+            region=${{ env.REGION }},
+            encrypt=${{ env.ENCRYPT }},
+            access_key=${{ env.AWS_ACCESS_KEY_ID }},
+            secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}
+      # - name: Setup tmate session
+      #   if: ${{ failure() }}
+      #   uses: mxschmitt/action-tmate@v3
+      #   with:
+      #     limit-access-to-actor: true
+      - name: test development environment
+        run: echo development tests ok  # TODO development smoke tests

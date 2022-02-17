@@ -125,7 +125,9 @@ github_release and github_actions_secret in the github_provider!) -->
 
 ## Uninstalling and deleting the broker
 
-Run Terraform destroy and answer `yes` when prompted.
+1. Delete any instances managed by the brokers. (This will prevent orphaning of backend resources.)
+1. There's a safeguard in place to make sure you _really mean it_ before you delete the broker: Enable deletion of the databases by changing the `prevent_destroy` attribute in `broker/main.tf` from `true` to `false`.
+1. Run Terraform destroy and answer `yes` when prompted.
 
 ```bash
 docker-compose --env-file=.env.${ENV_NAME}.secrets run --rm terraform destroy -var-file=terraform.${ENV_NAME}.tfvars

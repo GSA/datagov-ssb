@@ -1,10 +1,10 @@
 # See vars.tf for more information
 client_spaces = {
-  gsa-datagov = ["development"]
+  gsa-datagov = ["development-ssb"]
 }
 broker_space = {
   org   = "gsa-datagov"
-  space = "development"
+  space = "development-ssb"
 }
 broker_zone = "ssb-dev.data.gov"
 manage_zone = true

@@ -10,9 +10,10 @@
 # NOTE: This script has been tested with CF CLI v8!
 
 SERVICE_INSTANCE_NAME="${SERVICE_INSTANCE_NAME:-terraform-s3}"
-KEY_NAME="${SERVICE_INSTANCE_NAME}-key"
+KEY_NAME="${KEY_NAME:-${SERVICE_INSTANCE_NAME}-key}"
+KEY_CONFIG="${KEY_CONFIG:-'{ }'}"
 
-cf create-service-key "${SERVICE_INSTANCE_NAME}" "${KEY_NAME}"
+cf service-key "${SERVICE_INSTANCE_NAME}" "${KEY_NAME}" &> /dev/null || cf create-service-key "${SERVICE_INSTANCE_NAME}" "${KEY_NAME}" -c "${KEY_CONFIG}"
 S3_CREDENTIALS=`cf service-key "${SERVICE_INSTANCE_NAME}" "${KEY_NAME}" | tail -n +2`
 
 echo 'Run the following lines at your shell prompt to put the S3 bucket credentials in your environment.'

@@ -11,7 +11,8 @@ module "broker_eks" {
   broker_space          = var.broker_space
   client_spaces         = var.client_spaces
   enable_ssh            = var.enable_ssh
-  memory                = 512
+  memory                = 1024
+  instances             = 2
   aws_access_key_id     = module.ssb-eks-broker-user.iam_access_key_id
   aws_secret_access_key = module.ssb-eks-broker-user.iam_access_key_secret
   aws_zone              = var.broker_zone
@@ -42,7 +43,8 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
     delete = "40m"
   }
   depends_on = [
-    module.broker_eks
+    module.broker_eks,
+    cloudfoundry_service_instance.solrcloud_broker_k8s_cluster
   ]
 }
 
@@ -51,6 +53,7 @@ resource "cloudfoundry_service_instance" "solrcloud_broker_k8s_cluster" {
   space        = data.cloudfoundry_space.broker_space.id
   service_plan = module.broker_eks.plans["aws-eks-service/raw"]
   tags         = ["k8s"]
+  json_params  = "{\"mng_min_capacity\": 8, \"mng_max_capacity\": 12, \"mng_desired_capacity\": 10}"
   timeouts {
     create = "60m"
     update = "90m" # in case of an EKS destroy/create
