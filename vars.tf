@@ -90,10 +90,6 @@ variable "eks_terraform_mng_desired_capacity" {
   default = 2
 }
 
-variable "eks_terraform_zone" {
-  type = string
-}
-
 variable "eks_terraform_region" {
   type = string
 }
