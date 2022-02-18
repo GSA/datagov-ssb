@@ -68,7 +68,7 @@ module "brokerpak-eks-terraform-provision" {
 
   subdomain            = var.eks_terraform_subdomain
   region               = var.eks_terraform_region
-  zone                 = var.eks_terraform_zone
+  zone                 = var.broker_zone
   instance_name        = var.eks_terraform_instance_name
   mng_min_capacity     = var.eks_terraform_mng_min_capacity
   mng_max_capacity     = var.eks_terraform_mng_max_capacity
@@ -79,6 +79,10 @@ module "brokerpak-eks-terraform-bind" {
   source = "github.com/GSA/datagov-brokerpak-eks//terraform/bind?ref=main"
 
   instance_name = var.eks_terraform_instance_name
+
+  depends_on = [
+    module.brokerpak-eks-terraform-provision
+  ]
 }
 
 resource "cloudfoundry_user_provided_service" "ssb-solrcloud-k8s" {
