@@ -76,12 +76,12 @@ module "brokerpak-eks-terraform-provision" {
 }
 
 module "brokerpak-eks-terraform-bind" {
-  source = "github.com/GSA/datagov-brokerpak-eks//terraform/bind?ref=main"
+  source = "github.com/GSA/datagov-brokerpak-eks//terraform/bind?ref=fix-for-ssb-terraform-only"
 
   instance_name = var.eks_terraform_instance_name
 
   depends_on = [
-    module.brokerpak-eks-terraform-provision
+    module.brokerpak-eks-terraform-provision.domain_name
   ]
 }
 
