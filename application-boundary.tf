@@ -64,7 +64,7 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
 # }
 
 module "brokerpak-eks-terraform-provision" {
-  source = "github.com/GSA/datagov-brokerpak-eks//terraform/provision?ref=main"
+  source = "github.com/GSA/datagov-brokerpak-eks//terraform/provision?ref=fix-for-ssb-terraform-only"
 
   subdomain            = var.eks_terraform_subdomain
   region               = var.eks_terraform_region
@@ -81,7 +81,7 @@ module "brokerpak-eks-terraform-bind" {
   instance_name = var.eks_terraform_instance_name
 
   depends_on = [
-    module.brokerpak-eks-terraform-provision.domain_name
+    module.brokerpak-eks-terraform-provision.cluster_functional
   ]
 }
 
