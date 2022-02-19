@@ -54,9 +54,14 @@ jobs:
           mkdir $HOME/.aws
           cat << AWSSDK > $HOME/.aws/credentials
             [default]
+            aws_access_key_id = ${{ env.AWS_ACCESS_KEY_ID }}
+            aws_secret_access_key = ${{ env.AWS_SECRET_ACCESS_KEY }}
+            [tf]
             aws_access_key_id = $TF_VAR_aws_access_key_id
             aws_secret_access_key = $TF_VAR_aws_secret_access_key
           AWSSDK
+          unset $AWS_ACCESS_KEY_ID
+          unset $AWS_SECRET_ACCESS_KEY
       - name: prep applications
         run: |
           # Ensure aws-iam-authenticator persists here
@@ -79,8 +84,6 @@ jobs:
             key=${{ env.KEY }},
             region=${{ env.REGION }},
             encrypt=${{ env.ENCRYPT }},
-            access_key=${{ env.AWS_ACCESS_KEY_ID }},
-            secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}
       # - name: Setup tmate session
       #   if: ${{ failure() }}
       #   uses: mxschmitt/action-tmate@v3
