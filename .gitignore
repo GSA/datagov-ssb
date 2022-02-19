@@ -45,3 +45,6 @@ app-solrcloud
 app-ssb-*.zip
 .backend.secrets
 .env.*.secrets
+
+linux-amd64/
+bin/

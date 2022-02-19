@@ -40,10 +40,15 @@ jobs:
       TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
       TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
       TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
+      PATH: ${PATH}:./bin
 
     steps:
       - name: checkout
         uses: actions/checkout@v2
+      - name: Install eks-terraform prerequisites
+        run: |
+          ./install-tools.sh
+          export PATH="$PATH:${PWD}/bin"
       - name: prep applications
         run: |
           ./app-setup-eks.sh
