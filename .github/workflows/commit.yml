@@ -47,7 +47,9 @@ jobs:
       - name: Install eks-terraform prerequisites
         run: |
           ./install-tools.sh
-          echo "./bin" >> $GITHUB_PATH
+          echo "`pwd`/bin"
+          echo "${HOME}"
+          echo "`pwd`/bin" >> $GITHUB_PATH
       - name: prep applications
         run: |
           ./app-setup-eks.sh
