@@ -40,9 +40,6 @@ jobs:
       TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
       TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
       TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.TF_VAR_aws_access_key_id }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.TF_VAR_aws_secret_access_key }}
-      AWS_DEFAULT_REGION: us-west-2
 
     steps:
       - name: checkout
@@ -54,6 +51,12 @@ jobs:
 
           # Ensure aws-iam-authenticator works
           bin/aws-iam-authenticator version
+          mkdir $HOME/.aws
+          cat << AWSSDK > $HOME/.aws/credentials
+            [default]
+            aws_access_key_id = $TF_VAR_aws_access_key_id
+            aws_secret_access_key = $TF_VAR_aws_secret_access_key
+          AWSSDK
       - name: prep applications
         run: |
           # Ensure aws-iam-authenticator persists here
