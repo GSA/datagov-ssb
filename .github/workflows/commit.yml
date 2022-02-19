@@ -48,8 +48,8 @@ jobs:
         run: |
           ./install-tools.sh
           ls `pwd`/bin
-          aws-iam-authenticator version
           echo "`pwd`/bin" >> $GITHUB_PATH
+          bin/aws-iam-authenticator version
       - name: prep applications
         run: |
           ./app-setup-eks.sh
