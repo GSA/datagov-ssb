@@ -11,12 +11,30 @@ variable "cf_password" {
   description = "Password for the Cloud Foundry user"
 }
 
-# Vars for provisioning and managing resources in AWS
-variable "aws_access_key_id" {
-  description = "AWS access key to use for managing resources. Policy requirements: https://github.com/pivotal/cloud-service-broker/blob/master/docs/aws-installation.md#required-iam-policies"
+variable "backend_s3_profile" {
+  description = "The AWS Credential Profile to use for the backend"
 }
-variable "aws_secret_access_key" {
-  description = "AWS secret for the access key"
+
+variable "backend_s3_bucket_name" {
+  description = "The bucket name for the S3 Backend"
+}
+
+variable "backend_s3_key" {
+  description = "The name of the S3 Backend selected"
+}
+
+variable "backend_s3_region" {
+  description = "The region in which the S3 Backend Bucket exists"
+}
+
+variable "backend_s3_encrypted" {
+  # TODO: verify this is correct
+  description = "Whether the Backend is encrypted?"
+}
+
+# Vars for provisioning and managing resources in AWS
+variable "aws_profile" {
+  description = "AWS Credential Profile to use for managing resources. Policy requirements: https://github.com/pivotal/cloud-service-broker/blob/master/docs/aws-installation.md#required-iam-policies"
 }
 
 variable "broker_zone" {

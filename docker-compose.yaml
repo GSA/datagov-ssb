@@ -7,11 +7,11 @@ services:
       context: .
     volumes:
       - .:/code
+      - .aws/credentials:/root/.aws/credentials
     working_dir: /code
     environment:
       # Terraform backend bucket creds
-      - AWS_ACCESS_KEY_ID
-      - AWS_SECRET_ACCESS_KEY
+      - AWS_PROFILE=backend
       
       # Secrets for the appropriate Terraform workspace
       - TF_VAR_aws_access_key_id
