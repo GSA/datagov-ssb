@@ -65,6 +65,10 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
 
 module "brokerpak-eks-terraform-provision" {
   source = "github.com/GSA/datagov-brokerpak-eks//terraform/provision?ref=fix-for-ssb-terraform-only"
+  providers = {
+    aws                     = aws.eks-terraform
+    aws-dnssec-key-provider = aws.dnssec-key-provider
+  }
 
   subdomain            = var.eks_terraform_subdomain
   region               = var.eks_terraform_region
@@ -77,6 +81,9 @@ module "brokerpak-eks-terraform-provision" {
 
 module "brokerpak-eks-terraform-bind" {
   source = "github.com/GSA/datagov-brokerpak-eks//terraform/bind?ref=fix-for-ssb-terraform-only"
+  providers = {
+    aws = aws.eks-terraform
+  }
 
   instance_name = var.eks_terraform_instance_name
 
@@ -109,7 +116,7 @@ module "broker_solrcloud" {
   client_spaces = var.client_spaces
   enable_ssh    = var.enable_ssh
   # services      = [cloudfoundry_service_instance.solrcloud_broker_k8s_cluster.id]
-  services = [cloudfoundry_user_provided_service.ssb-solrcloud-k8s]
+  services = [cloudfoundry_user_provided_service.ssb-solrcloud-k8s.id]
 }
 
 module "broker_solr" {
