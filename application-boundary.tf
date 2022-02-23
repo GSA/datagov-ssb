@@ -69,6 +69,8 @@ module "brokerpak-eks-terraform-provision" {
     aws                     = aws.eks-terraform
     aws.dnssec-key-provider = aws.dnssec-key-provider
   }  
+  aws_access_key_id =  module.ssb-eks-broker-user.iam_access_key_id
+  aws_secret_access_key =  module.ssb-eks-broker-user.iam_access_key_secret
   subdomain            = var.eks_terraform_subdomain
   region               = var.eks_terraform_region
   zone                 = var.broker_zone
