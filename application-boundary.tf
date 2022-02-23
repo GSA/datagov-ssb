@@ -63,48 +63,17 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
 #   ]
 # }
 
-module "brokerpak-eks-terraform-provision" {
-  source = "github.com/GSA/datagov-brokerpak-eks//terraform/provision?ref=fix-for-ssb-terraform-only"
-  providers = {
-    aws                     = aws.eks-terraform
-    aws.dnssec-key-provider = aws.dnssec-key-provider
-  }  
-  aws_access_key_id =  module.ssb-eks-broker-user.iam_access_key_id
-  aws_secret_access_key =  module.ssb-eks-broker-user.iam_access_key_secret
-  subdomain            = var.eks_terraform_subdomain
-  region               = var.eks_terraform_region
-  zone                 = var.broker_zone
-  instance_name        = var.eks_terraform_instance_name
-  mng_min_capacity     = var.eks_terraform_mng_min_capacity
-  mng_max_capacity     = var.eks_terraform_mng_max_capacity
-  mng_desired_capacity = var.eks_terraform_mng_desired_capacity
-}
-
-# module "brokerpak-eks-terraform-bind" {
-#   source = "github.com/GSA/datagov-brokerpak-eks//terraform/bind?ref=fix-for-ssb-terraform-only"
-
-#   providers = {
-#     aws = aws.eks-terraform
-#   }
-
-#   instance_name = var.eks_terraform_instance_name
-
-#   depends_on = [
-#     module.brokerpak-eks-terraform-provision.cluster_functional
-#   ]
-# }
-
 # resource "cloudfoundry_user_provided_service" "ssb-solrcloud-k8s" {
 #   name             = "aws-eks-service"
 #   space            = var.broker_space.space
 #   credentials_json = <<-JSON
 #     "credentials": {
-#       "certificate_authority_data": "${module.brokerpak-eks-terraform-bind.certificate_authority_data}",
-#       "domain_name": "${module.brokerpak-eks-terraform-provision.domain_name}",
-#       "kubeconfig": "${module.brokerpak-eks-terraform-bind.kubeconfig}",
-#       "namespace": "${module.brokerpak-eks-terraform-bind.namespace}",
-#       "server": "${module.brokerpak-eks-terraform-bind.server}",
-#       "token": "${module.brokerpak-eks-terraform-bind.token}"
+#       "certificate_authority_data": "${module.brokerpak-eks-terraform.certificate_authority_data}",
+#       "domain_name": "${module.brokerpak-eks-terraform.domain_name}",
+#       "kubeconfig": "${module.brokerpak-eks-terraform.kubeconfig}",
+#       "namespace": "${module.brokerpak-eks-terraform.namespace}",
+#       "server": "${module.brokerpak-eks-terraform.server}",
+#       "token": "${module.brokerpak-eks-terraform.token}"
 #     }
 #   JSON
 # }
