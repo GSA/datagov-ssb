@@ -67,9 +67,8 @@ module "brokerpak-eks-terraform-provision" {
   source = "github.com/GSA/datagov-brokerpak-eks//terraform/provision?ref=fix-for-ssb-terraform-only"
   providers = {
     aws                     = aws.eks-terraform
-    aws-dnssec-key-provider = aws.dnssec-key-provider
-  }
-
+    aws.dnssec-key-provider = aws.dnssec-key-provider
+  }  
   subdomain            = var.eks_terraform_subdomain
   region               = var.eks_terraform_region
   zone                 = var.broker_zone
