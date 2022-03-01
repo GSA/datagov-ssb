@@ -40,21 +40,14 @@ jobs:
       TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
       TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
       TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
+      TERRAFORM_PRE_RUN: |
+          ./install-tools.sh
 
     steps:
       - name: checkout
         uses: actions/checkout@v2
-      - name: Install eks-terraform prerequisites
-        run: |
-          ./install-tools.sh
-          echo "`pwd`/bin" >> $GITHUB_PATH
-
-          # Ensure aws-iam-authenticator works
-          bin/aws-iam-authenticator version
       - name: prep applications
         run: |
-          # Ensure aws-iam-authenticator persists here
-          aws-iam-authenticator version
           ./app-setup-eks.sh
           ./app-setup-solr.sh
           ./app-setup-solrcloud.sh
