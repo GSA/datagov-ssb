@@ -63,32 +63,32 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
 #   ]
 # }
 
-# resource "cloudfoundry_user_provided_service" "ssb-solrcloud-k8s" {
-#   name             = "aws-eks-service"
-#   space            = var.broker_space.space
-#   credentials_json = <<-JSON
-#     "credentials": {
-#       "certificate_authority_data": "${module.brokerpak-eks-terraform.certificate_authority_data}",
-#       "domain_name": "${module.brokerpak-eks-terraform.domain_name}",
-#       "kubeconfig": "${module.brokerpak-eks-terraform.kubeconfig}",
-#       "namespace": "${module.brokerpak-eks-terraform.namespace}",
-#       "server": "${module.brokerpak-eks-terraform.server}",
-#       "token": "${module.brokerpak-eks-terraform.token}"
-#     }
-#   JSON
-# }
+resource "cloudfoundry_user_provided_service" "ssb-solrcloud-k8s" {
+  name             = "aws-eks-service"
+  space            = var.broker_space.space
+  credentials_json = <<-JSON
+    "credentials": {
+      "certificate_authority_data": "${module.brokerpak-eks-terraform.certificate_authority_data}",
+      "domain_name": "${module.brokerpak-eks-terraform.domain_name}",
+      "kubeconfig": "${module.brokerpak-eks-terraform.kubeconfig}",
+      "namespace": "${module.brokerpak-eks-terraform.namespace}",
+      "server": "${module.brokerpak-eks-terraform.server}",
+      "token": "${module.brokerpak-eks-terraform.token}"
+    }
+  JSON
+}
 
-# module "broker_solrcloud" {
-#   source = "./broker"
+module "broker_solrcloud" {
+  source = "./broker"
 
-#   name          = "ssb-solrcloud"
-#   path          = "./app-solrcloud"
-#   broker_space  = var.broker_space
-#   client_spaces = var.client_spaces
-#   enable_ssh    = var.enable_ssh
-#   # services      = [cloudfoundry_service_instance.solrcloud_broker_k8s_cluster.id]
-#   services = [cloudfoundry_user_provided_service.ssb-solrcloud-k8s.id]
-# }
+  name          = "ssb-solrcloud"
+  path          = "./app-solrcloud"
+  broker_space  = var.broker_space
+  client_spaces = var.client_spaces
+  enable_ssh    = var.enable_ssh
+  # services      = [cloudfoundry_service_instance.solrcloud_broker_k8s_cluster.id]
+  services = [cloudfoundry_user_provided_service.ssb-solrcloud-k8s.id]
+}
 
 module "broker_solr" {
   source = "./broker"
