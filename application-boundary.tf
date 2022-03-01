@@ -73,7 +73,7 @@ data "cloudfoundry_space" "dev-ssb" {
 }
 
 resource "cloudfoundry_user_provided_service" "ssb-solrcloud-k8s" {
-  name             = "aws-eks-service"
+  name             = "ssb-solrcloud-k8s"
   space            = data.cloudfoundry_space.dev-ssb.id
   credentials_json = <<-JSON
     {
