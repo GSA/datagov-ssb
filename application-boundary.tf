@@ -64,12 +64,12 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
 # }
 
 data "cloudfoundry_org" "gsa" {
-    name = var.broker_space.org
+  name = var.broker_space.org
 }
 
 data "cloudfoundry_space" "dev-ssb" {
-    name = var.broker_space.space
-    org = data.cloudfoundry_org.gsa.id
+  name = var.broker_space.space
+  org  = data.cloudfoundry_org.gsa.id
 }
 
 resource "cloudfoundry_user_provided_service" "ssb-solrcloud-k8s" {
