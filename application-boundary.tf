@@ -70,7 +70,7 @@ resource "cloudfoundry_user_provided_service" "ssb-solrcloud-k8s" {
     {
       "certificate_authority_data": "${module.brokerpak-eks-terraform.certificate_authority_data}",
       "domain_name": "${module.brokerpak-eks-terraform.domain_name}",
-      "kubeconfig": "${module.brokerpak-eks-terraform.kubeconfig}",
+      "kubeconfig": "${replace(module.brokerpak-eks-terraform.kubeconfig, "\n", "\\n")}",
       "namespace": "${module.brokerpak-eks-terraform.namespace}",
       "server": "${module.brokerpak-eks-terraform.server}",
       "token": "${module.brokerpak-eks-terraform.token}"
