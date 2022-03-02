@@ -41,6 +41,7 @@ jobs:
       TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
       TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
       TERRAFORM_PRE_RUN: |
+          shopt -s expand_aliases
           ./install-tools.sh
 
     steps:
