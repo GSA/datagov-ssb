@@ -58,7 +58,7 @@ jobs:
           ./app-setup-smtp.sh
 
       - name: terraform apply (development)
-        uses: dflook/terraform-apply@v1.22.1
+        uses: dflook/terraform-apply@v1
         with:
           path: .
           label: development
