@@ -62,6 +62,7 @@ jobs:
         uses: dflook/terraform-apply@v1
         with:
           path: .
+          options: -v $GITHUB_WORKSPACE:$GITHUB_WORKSPACE
           label: development
           workspace: development
           auto_approve: true
