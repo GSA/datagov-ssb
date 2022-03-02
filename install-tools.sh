@@ -23,3 +23,9 @@ curl -f -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL
 # Install aws-iam-authenticator
 curl -f -LO ${AWS_IAM_AUTH_VERSION_URL} && \
     chmod +x aws-iam-authenticator
+
+# Remaining steps from official install
+# https://docs.aws.amazon.com/eks/latest/userguide/install-aws-iam-authenticator.html
+mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+echo 'export PATH=$PATH:$HOME/bin' >> ~/.bashrc
+aws-iam-authenticator help
