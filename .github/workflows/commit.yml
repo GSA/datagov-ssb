@@ -43,6 +43,7 @@ jobs:
       TERRAFORM_PRE_RUN: |
           shopt -s expand_aliases
           ./install-tools.sh
+          type -a helm git kubectl aws-iam-authenticator
 
     steps:
       - name: checkout
