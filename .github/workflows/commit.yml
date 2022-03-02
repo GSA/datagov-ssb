@@ -64,10 +64,10 @@ jobs:
         curl -f -LO ${AWS_IAM_AUTH_VERSION_URL} && \
             chmod +x aws-iam-authenticator
 
-        cp helm /github/home/.dflook-terraform-github-actions/terraform-bin-dir
-        cp kubectl /github/home/.dflook-terraform-github-actions/terraform-bin-dir
-        cp aws-iam-authenticator /github/home/.dflook-terraform-github-actions/terraform-bin-dir
-        /github/home/.dflook-terraform-github-actions/terraform-bin-dir/aws-iam-authenticator help
+        cp helm /tmp/terraform-data-dir/modules/brokerpak-eks-terraform/terraform/modules/provision/
+        cp kubectl /tmp/terraform-data-dir/modules/brokerpak-eks-terraform/terraform/modules/provision/
+        cp aws-iam-authenticator /tmp/terraform-data-dir/modules/brokerpak-eks-terraform/terraform/modules/provision/
+        /tmp/terraform-data-dir/modules/brokerpak-eks-terraform/terraform/modules/provision/aws-iam-authenticator help
 
     steps:
       - name: checkout
