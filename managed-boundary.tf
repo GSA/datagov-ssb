@@ -9,7 +9,7 @@ locals {
 # Static deployment of EKS in the managed boundary. This gets bound to the
 # ssb-solrcloud broker app, and it's where SolrCloud instances are created.
 module "brokerpak-eks-terraform" {
-  source = "github.com/GSA/datagov-brokerpak-eks//terraform?ref=another-fix-for-finding-binaries"
+  source = "github.com/GSA/datagov-brokerpak-eks//terraform?ref=main"
   providers = {
     aws                     = aws.eks-terraform
     aws.dnssec-key-provider = aws.dnssec-key-provider
