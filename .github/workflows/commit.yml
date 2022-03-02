@@ -42,6 +42,7 @@ jobs:
       TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
       TERRAFORM_PRE_RUN: |
           ./install-tools.sh
+          aws-iam-authenticator help
 
     steps:
       - name: checkout
