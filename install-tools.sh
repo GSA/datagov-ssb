@@ -23,7 +23,3 @@ curl -f -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL
 # Install aws-iam-authenticator
 curl -f -LO ${AWS_IAM_AUTH_VERSION_URL} && \
     chmod +x aws-iam-authenticator
-
-alias aws-iam-authenticator="`pwd`/aws-iam-authenticator"
-alias helm="`pwd`/helm"
-alias kubectl="`pwd`/kubectl"

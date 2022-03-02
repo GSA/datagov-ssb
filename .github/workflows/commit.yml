@@ -43,6 +43,9 @@ jobs:
       TERRAFORM_PRE_RUN: |
           shopt -s expand_aliases
           ./install-tools.sh
+          alias aws-iam-authenticator="`pwd`/aws-iam-authenticator"
+          alias helm="`pwd`/helm"
+          alias kubectl="`pwd`/kubectl"
           type -a helm git kubectl aws-iam-authenticator
 
     steps:
