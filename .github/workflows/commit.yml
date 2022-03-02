@@ -41,7 +41,7 @@ jobs:
       TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
       TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
       TERRAFORM_PRE_RUN: |
-        ./install_tools.sh
+        ./install-tools.sh
         cp helm /usr/local/bin/
         cp kubectl /usr/local/bin/
         cp aws-iam-authenticator /usr/local/bin/
