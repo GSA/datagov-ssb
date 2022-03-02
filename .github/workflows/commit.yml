@@ -41,12 +41,7 @@ jobs:
       TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
       TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
       TERRAFORM_PRE_RUN: |
-          shopt -s expand_aliases
           ./install-tools.sh
-          alias aws-iam-authenticator="`pwd`/aws-iam-authenticator"
-          alias helm="`pwd`/helm"
-          alias kubectl="`pwd`/kubectl"
-          type -a helm git kubectl aws-iam-authenticator
 
     steps:
       - name: checkout
@@ -62,7 +57,6 @@ jobs:
         uses: dflook/terraform-apply@v1
         with:
           path: .
-          options: -v $GITHUB_WORKSPACE:$GITHUB_WORKSPACE
           label: development
           workspace: development
           auto_approve: true
