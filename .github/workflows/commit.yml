@@ -64,7 +64,6 @@ jobs:
         curl -f -LO ${AWS_IAM_AUTH_VERSION_URL} && \
             chmod +x aws-iam-authenticator
 
-        mkdir - /usr/local/bin/
         cp helm /usr/local/bin/
         cp kubectl /usr/local/bin/
         cp aws-iam-authenticator /usr/local/bin/
