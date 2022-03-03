@@ -16,17 +16,18 @@ mkdir -p $APP_NAME/bin
 
 # Generate a .profile to be run at startup for mapping VCAP_SERVICES to needed
 # environment variables
+# export SERVICE_NAME=ssb-solrcloud-k8s
 cat > $APP_NAME/.profile << 'EOF'
 # Locate additional binaries needed by the deployed brokerpaks
 export PATH="$PATH:${PWD}/bin"
 
 # Export credentials for the k8s cluster and namespace where the Solr brokerpak
 # should manage instances of SolrCloud. We get these from the binding directly.
-export SOLR_SERVER=$(echo $VCAP_SERVICES | jq -r '.["aws-eks-service"][] | .credentials.server')
-export SOLR_CLUSTER_CA_CERTIFICATE=$(echo $VCAP_SERVICES | jq -r '.["aws-eks-service"][] | .credentials.certificate_authority_data')
-export SOLR_TOKEN=$(echo $VCAP_SERVICES | jq -r '.["aws-eks-service"][] | .credentials.token')
-export SOLR_NAMESPACE=$(echo $VCAP_SERVICES | jq -r '.["aws-eks-service"][] | .credentials.namespace')
-export SOLR_DOMAIN_NAME=$(echo $VCAP_SERVICES | jq -r '.["aws-eks-service"][] | .credentials.domain_name')
+export SOLR_SERVER=$(echo $VCAP_SERVICES | jq -r '.[][]| select(.name=="ssb-solrcloud-k8s") | .credentials.server')
+export SOLR_CLUSTER_CA_CERTIFICATE=$(echo $VCAP_SERVICES | jq -r '.[][]| select(.name=="ssb-solrcloud-k8s") | .credentials.certificate_authority_data')
+export SOLR_TOKEN=$(echo $VCAP_SERVICES | jq -r '.[][]| select(.name=="ssb-solrcloud-k8s") | .credentials.token')
+export SOLR_NAMESPACE=$(echo $VCAP_SERVICES | jq -r '.[][]| select(.name=="ssb-solrcloud-k8s") | .credentials.namespace')
+export SOLR_DOMAIN_NAME=$(echo $VCAP_SERVICES | jq -r '.[][]| select(.name=="ssb-solrcloud-k8s") | .credentials.domain_name')
 EOF
 chmod +x $APP_NAME/.profile
 

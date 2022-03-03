@@ -2,7 +2,9 @@ version: '3.7'
 
 services:
   terraform:
-    image: hashicorp/terraform:1.0.8
+    image: datagov-ssb/terraform:latest
+    build:
+      context: .
     volumes:
       - .:/code
     working_dir: /code

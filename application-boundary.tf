@@ -43,25 +43,48 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
     delete = "40m"
   }
   depends_on = [
-    module.broker_eks,
-    cloudfoundry_service_instance.solrcloud_broker_k8s_cluster
+    module.broker_eks
   ]
 }
 
-resource "cloudfoundry_service_instance" "solrcloud_broker_k8s_cluster" {
-  name         = "ssb-solrcloud-k8s"
-  space        = data.cloudfoundry_space.broker_space.id
-  service_plan = module.broker_eks.plans["aws-eks-service/raw"]
-  tags         = ["k8s"]
-  json_params  = "{\"mng_min_capacity\": 8, \"mng_max_capacity\": 12, \"mng_desired_capacity\": 10}"
-  timeouts {
-    create = "60m"
-    update = "90m" # in case of an EKS destroy/create
-    delete = "40m"
-  }
-  depends_on = [
-    module.broker_eks
-  ]
+# resource "cloudfoundry_service_instance" "solrcloud_broker_k8s_cluster" {
+#   name         = "ssb-solrcloud-k8s"
+#   space        = data.cloudfoundry_space.broker_space.id
+#   service_plan = module.broker_eks.plans["aws-eks-service/raw"]
+#   tags         = ["k8s"]
+#   json_params  = "{\"mng_min_capacity\": 8, \"mng_max_capacity\": 12, \"mng_desired_capacity\": 10}"
+#   timeouts {
+#     create = "60m"
+#     update = "90m" # in case of an EKS destroy/create
+#     delete = "40m"
+#   }
+#   depends_on = [
+#     module.broker_eks
+#   ]
+# }
+
+data "cloudfoundry_org" "gsa" {
+  name = var.broker_space.org
+}
+
+data "cloudfoundry_space" "dev-ssb" {
+  name = var.broker_space.space
+  org  = data.cloudfoundry_org.gsa.id
+}
+
+resource "cloudfoundry_user_provided_service" "ssb-solrcloud-k8s" {
+  name             = "ssb-solrcloud-k8s"
+  space            = data.cloudfoundry_space.dev-ssb.id
+  credentials_json = <<-JSON
+    {
+      "certificate_authority_data": "${module.brokerpak-eks-terraform.certificate_authority_data}",
+      "domain_name": "${module.brokerpak-eks-terraform.domain_name}",
+      "kubeconfig": "${replace(module.brokerpak-eks-terraform.kubeconfig, "\n", "\\n")}",
+      "namespace": "${module.brokerpak-eks-terraform.namespace}",
+      "server": "${module.brokerpak-eks-terraform.server}",
+      "token": "${module.brokerpak-eks-terraform.token}"
+    }
+  JSON
 }
 
 module "broker_solrcloud" {
@@ -72,7 +95,8 @@ module "broker_solrcloud" {
   broker_space  = var.broker_space
   client_spaces = var.client_spaces
   enable_ssh    = var.enable_ssh
-  services      = [cloudfoundry_service_instance.solrcloud_broker_k8s_cluster.id]
+  # services      = [cloudfoundry_service_instance.solrcloud_broker_k8s_cluster.id]
+  services = [cloudfoundry_user_provided_service.ssb-solrcloud-k8s.id]
 }
 
 module "broker_solr" {

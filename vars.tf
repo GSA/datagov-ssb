@@ -63,3 +63,33 @@ variable "enable_ssh" {
   default     = true
   description = "Whether `cf ssh` should be enabled for the broker app"
 }
+
+
+variable "eks_terraform_subdomain" {
+  type    = string
+  default = ""
+}
+
+variable "eks_terraform_instance_name" {
+  type    = string
+  default = ""
+}
+
+variable "eks_terraform_mng_min_capacity" {
+  type    = number
+  default = 1
+}
+
+variable "eks_terraform_mng_max_capacity" {
+  type    = number
+  default = 5
+}
+
+variable "eks_terraform_mng_desired_capacity" {
+  type    = number
+  default = 2
+}
+
+variable "eks_terraform_region" {
+  type = string
+}
