@@ -49,3 +49,5 @@ app-ssb-*.zip
 linux-amd64/
 bin/
 kubeconfig*
+vars-solr-template.yml
+manifest-solr.yml
