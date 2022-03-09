@@ -49,3 +49,4 @@ app-ssb-*.zip
 linux-amd64/
 bin/
 kubeconfig*
+*.log
