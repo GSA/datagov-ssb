@@ -2,6 +2,7 @@ version: '3.7'
 
 services:
   terraform:
+    user: 1000:1000
     image: datagov-ssb/terraform:latest
     build:
       context: .
@@ -18,3 +19,5 @@ services:
       - TF_VAR_aws_secret_access_key
       - TF_VAR_cf_username
       - TF_VAR_cf_password
+      - TF_LOG=info
+      - TF_LOG_PATH=terraform.log
