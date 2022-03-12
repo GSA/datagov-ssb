@@ -26,7 +26,7 @@ resource "cloudfoundry_service_instance" "db" {
 resource "random_uuid" "client_username" {}
 resource "random_password" "client_password" {
   length  = 16
-  special = true
+  special = false
 }
 
 data "archive_file" "app_zip" {
