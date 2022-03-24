@@ -294,6 +294,9 @@ resource "aws_iam_user_policy_attachment" "eks_broker_policies" {
     // AWS EKS brokerpak policy for persistent volumes defined below
     "arn:aws:iam::${local.this_aws_account_id}:policy/${module.eks_brokerpak_pv_policy.name}",
 
+    // AWS EKS brokerpak policy for systems manager defined below
+    "arn:aws:iam::${local.this_aws_account_id}:policy/${module.eks_brokerpak_ssm_policy.name}",
+
     // Uncomment if we are still missing stuff and need to get it working again
     // "arn:aws:iam::aws:policy/AdministratorAccess"
   ])
@@ -487,6 +490,39 @@ module "eks_brokerpak_pv_policy" {
         }
       }
     ]
+  }
+  EOF
+}
+
+module "eks_brokerpak_ssm_policy" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
+  version = "~> 4.2.0"
+
+  name        = "eks_brokerpak_ssm_policy"
+  path        = "/"
+  description = "Policy granting additional permissions needed by the EKS brokerpak for configuring AWS SSM"
+  policy      = <<-EOF
+  {
+      "Version": "2012-10-17",
+      "Statement": [
+          {
+              "Sid": "VisualEditor0",
+              "Effect": "Allow",
+              "Action": [
+                  "ssm:CreateMaintenanceWindow",
+                  "ssm:GetMaintenanceWindow",
+                  "ssm:DeleteMaintenanceWindow",
+                  "ssm:DeregisterTargetFromMaintenanceWindow",
+                  "ssm:DeregisterTaskFromMaintenanceWindow",
+                  "ssm:DescribeMaintenanceWindowTargets",
+                  "ssm:GetMaintenanceWindowTask",
+                  "ssm:ListTagsForResource",
+                  "ssm:RegisterTargetWithMaintenanceWindow",
+                  "ssm:RegisterTaskWithMaintenanceWindow"
+              ],
+              "Resource": "*"
+          }
+      ]
   }
   EOF
 }
