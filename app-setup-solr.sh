@@ -47,13 +47,13 @@ curl -f -L ${BASE_URL}/${TAR_FILE} |tar xvz && \
 curl -f -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
     mv kubectl app-solr/bin/kubectl && \
     chmod +x app-solr/bin/kubectl
-    
+
 # Create a manifest for pushing by hand, if necessary
 cat > manifest-solr.yml << MANIFEST
 ---
 # Make a copy of vars-solr-template.yml for each deployment target, editing the
-# values to match your expectations. Then push with `cf push ssb-solr -f
-# manifest-solr.yml --vars-file vars-solr-ENV_NAME`
+# values to match your expectations. Then push with
+#   cf push ssb-solr -f manifest-solr.yml --vars-file vars-solr-ENV_NAME
 applications:
 - name: ssb-solr
   path: app-solr
@@ -65,7 +65,7 @@ applications:
   disk_quota: 2G
   routes:
   - route: ssb-solr-((ORG))-((SPACE)).app.cloud.gov
-  env: 
+  env:
     SECURITY_USER_NAME: ((SECURITY_USER_NAME))
     SECURITY_USER_PASSWORD: ((SECURITY_USER_PASSWORD))
     AWS_ACCESS_KEY_ID: ((AWS_ACCESS_KEY_ID))
