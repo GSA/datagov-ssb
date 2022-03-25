@@ -6,26 +6,6 @@ locals {
   instructions           = var.manage_zone ? "Create NS and DS records in the ${regex("\\..*", var.broker_zone)} zone with the values indicated." : null
 }
 
-# Static deployment of EKS in the managed boundary. This gets bound to the
-# ssb-solrcloud broker app, and it's where SolrCloud instances are created.
-module "brokerpak-eks-terraform" {
-  source = "github.com/GSA/datagov-brokerpak-eks//terraform?ref=another-fix-for-finding-binaries"
-  providers = {
-    aws                     = aws.eks-terraform
-    aws.dnssec-key-provider = aws.dnssec-key-provider
-  }
-  aws_access_key_id     = module.ssb-eks-broker-user.iam_access_key_id
-  aws_secret_access_key = module.ssb-eks-broker-user.iam_access_key_secret
-  write_kubeconfig      = true
-  subdomain             = var.eks_terraform_subdomain
-  region                = var.eks_terraform_region
-  zone                  = var.broker_zone
-  instance_name         = var.eks_terraform_instance_name
-  mng_min_capacity      = var.eks_terraform_mng_min_capacity
-  mng_max_capacity      = var.eks_terraform_mng_max_capacity
-  mng_desired_capacity  = var.eks_terraform_mng_desired_capacity
-}
-
 data "aws_caller_identity" "current" {}
 
 resource "aws_servicequotas_service_quota" "minimum_quotas" {
@@ -285,6 +265,9 @@ resource "aws_iam_user_policy_attachment" "eks_broker_policies" {
     // WAF2: for aws_wafv2_web_acl
     "arn:aws:iam::aws:policy/AWSWAFFullAccess",
 
+    // AWS SSM: for setting up maintenance window/scanning/patching tasks
+    "arn:aws:iam::aws:policy/AmazonSSMFullAccess",
+
     // AWS EKS module policy defined below
     "arn:aws:iam::${local.this_aws_account_id}:policy/${module.eks_module_policy.name}",
 
@@ -490,7 +473,6 @@ module "eks_brokerpak_pv_policy" {
   }
   EOF
 }
-
 
 module "eks_module_policy" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
