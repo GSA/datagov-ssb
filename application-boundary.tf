@@ -63,13 +63,14 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
 #   ]
 # }
 
-data "cloudfoundry_org" "gsa" {
-  name = var.broker_space.org
+# For now we are using a hand-provisioned user-provided service, not managed by Terraform
+data "cloudfoundry_space" "broker-space" {
+  name     = var.broker_space.space
+  org_name = var.broker_space.org
 }
-
-data "cloudfoundry_space" "dev-ssb" {
-  name = var.broker_space.space
-  org  = data.cloudfoundry_org.gsa.id
+data "cloudfoundry_user_provided_service" "ssb-solrcloud-k8s" {
+  name  = "ssb-solrcloud-k8s"
+  space = data.cloudfoundry_space.broker-space.id
 }
 
 module "broker_solrcloud" {
@@ -81,7 +82,7 @@ module "broker_solrcloud" {
   client_spaces = var.client_spaces
   enable_ssh    = var.enable_ssh
   # services      = [cloudfoundry_service_instance.solrcloud_broker_k8s_cluster.id]
-  services = [cloudfoundry_user_provided_service.ssb-solrcloud-k8s.id]
+  services = [data.cloudfoundry_user_provided_service.ssb-solrcloud-k8s.id]
 }
 
 module "broker_solr" {
