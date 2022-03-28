@@ -72,16 +72,17 @@ data "cloudfoundry_space" "dev-ssb" {
   org  = data.cloudfoundry_org.gsa.id
 }
 
-# module "broker_solrcloud" {
-#   source = "./broker"
+module "broker_solrcloud" {
+  source = "./broker"
 
-#   name          = "ssb-solrcloud"
-#   path          = "./app-solrcloud"
-#   broker_space  = var.broker_space
-#   client_spaces = var.client_spaces
-#   enable_ssh    = var.enable_ssh
-#   services      = [cloudfoundry_service_instance.solrcloud_broker_k8s_cluster.id]
-# }
+  name          = "ssb-solrcloud"
+  path          = "./app-solrcloud"
+  broker_space  = var.broker_space
+  client_spaces = var.client_spaces
+  enable_ssh    = var.enable_ssh
+  # services      = [cloudfoundry_service_instance.solrcloud_broker_k8s_cluster.id]
+  services = [cloudfoundry_user_provided_service.ssb-solrcloud-k8s.id]
+}
 
 module "broker_solr" {
   source = "./broker"
