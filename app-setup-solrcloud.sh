@@ -48,5 +48,43 @@ curl -f -L ${BASE_URL}/${TAR_FILE} |tar xvz && \
 curl -f -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
     mv kubectl $APP_NAME/bin/kubectl && \
     chmod +x $APP_NAME/bin/kubectl
-    
 
+
+# Create a manifest for pushing by hand, if necessary
+cat > manifest-solrcloud.yml << MANIFEST
+---
+# Make a copy of vars-solrcloud-template.yml for each deployment target, editing the
+# values to match your expectations. Then push with
+#   cf push ssb-solrcloud -f manifest-solrcloud.yml --vars-file vars-solrcloud-ENV_NAME
+applications:
+- name: ssb-solrcloud
+  path: app-solrcloud
+  buildpacks:
+  - binary_buildpack
+  command: source .profile && ./cloud-service-broker serve
+  instances: 1
+  memory: 256M
+  disk_quota: 2G
+  routes:
+  - route: ssb-solrcloud-((ORG))-((SPACE)).app.cloud.gov
+  env:
+    SECURITY_USER_NAME: ((SECURITY_USER_NAME))
+    SECURITY_USER_PASSWORD: ((SECURITY_USER_PASSWORD))
+    AWS_ACCESS_KEY_ID: ((AWS_ACCESS_KEY_ID))
+    AWS_SECRET_ACCESS_KEY: ((AWS_SECRET_ACCESS_KEY))
+    AWS_DEFAULT_REGION: ((AWS_DEFAULT_REGION))
+    DB_TLS: "skip-verify"
+    GSB_COMPATIBILITY_ENABLE_CATALOG_SCHEMAS: true
+    GSB_COMPATIBILITY_ENABLE_CF_SHARING: true
+    AWS_ZONE: ((AWS_ZONE))
+MANIFEST
+cat > vars-solrcloud-template.yml << VARS
+AWS_ACCESS_KEY_ID: your-key-id
+AWS_SECRET_ACCESS_KEY: your-key-secret
+AWS_DEFAULT_REGION: us-west-2
+AWS_ZONE: your-ssb-zone
+SECURITY_USER_NAME: your-broker-username
+SECURITY_USER_PASSWORD: your-broker-password
+ORG: gsa-datagov
+SPACE: your-space
+VARS
