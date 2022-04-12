@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 APP_NAME=app-solrcloud
-CSB_VERSION="0.4.1"
+CSB_VERSION="0.10.0"
 DATAGOV_BROKERPAK_SOLR_VERSION="v1.0.7"
 
 # TODO: Check sha256 sums
