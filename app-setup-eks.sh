@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-CSB_VERSION="0.10.0"
+CSB_VERSION="v0.10.0"
 EKS_BROKERPAK_VERSION="v1.0.2"
 
 # TODO: Check sha256 sums

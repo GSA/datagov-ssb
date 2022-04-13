@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-CSB_VERSION="0.10.0"
+CSB_VERSION="v0.10.0"
 SMTP_BROKERPAK_VERSION="v1.1.2"
 
 # Set up an app dir and bin dir
