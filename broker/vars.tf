@@ -40,7 +40,7 @@ variable "path" {
 }
 
 variable "command" {
-  default     = "source .profile && ./cloud-service-broker serve"
+  default     = "source .profile && /bin/cloud-service-broker serve"
   description = "Command to be run at app startup"
 }
 
