@@ -309,7 +309,18 @@ module "eks_brokerpak_policy" {
               "eks:DescribeNodegroup",
               "eks:ListNodegroups",
               "eks:UpdateNodegroupConfig",
-              "eks:UpdateNodegroupVersion"
+              "eks:UpdateNodegroupVersion",
+              "iam:CreateUser",
+              "iam:DeleteUser",
+              "iam:GetUser",
+              "iam:UpdateUser",
+              "iam:CreateAccessKey",
+              "iam:DeleteAccessKey",
+              "iam:PutUserPolicy",
+              "iam:GetUserPolicy",
+              "iam:DeleteUserPolicy",
+              "iam:TagUser",
+              "iam:UntagUser"
             ],
             "Resource": "*"
           },
