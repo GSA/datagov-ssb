@@ -268,14 +268,14 @@ resource "aws_iam_user_policy_attachment" "eks_broker_policies" {
     // AWS SSM: for setting up maintenance window/scanning/patching tasks
     "arn:aws:iam::aws:policy/AmazonSSMFullAccess",
 
+    // AWS S3: for setting up a backup S3 bucket for each cluster
+    "arn:aws:iam::aws:policy/AmazonS3FullAccess",
+
     // AWS EKS module policy defined below
     "arn:aws:iam::${local.this_aws_account_id}:policy/${module.eks_module_policy.name}",
 
     // AWS EKS brokerpak policy defined below
     "arn:aws:iam::${local.this_aws_account_id}:policy/${module.eks_brokerpak_policy.name}",
-
-    // AWS EKS brokerpak policy for persistent volumes defined below
-    "arn:aws:iam::${local.this_aws_account_id}:policy/${module.eks_brokerpak_pv_policy.name}",
 
     // Uncomment if we are still missing stuff and need to get it working again
     // "arn:aws:iam::aws:policy/AdministratorAccess"
@@ -290,7 +290,7 @@ module "eks_brokerpak_policy" {
 
   name        = "eks_brokerpak_policy"
   path        = "/"
-  description = "Policy granting additional permissions needed by the EKS brokerpak"
+  description = "Policy granting additional permissions needed by the EKS brokerpak; most are for managing PVs"
   policy      = <<-EOF
     {
       "Version": "2012-10-17",
@@ -312,165 +312,149 @@ module "eks_brokerpak_policy" {
               "eks:UpdateNodegroupVersion"
             ],
             "Resource": "*"
-          }
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ec2:CreateSnapshot",
+              "ec2:AttachVolume",
+              "ec2:DetachVolume",
+              "ec2:ModifyVolume",
+              "ec2:DescribeAvailabilityZones",
+              "ec2:DescribeInstances",
+              "ec2:DescribeSnapshots",
+              "ec2:DescribeTags",
+              "ec2:DescribeVolumes",
+              "ec2:DescribeVolumesModifications"
+            ],
+            "Resource": "*"
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ec2:CreateTags"
+            ],
+            "Resource": [
+              "arn:aws:ec2:*:*:volume/*",
+              "arn:aws:ec2:*:*:snapshot/*"
+            ],
+            "Condition": {
+              "StringEquals": {
+                "ec2:CreateAction": [
+                  "CreateVolume",
+                  "CreateSnapshot"
+                ]
+              }
+            }
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ec2:DeleteTags"
+            ],
+            "Resource": [
+              "arn:aws:ec2:*:*:volume/*",
+              "arn:aws:ec2:*:*:snapshot/*"
+            ]
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ec2:CreateVolume"
+            ],
+            "Resource": "*",
+            "Condition": {
+              "StringLike": {
+                "aws:RequestTag/ebs.csi.aws.com/cluster": "true"
+              }
+            }
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ec2:CreateVolume"
+            ],
+            "Resource": "*",
+            "Condition": {
+              "StringLike": {
+                "aws:RequestTag/CSIVolumeName": "*"
+              }
+            }
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ec2:CreateVolume"
+            ],
+            "Resource": "*",
+            "Condition": {
+              "StringLike": {
+                "aws:RequestTag/kubernetes.io/cluster/*": "owned"
+              }
+            }
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ec2:DeleteVolume"
+            ],
+            "Resource": "*",
+            "Condition": {
+              "StringLike": {
+                "ec2:ResourceTag/ebs.csi.aws.com/cluster": "true"
+              }
+            }
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ec2:DeleteVolume"
+            ],
+            "Resource": "*",
+            "Condition": {
+              "StringLike": {
+                "ec2:ResourceTag/CSIVolumeName": "*"
+              }
+            }
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ec2:DeleteVolume"
+            ],
+            "Resource": "*",
+            "Condition": {
+              "StringLike": {
+                "ec2:ResourceTag/kubernetes.io/cluster/*": "owned"
+              }
+            }
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ec2:DeleteSnapshot"
+            ],
+            "Resource": "*",
+            "Condition": {
+              "StringLike": {
+                "ec2:ResourceTag/CSIVolumeSnapshotName": "*"
+              }
+            }
+          },
+          {
+            "Effect": "Allow",
+            "Action": [
+              "ec2:DeleteSnapshot"
+            ],
+            "Resource": "*",
+            "Condition": {
+              "StringLike": {
+                "ec2:ResourceTag/ebs.csi.aws.com/cluster": "true"
+              }
+            }
+          }          
       ]
     }
-  EOF
-}
-
-module "eks_brokerpak_pv_policy" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
-  version = "~> 4.2.0"
-
-  name        = "eks_brokerpak_pv_policy"
-  path        = "/"
-  description = "Policy granting additional permissions needed by the EKS brokerpak for Persistent Volumes"
-  policy      = <<-EOF
-  {
-    "Version": "2012-10-17",
-    "Statement": [
-      {
-        "Effect": "Allow",
-        "Action": [
-          "ec2:CreateSnapshot",
-          "ec2:AttachVolume",
-          "ec2:DetachVolume",
-          "ec2:ModifyVolume",
-          "ec2:DescribeAvailabilityZones",
-          "ec2:DescribeInstances",
-          "ec2:DescribeSnapshots",
-          "ec2:DescribeTags",
-          "ec2:DescribeVolumes",
-          "ec2:DescribeVolumesModifications"
-        ],
-        "Resource": "*"
-      },
-      {
-        "Effect": "Allow",
-        "Action": [
-          "ec2:CreateTags"
-        ],
-        "Resource": [
-          "arn:aws:ec2:*:*:volume/*",
-          "arn:aws:ec2:*:*:snapshot/*"
-        ],
-        "Condition": {
-          "StringEquals": {
-            "ec2:CreateAction": [
-              "CreateVolume",
-              "CreateSnapshot"
-            ]
-          }
-        }
-      },
-      {
-        "Effect": "Allow",
-        "Action": [
-          "ec2:DeleteTags"
-        ],
-        "Resource": [
-          "arn:aws:ec2:*:*:volume/*",
-          "arn:aws:ec2:*:*:snapshot/*"
-        ]
-      },
-      {
-        "Effect": "Allow",
-        "Action": [
-          "ec2:CreateVolume"
-        ],
-        "Resource": "*",
-        "Condition": {
-          "StringLike": {
-            "aws:RequestTag/ebs.csi.aws.com/cluster": "true"
-          }
-        }
-      },
-      {
-        "Effect": "Allow",
-        "Action": [
-          "ec2:CreateVolume"
-        ],
-        "Resource": "*",
-        "Condition": {
-          "StringLike": {
-            "aws:RequestTag/CSIVolumeName": "*"
-          }
-        }
-      },
-      {
-        "Effect": "Allow",
-        "Action": [
-          "ec2:CreateVolume"
-        ],
-        "Resource": "*",
-        "Condition": {
-          "StringLike": {
-            "aws:RequestTag/kubernetes.io/cluster/*": "owned"
-          }
-        }
-      },
-      {
-        "Effect": "Allow",
-        "Action": [
-          "ec2:DeleteVolume"
-        ],
-        "Resource": "*",
-        "Condition": {
-          "StringLike": {
-            "ec2:ResourceTag/ebs.csi.aws.com/cluster": "true"
-          }
-        }
-      },
-      {
-        "Effect": "Allow",
-        "Action": [
-          "ec2:DeleteVolume"
-        ],
-        "Resource": "*",
-        "Condition": {
-          "StringLike": {
-            "ec2:ResourceTag/CSIVolumeName": "*"
-          }
-        }
-      },
-      {
-        "Effect": "Allow",
-        "Action": [
-          "ec2:DeleteVolume"
-        ],
-        "Resource": "*",
-        "Condition": {
-          "StringLike": {
-            "ec2:ResourceTag/kubernetes.io/cluster/*": "owned"
-          }
-        }
-      },
-      {
-        "Effect": "Allow",
-        "Action": [
-          "ec2:DeleteSnapshot"
-        ],
-        "Resource": "*",
-        "Condition": {
-          "StringLike": {
-            "ec2:ResourceTag/CSIVolumeSnapshotName": "*"
-          }
-        }
-      },
-      {
-        "Effect": "Allow",
-        "Action": [
-          "ec2:DeleteSnapshot"
-        ],
-        "Resource": "*",
-        "Condition": {
-          "StringLike": {
-            "ec2:ResourceTag/ebs.csi.aws.com/cluster": "true"
-          }
-        }
-      }
-    ]
-  }
   EOF
 }
 
