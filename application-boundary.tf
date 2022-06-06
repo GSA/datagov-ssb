@@ -81,6 +81,7 @@ module "broker_solrcloud" {
   broker_space  = var.broker_space
   client_spaces = var.client_spaces
   enable_ssh    = var.enable_ssh
+  memory        = 1024
   # services      = [cloudfoundry_service_instance.solrcloud_broker_k8s_cluster.id]
   services = [data.cloudfoundry_user_provided_service.ssb-solrcloud-k8s.id]
 }
