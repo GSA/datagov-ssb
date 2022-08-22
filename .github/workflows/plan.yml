@@ -37,7 +37,6 @@ jobs:
       - name: prep applications
         run: |
           ./app-setup-eks.sh
-          ./app-setup-solr.sh
           ./app-setup-solrcloud.sh
           ./app-setup-smtp.sh
       - name: terraform plan (staging)
@@ -77,7 +76,6 @@ jobs:
       - name: prep applications
         run: |
           ./app-setup-eks.sh
-          ./app-setup-solr.sh
           ./app-setup-solrcloud.sh
           ./app-setup-smtp.sh
       - name: terraform plan (production)
