@@ -12,7 +12,7 @@ module "broker_eks" {
   client_spaces         = var.client_spaces
   enable_ssh            = var.enable_ssh
   memory                = 1024
-  instances             = 2
+  instances             = 1
   aws_access_key_id     = module.ssb-eks-broker-user.iam_access_key_id
   aws_secret_access_key = module.ssb-eks-broker-user.iam_access_key_secret
   aws_zone              = var.broker_zone
@@ -31,12 +31,18 @@ module "broker_smtp" {
   aws_zone              = var.broker_zone
 }
 
-# This is the back-end k8s instance to be used by the ssb-solr app
-resource "cloudfoundry_service_instance" "k8s_cluster" {
-  name         = "ssb-solr-k8s"
+# For now we are using a hand-provisioned user-provided service, not managed by Terraform
+data "cloudfoundry_space" "broker-space" {
+  name     = var.broker_space.space
+  org_name = var.broker_space.org
+}
+
+resource "cloudfoundry_service_instance" "solrcloud_broker_k8s_cluster" {
+  name         = "ssb-solrcloud-k8s"
   space        = data.cloudfoundry_space.broker_space.id
   service_plan = module.broker_eks.plans["aws-eks-service/raw"]
   tags         = ["k8s"]
+  json_params  = "{\"mng_min_capacity\": 1, \"mng_max_capacity\": 1, \"mng_desired_capacity\": 1, \"mng_instance_types\": [\"t2.small\"]}"
   timeouts {
     create = "60m"
     update = "90m" # in case of an EKS destroy/create
@@ -45,32 +51,6 @@ resource "cloudfoundry_service_instance" "k8s_cluster" {
   depends_on = [
     module.broker_eks
   ]
-}
-
-# resource "cloudfoundry_service_instance" "solrcloud_broker_k8s_cluster" {
-#   name         = "ssb-solrcloud-k8s"
-#   space        = data.cloudfoundry_space.broker_space.id
-#   service_plan = module.broker_eks.plans["aws-eks-service/raw"]
-#   tags         = ["k8s"]
-#   json_params  = "{\"mng_min_capacity\": 8, \"mng_max_capacity\": 12, \"mng_desired_capacity\": 10}"
-#   timeouts {
-#     create = "60m"
-#     update = "90m" # in case of an EKS destroy/create
-#     delete = "40m"
-#   }
-#   depends_on = [
-#     module.broker_eks
-#   ]
-# }
-
-# For now we are using a hand-provisioned user-provided service, not managed by Terraform
-data "cloudfoundry_space" "broker-space" {
-  name     = var.broker_space.space
-  org_name = var.broker_space.org
-}
-data "cloudfoundry_user_provided_service" "ssb-solrcloud-k8s" {
-  name  = "ssb-solrcloud-k8s"
-  space = data.cloudfoundry_space.broker-space.id
 }
 
 module "broker_solrcloud" {
@@ -82,17 +62,5 @@ module "broker_solrcloud" {
   client_spaces = var.client_spaces
   enable_ssh    = var.enable_ssh
   memory        = 1024
-  # services      = [cloudfoundry_service_instance.solrcloud_broker_k8s_cluster.id]
-  services = [data.cloudfoundry_user_provided_service.ssb-solrcloud-k8s.id]
-}
-
-module "broker_solr" {
-  source = "./broker"
-
-  name          = "ssb-solr"
-  path          = "./app-solr"
-  broker_space  = var.broker_space
-  client_spaces = var.client_spaces
-  enable_ssh    = var.enable_ssh
-  services      = [cloudfoundry_service_instance.k8s_cluster.id]
+  services      = [cloudfoundry_service_instance.solrcloud_broker_k8s_cluster.id]
 }
