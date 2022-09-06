@@ -2,7 +2,7 @@
 set -ex
 APP_NAME=app-solrcloud
 CSB_VERSION="v0.10.0"
-DATAGOV_BROKERPAK_SOLR_VERSION="v1.3.7"
+DATAGOV_BROKERPAK_SOLR_VERSION="v1.3.8"
 
 # TODO: Check sha256 sums
 HELM_VERSION="3.7.1"
@@ -10,6 +10,9 @@ KUBECTL_VERSION="1.22.3"
 
 BASE_URL="https://get.helm.sh"
 TAR_FILE="helm-v${HELM_VERSION}-linux-amd64.tar.gz"
+
+# Install zip for AWS Lambda restarts of solr
+apt-get -y install zip
 
 # Set up an app dir and bin dir
 mkdir -p $APP_NAME/bin
