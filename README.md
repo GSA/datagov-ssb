@@ -65,7 +65,6 @@ github_release and github_actions_secret in the github_provider!) -->
     ```bash
     ./app-setup-eks.sh
     ./app-setup-smtp.sh
-    ./app-setup-solr.sh
     ./app-setup-solrcloud.sh
     ```
 
