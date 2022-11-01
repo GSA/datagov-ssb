@@ -661,6 +661,9 @@ resource "aws_iam_user_policy_attachment" "solr_broker_policies" {
     // ELB manager: for lb setup
     "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess",
 
+    // Lambda manager: to create lambda function for solr restarts
+    "arn:aws:iam::aws:policy/AWSLambda_FullAccess",
+
     // Route53 manager: for aws_route53_record, aws_route53_zone
     "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
 
