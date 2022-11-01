@@ -687,6 +687,7 @@ module "solr_brokerpak_policy" {
           "Effect": "Allow",
           "Action": [
               "elasticloadbalancing:ModifyLoadBalancerAttributes",
+              "elasticloadbalancing:DescribeTargetGroupAttributes",
 
               "iam:CreateUser",
               "iam:DeleteUser",
