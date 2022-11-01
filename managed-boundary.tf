@@ -762,7 +762,8 @@ module "solr_brokerpak_policy" {
               "sns:GetTopicAttributes",
               "sns:ListTopics",
               "sns:SetTopicAttributes",
-              "sns:Subscribe"
+              "sns:Subscribe",
+              "sns:Unsubscribe"
           ],
           "Resource": "*"
         }
