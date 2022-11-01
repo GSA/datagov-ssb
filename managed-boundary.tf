@@ -632,3 +632,79 @@ module "eks_module_policy" {
     }
   EOF
 }
+
+
+
+module "ssb-solr-broker-user" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-user"
+  version = "~> 4.2.0"
+
+  create_iam_user_login_profile = false
+  force_destroy                 = true
+  name                          = "ssb-solr-broker"
+}
+
+resource "aws_iam_user_policy_attachment" "solr_broker_policies" {
+  for_each = toset([
+    // ACM manager: for aws_acm_certificate, aws_acm_certificate_validation
+    "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess",
+
+    // ECS manager: for ECS creation and deployments
+    "arn:aws:iam::aws:policy/AmazonECS_FullAccess",
+
+    // EFS manager: for persistent storage
+    "arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess",
+
+    // Route53 manager: for aws_route53_record, aws_route53_zone
+    "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
+
+    // AWS EKS module policy defined below
+    "arn:aws:iam::${local.this_aws_account_id}:policy/${module.solr_module_policy.name}",
+
+    // Uncomment if we are still missing stuff and need to get it working again
+    // "arn:aws:iam::aws:policy/AdministratorAccess"
+  ])
+  user       = module.ssb-solr-broker-user.iam_user_name
+  policy_arn = each.key
+}
+
+module "solr_brokerpak_policy" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
+  version = "~> 4.2.0"
+
+  name        = "eks_brokerpak_policy"
+  path        = "/"
+  description = "Policy granting additional permissions needed by the Solr brokerpak"
+  policy      = <<-EOF
+  {
+    "Version":"2012-10-17",
+    "Statement":
+      [
+        {
+          "Effect": "Allow",
+          "Action": [
+              "iam:CreateUser",
+              "iam:DeleteUser",
+              "iam:GetUser",
+
+              "iam:CreateAccessKey",
+              "iam:DeleteAccessKey",
+
+              "iam:GetUserPolicy",
+              "iam:PutUserPolicy",
+              "iam:DeleteUserPolicy",
+
+              "iam:CreatePolicy",
+              "iam:DeletePolicy",
+              "iam:GetPolicy",
+              "iam:AttachUserPolicy",
+              "iam:DetachUserPolicy",
+
+              "iam:List*"
+          ],
+          "Resource": "*"
+        }
+      ]
+  }
+  EOF
+}
