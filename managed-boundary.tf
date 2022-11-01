@@ -659,7 +659,7 @@ resource "aws_iam_user_policy_attachment" "solr_broker_policies" {
     "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
 
     // AWS EKS module policy defined below
-    "arn:aws:iam::${local.this_aws_account_id}:policy/${module.solr_module_policy.name}",
+    "arn:aws:iam::${local.this_aws_account_id}:policy/${module.solr_brokerpak_policy.name}",
 
     // Uncomment if we are still missing stuff and need to get it working again
     // "arn:aws:iam::aws:policy/AdministratorAccess"
