@@ -655,6 +655,9 @@ resource "aws_iam_user_policy_attachment" "solr_broker_policies" {
     // EFS manager: for persistent storage
     "arn:aws:iam::aws:policy/AmazonElasticFileSystemFullAccess",
 
+    // VPC manager: for vpc setup
+    "arn:aws:iam::aws:policy/AmazonVPCFullAccess",
+
     // Route53 manager: for aws_route53_record, aws_route53_zone
     "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
 
@@ -686,21 +689,61 @@ module "solr_brokerpak_policy" {
               "iam:CreateUser",
               "iam:DeleteUser",
               "iam:GetUser",
-
               "iam:CreateAccessKey",
               "iam:DeleteAccessKey",
-
               "iam:GetUserPolicy",
               "iam:PutUserPolicy",
               "iam:DeleteUserPolicy",
-
               "iam:CreatePolicy",
               "iam:DeletePolicy",
               "iam:GetPolicy",
               "iam:AttachUserPolicy",
               "iam:DetachUserPolicy",
+              "iam:List*",
+              "iam:AddRoleToInstanceProfile",
+              "iam:AttachRolePolicy",
+              "iam:CreateInstanceProfile",
+              "iam:CreateOpenIDConnectProvider",
+              "iam:CreateServiceLinkedRole",
+              "iam:CreatePolicyVersion",
+              "iam:CreateRole",
+              "iam:DeleteInstanceProfile",
+              "iam:DeleteOpenIDConnectProvider",
+              "iam:DeletePolicy",
+              "iam:DeletePolicyVersion",
+              "iam:DeleteRole",
+              "iam:DeleteRolePolicy",
+              "iam:DeleteServiceLinkedRole",
+              "iam:DetachRolePolicy",
+              "iam:GetInstanceProfile",
+              "iam:GetOpenIDConnectProvider",
+              "iam:GetPolicyVersion",
+              "iam:GetRole",
+              "iam:GetRolePolicy",
+              "iam:PassRole",
+              "iam:PutRolePolicy",
+              "iam:RemoveRoleFromInstanceProfile",
+              "iam:TagOpenIDConnectProvider",
+              "iam:TagRole",
+              "iam:UntagRole",
+              "iam:UpdateAssumeRolePolicy",
 
-              "iam:List*"
+              "kms:CreateAlias",
+              "kms:CreateGrant",
+              "kms:CreateKey",
+              "kms:DeleteAlias",
+              "kms:DescribeKey",
+              "kms:GetKeyPolicy",
+              "kms:GetKeyRotationStatus",
+              "kms:ListAliases",
+              "kms:ListResourceTags",
+              "kms:ScheduleKeyDeletion",
+
+              "logs:CreateLogGroup",
+              "logs:DescribeLogGroups",
+              "logs:DeleteLogGroup",
+              "logs:ListTagsLogGroup",
+              "logs:PutRetentionPolicy"
           ],
           "Resource": "*"
         }
