@@ -686,6 +686,8 @@ module "solr_brokerpak_policy" {
         {
           "Effect": "Allow",
           "Action": [
+              "elasticloadbalancing:ModifyLoadBalancerAttributes",
+
               "iam:CreateUser",
               "iam:DeleteUser",
               "iam:GetUser",
@@ -743,7 +745,9 @@ module "solr_brokerpak_policy" {
               "logs:DescribeLogGroups",
               "logs:DeleteLogGroup",
               "logs:ListTagsLogGroup",
-              "logs:PutRetentionPolicy"
+              "logs:PutRetentionPolicy",
+
+              "servicediscovery:ListTagsForResource"
           ],
           "Resource": "*"
         }
