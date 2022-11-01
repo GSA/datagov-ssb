@@ -658,6 +658,9 @@ resource "aws_iam_user_policy_attachment" "solr_broker_policies" {
     // VPC manager: for vpc setup
     "arn:aws:iam::aws:policy/AmazonVPCFullAccess",
 
+    // ELB manager: for lb setup
+    "arn:aws:iam::aws:policy/ElasticLoadBalancingFullAccess",
+
     // Route53 manager: for aws_route53_record, aws_route53_zone
     "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
 
@@ -686,9 +689,6 @@ module "solr_brokerpak_policy" {
         {
           "Effect": "Allow",
           "Action": [
-              "elasticloadbalancing:ModifyLoadBalancerAttributes",
-              "elasticloadbalancing:DescribeTargetGroupAttributes",
-
               "iam:CreateUser",
               "iam:DeleteUser",
               "iam:GetUser",
