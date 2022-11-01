@@ -689,6 +689,8 @@ module "solr_brokerpak_policy" {
         {
           "Effect": "Allow",
           "Action": [
+              "cloudwatch:ListTagsForResource",
+
               "iam:CreateUser",
               "iam:DeleteUser",
               "iam:GetUser",
