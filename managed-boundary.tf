@@ -758,6 +758,7 @@ module "solr_brokerpak_policy" {
 
               "sns:CreateTopic",
               "sns:DeleteTopic",
+              "sns:GetSubscriptionAttributes",
               "sns:GetTopicAttributes",
               "sns:ListTopics",
               "sns:SetTopicAttributes",
