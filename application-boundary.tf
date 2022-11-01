@@ -56,11 +56,14 @@ resource "cloudfoundry_service_instance" "solrcloud_broker_k8s_cluster" {
 module "broker_solrcloud" {
   source = "./broker"
 
-  name          = "ssb-solrcloud"
-  path          = "./app-solrcloud"
-  broker_space  = var.broker_space
-  client_spaces = var.client_spaces
-  enable_ssh    = var.enable_ssh
-  memory        = 1024
-  services      = [cloudfoundry_service_instance.solrcloud_broker_k8s_cluster.id]
+  name                  = "ssb-solrcloud"
+  path                  = "./app-solrcloud"
+  broker_space          = var.broker_space
+  client_spaces         = var.client_spaces
+  enable_ssh            = var.enable_ssh
+  memory                = 1024
+  aws_access_key_id     = module.ssb-solr-broker-user.iam_access_key_id
+  aws_secret_access_key = module.ssb-solr-broker-user.iam_access_key_secret
+  aws_zone              = var.broker_zone
+  services              = [cloudfoundry_service_instance.solrcloud_broker_k8s_cluster.id]
 }
