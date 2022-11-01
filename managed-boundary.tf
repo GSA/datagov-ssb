@@ -748,7 +748,13 @@ module "solr_brokerpak_policy" {
               "logs:ListTagsLogGroup",
               "logs:PutRetentionPolicy",
 
-              "servicediscovery:ListTagsForResource"
+              "servicediscovery:DeleteNamespace",
+              "servicediscovery:ListTagsForResource",
+
+              "sns:CreateTopic",
+              "sns:DeleteTopic",
+              "sns:ListTopics",
+              "sns:SetTopicAttributes"
           ],
           "Resource": "*"
         }
