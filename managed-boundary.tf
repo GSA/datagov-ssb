@@ -672,7 +672,7 @@ module "solr_brokerpak_policy" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
   version = "~> 4.2.0"
 
-  name        = "eks_brokerpak_policy"
+  name        = "solr_brokerpak_policy"
   path        = "/"
   description = "Policy granting additional permissions needed by the Solr brokerpak"
   policy      = <<-EOF
