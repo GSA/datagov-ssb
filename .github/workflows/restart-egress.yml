@@ -1,0 +1,29 @@
+---
+name: restart egress proxy
+
+on:   # yamllint disable-line rule:truthy
+  workflow_dispatch:
+  schedule:
+    - cron: '0 3 * * *'  # every day at 3am UTC
+
+jobs:
+
+  restart-egress:
+    strategy:
+      matrix:
+        environ: [development-ssb, management-staging, management]
+    name: restart egress (${{matrix.environ}})
+    concurrency: ${{matrix.environ}}
+    environment: ${{matrix.environ}}
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: cf restart
+        uses: cloud-gov/cg-cli-tools@main
+        with:
+          command: egress/restart-egress
+          cf_org: gsa-datagov
+          cf_space: ${{matrix.environ}}-egress
+          cf_username: ${{secrets.CF_SERVICE_EGRESS_USER}}
+          cf_password: ${{secrets.CF_SERVICE_EGRESS_AUTH}}
