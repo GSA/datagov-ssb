@@ -12,6 +12,13 @@ mkdir -p app-smtp/bin
 cat > app-smtp/.profile << 'EOF'
 # Locate additional binaries needed by the deployed brokerpaks
 export PATH="$PATH:${PWD}/bin"
+
+echo "Setting up egress proxy.."
+if [ -z ${proxy_url+x} ]; then
+  echo "Egress proxy is not connected."
+else
+  export https_proxy=$proxy_url
+fi
 EOF
 chmod +x app-smtp/.profile
 

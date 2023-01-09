@@ -35,6 +35,13 @@ export SOLR_CLUSTER_CA_CERTIFICATE=$(echo $VCAP_SERVICES | jq -r '.[][]| select(
 export SOLR_TOKEN=$(echo $VCAP_SERVICES | jq -r '.[][]| select(.name=="ssb-solrcloud-k8s") | .credentials.token')
 export SOLR_NAMESPACE=$(echo $VCAP_SERVICES | jq -r '.[][]| select(.name=="ssb-solrcloud-k8s") | .credentials.namespace')
 export SOLR_DOMAIN_NAME=$(echo $VCAP_SERVICES | jq -r '.[][]| select(.name=="ssb-solrcloud-k8s") | .credentials.domain_name')
+
+echo "Setting up egress proxy.."
+if [ -z ${proxy_url+x} ]; then
+  echo "Egress proxy is not connected."
+else
+  export https_proxy=$proxy_url
+fi
 EOF
 chmod +x $APP_NAME/.profile
 
