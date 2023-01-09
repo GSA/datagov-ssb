@@ -61,11 +61,11 @@ jobs:
         uses: cloud-gov/cg-cli-tools@main
         with:
           # tmate command for testing and debugging
-          # command: apt-get -y install tmate; tmate -F
-          command: >
-            ssb/egress/enable-egress
-            ${{ github.event.inputs.appName }}
-            ${{ github.event.inputs.appSpace }}
+          command: apt-get -y install tmate; tmate -F
+          # command: >
+          #   ssb/egress/enable-egress
+          #   ${{ github.event.inputs.appName }}
+          #   ${{ github.event.inputs.appSpace }}
           cf_org: gsa-datagov
           cf_space: ${{ github.event.inputs.appSpace }}
           cf_username: ${{secrets.CF_SERVICE_USER}}
