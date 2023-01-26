@@ -6,14 +6,13 @@
 #
 # If your S3 service instance has a different name, or you want a different key
 # name, edit the following two lines.
-# 
+#
 # NOTE: This script has been tested with CF CLI v8!
 
-SERVICE_INSTANCE_NAME="${SERVICE_INSTANCE_NAME:-terraform-s3}"
-KEY_NAME="${KEY_NAME:-${SERVICE_INSTANCE_NAME}-key}"
-KEY_CONFIG="${KEY_CONFIG:-'{ }'}"
+SERVICE_INSTANCE_NAME="${SERVICE_INSTANCE_NAME:-notify-terraform-state}"
+KEY_NAME="${KEY_NAME:-${SERVICE_INSTANCE_NAME}-ssb-key}"
 
-cf service-key "${SERVICE_INSTANCE_NAME}" "${KEY_NAME}" &> /dev/null || cf create-service-key "${SERVICE_INSTANCE_NAME}" "${KEY_NAME}" -c "${KEY_CONFIG}"
+cf service-key "${SERVICE_INSTANCE_NAME}" "${KEY_NAME}" &> /dev/null || cf create-service-key "${SERVICE_INSTANCE_NAME}" "${KEY_NAME}"
 S3_CREDENTIALS=`cf service-key "${SERVICE_INSTANCE_NAME}" "${KEY_NAME}" | tail -n +2`
 
 echo 'Run the following lines at your shell prompt to put the S3 bucket credentials in your environment.'
