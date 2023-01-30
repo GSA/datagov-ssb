@@ -9,14 +9,19 @@ variable "cf_username" {
 }
 variable "cf_password" {
   description = "Password for the Cloud Foundry user"
+  sensitive   = true
 }
 
 # Vars for provisioning and managing resources in AWS
+variable "aws_target_region" {
+  description = "AWS region to deploy resources to"
+}
 variable "aws_access_key_id" {
   description = "AWS access key to use for managing resources. Policy requirements: https://github.com/pivotal/cloud-service-broker/blob/master/docs/aws-installation.md#required-iam-policies"
 }
 variable "aws_secret_access_key" {
   description = "AWS secret for the access key"
+  sensitive   = true
 }
 
 variable "broker_zone" {

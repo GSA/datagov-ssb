@@ -13,5 +13,6 @@ module "broker_smtp" {
   enable_ssh            = var.enable_ssh
   aws_access_key_id     = module.ssb-smtp-broker-user.iam_access_key_id
   aws_secret_access_key = module.ssb-smtp-broker-user.iam_access_key_secret
+  aws_region            = var.aws_target_region
   aws_zone              = var.broker_zone
 }

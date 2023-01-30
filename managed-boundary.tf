@@ -8,21 +8,19 @@ locals {
 
 data "aws_caller_identity" "current" {}
 
-resource "aws_servicequotas_service_quota" "minimum_quotas" {
-  for_each = {
-    "vpc/L-45FE3B85" = 20 # egress-only internet gateways per region
-    "vpc/L-A4707A72" = 20 # internet gateways per region
-    "vpc/L-FE5A380F" = 20 # NAT gateways per AZ
-    "vpc/L-2AFB9258" = 16 # security groups per network interface (16 is the max)
-    "vpc/L-F678F1CE" = 20 # VPCs per region
-    "eks/L-33415657" = 20 # Fargate profiles per cluster
-    "eks/L-23414FF3" = 10 # label pairs per Fargate profile selector
-    "ec2/L-0263D0A3" = 20 # EC2-VPC Elastic IPs
-  }
-  service_code = element(split("/", each.key), 0)
-  quota_code   = element(split("/", each.key), 1)
-  value        = each.value
-}
+# Quotas defined in:
+# SES: https://docs.aws.amazon.com/general/latest/gr/ses.html
+# SNS: https://docs.aws.amazon.com/general/latest/gr/sns.html
+# I think this probably makes more sense to set within the brokerpak
+# resource "aws_servicequotas_service_quota" "minimum_quotas" {
+#   for_each = {
+#     "ses/L-804C8AE8" = 200 # daily email sends in the current region
+#     "ses/L-CDEF9B6B" = 1 # per-second email sends in the current region
+#   }
+#   service_code = element(split("/", each.key), 0)
+#   quota_code   = element(split("/", each.key), 1)
+#   value        = each.value
+# }
 
 # If we're to manage the DNS, create a Route53 zone and set up DNSSEC on it.
 resource "aws_route53_zone" "zone" {
@@ -107,51 +105,51 @@ resource "aws_route53_hosted_zone_dnssec" "zone" {
 }
 
 
-module "assumable_admin_role" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version = "~> 4.5.0"
-  trusted_role_arns = [
-    "arn:aws:iam::${local.trusted_aws_account_id}:root",
-  ]
-  trusted_role_actions = [
-    "sts:AssumeRole",
-    "sts:SetSourceIdentity"
-  ]
+# module "assumable_admin_role" {
+#   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
+#   version = "~> 4.5.0"
+#   trusted_role_arns = [
+#     "arn:aws:iam::${local.trusted_aws_account_id}:root",
+#   ]
+#   trusted_role_actions = [
+#     "sts:AssumeRole",
+#     "sts:SetSourceIdentity"
+#   ]
 
-  create_role         = true
-  role_name           = "SSBAdmin"
-  attach_admin_policy = true
+#   create_role         = true
+#   role_name           = "SSBAdmin"
+#   attach_admin_policy = true
 
-  # MFA is enforced at the jump account, not here
-  role_requires_mfa = false
+#   # MFA is enforced at the jump account, not here
+#   role_requires_mfa = false
 
-  tags = {
-    Role = "Admin"
-  }
-}
+#   tags = {
+#     Role = "Admin"
+#   }
+# }
 
-module "assumable_poweruser_role" {
-  source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
-  version = "~> 4.5.0"
-  trusted_role_arns = [
-    "arn:aws:iam::${local.trusted_aws_account_id}:root",
-  ]
-  trusted_role_actions = [
-    "sts:AssumeRole",
-    "sts:SetSourceIdentity"
-  ]
+# module "assumable_poweruser_role" {
+#   source  = "terraform-aws-modules/iam/aws//modules/iam-assumable-role"
+#   version = "~> 4.5.0"
+#   trusted_role_arns = [
+#     "arn:aws:iam::${local.trusted_aws_account_id}:root",
+#   ]
+#   trusted_role_actions = [
+#     "sts:AssumeRole",
+#     "sts:SetSourceIdentity"
+#   ]
 
-  create_role             = true
-  role_name               = "SSBDev"
-  attach_poweruser_policy = true
+#   create_role             = true
+#   role_name               = "SSBDev"
+#   attach_poweruser_policy = true
 
-  # MFA is enforced at the jump account, not here
-  role_requires_mfa = false
+#   # MFA is enforced at the jump account, not here
+#   role_requires_mfa = false
 
-  tags = {
-    Role = "PowerUser"
-  }
-}
+#   tags = {
+#     Role = "PowerUser"
+#   }
+# }
 
 module "ssb-smtp-broker-user" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-user"

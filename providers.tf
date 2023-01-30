@@ -1,14 +1,7 @@
 provider "aws" {
-  region     = "us-west-2"
+  region     = var.aws_target_region
   access_key = var.aws_access_key_id
   secret_key = var.aws_secret_access_key
-}
-
-provider "aws" {
-  region     = "us-west-2"
-  alias      = "eks-terraform"
-  access_key = module.ssb-eks-broker-user.iam_access_key_id
-  secret_key = module.ssb-eks-broker-user.iam_access_key_secret
 }
 
 # A separate provider for creating KMS keys in the us-east-1 region, which is required for DNSSEC.
@@ -26,4 +19,3 @@ provider "cloudfoundry" {
   user     = var.cf_username
   password = var.cf_password
 }
-
