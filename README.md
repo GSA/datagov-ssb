@@ -177,6 +177,13 @@ Once these secrets are in place, the GitHub Action should be operational.
   1. run tests on the broker in the staging environment
   1. (if successful) deploy the changes to the production environment
 
+#### AWS Accounts and Regions in use:
+
+| SSB Environment | AWS Account | AWS Region |
+|-----------------|-------------|------------|
+| Production | GovCloud prod | us-gov-west-1 |
+| Staging | Commercial prod | us-west-2 |
+| Development | Commercial dev | us-west-2 |
 
 ## Force cleanup of orphaned resources
 

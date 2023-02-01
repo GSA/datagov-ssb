@@ -1,5 +1,5 @@
 # See vars.tf for documentation on these options and the other options
-# available. 
+# available.
 
 client_spaces = {
     someorg = ["firstspace", "otherspace"]
@@ -10,3 +10,4 @@ broker_space = {
 }
 broker_zone = "brokerdomain"
 manage_zone = true
+aws_target_region = "us-west-2"

@@ -1,11 +1,12 @@
 # See vars.tf for more information
 client_spaces = {
-  gsa-datagov = ["management", "staging", "prod", "development"]
+  gsa-tts-benefits-studio-prototyping = ["notify-prod", "notify-demo"]
 }
 broker_space = {
-  org   = "gsa-datagov"
-  space = "management"
+  org   = "gsa-tts-benefits-studio-prototyping"
+  space = "notify-management"
 }
-broker_zone = "ssb.data.gov"
-manage_zone = true
-enable_ssh  = false
+broker_zone       = "ssb.notify.gov"
+manage_zone       = false
+enable_ssh        = false
+aws_target_region = "us-gov-west-1"
