@@ -1,10 +1,11 @@
 # See vars.tf for more information
 client_spaces = {
-  gsa-datagov = ["management-staging"]
+  gsa-tts-benefits-studio-prototyping = ["notify-management-staging", "notify-staging", "notify-sandbox"]
 }
 broker_space = {
-  org   = "gsa-datagov"
-  space = "management-staging"
+  org   = "gsa-tts-benefits-studio-prototyping"
+  space = "notify-management-staging"
 }
-broker_zone = "ssb-staging.data.gov"
-manage_zone = true
+broker_zone       = "notify-staging.rcahearn.net"
+manage_zone       = true
+aws_target_region = "us-west-2"

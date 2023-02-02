@@ -1,4 +1,4 @@
-# datagov-ssb
+# usnotify-ssb
 
 The Supplementary Service Broker (SSB) manages the lifecycle of services, filling gaps in [cloud.gov](https://cloud.gov)'s brokered services. The SSB is compliant with the [Open Service Broker API](https://www.openservicebrokerapi.org/) specification. Using this API, the service broker advertises a catalog of service offerings and service plans, and interprets calls for provision (create), bind, unbind, and deprovision (delete). What the broker does with each call can vary between services. In general, `provision` reserves resources on a service and `bind` delivers information to an app necessary for accessing the resource. The reserved resource is called a service instance.
 
@@ -6,10 +6,10 @@ What a service instance represents can vary by service, for example a single dat
 
 The SSB can also be used from the command-line with [`eden`](https://github.com/starkandwayne/eden), or integrated into other platforms that make use of the [OSBAPI](https://www.openservicebrokerapi.org).
 
-The SSB currently provides [SMTP](https://github.com/GSA/datagov-brokerpak-smtp), [Solr](https://github.com/GSA/datagov-brokerpak), and [(limited) Kubernetes](https://github.com/GSA/eks-brokerpak) services.
- 
+The SSB currently provides [SMTP](https://github.com/GSA/datagov-brokerpak-smtp) and [SMS](https://github.com/GSA/ttsnotify-brokerpak-sns) services.
+
 Services are defined in a
-[brokerpaks](https://github.com/pivotal/cloud-service-broker/blob/master/docs/brokerpak-intro.md),
+[brokerpaks](https://github.com/cloudfoundry/cloud-service-broker/blob/main/docs/brokerpak-intro.md),
 bundles of Terraform and YAML that specify how each service should be advertised,
 provisioned, bound, unbound, and unprovisioned.
 
@@ -27,7 +27,7 @@ provisioned, bound, unbound, and unprovisioned.
     cloud.gov](https://cloud.gov/docs/services/s3/#how-to-create-an-instance)
     using the `basic` plan, then [extract the
     credentials](https://cloud.gov/docs/services/s3/#interacting-with-your-s3-bucket-from-outside-cloudgov)
-    for use. Running `SERVICE_INSTANCE_NAME=<servicename> ./s3creds.sh` will create the service-key and provide the necessary environment variables. 
+    for use. Running `SERVICE_INSTANCE_NAME=<servicename> ./s3creds.sh` will create the service-key and provide the necessary environment variables.
 
 1. Cloud Foundry credentials with permission to register the service broker in
    the spaces where it should be available.
@@ -46,7 +46,7 @@ provisioned, bound, unbound, and unprovisioned.
 
 1. Credentials to be used for managing resources in AWS
 
-    To configure domains, set quotas, and create service accounts with the correct permissions, deployment requires an AWS access key id and secret for a user with at least IAM and Route53 policies, and the ability to make support requests. 
+    To configure domains, set quotas, and create service accounts with the correct permissions, deployment requires an AWS access key id and secret for a user with at least IAM and Route53 policies, and the ability to make support requests.
 
 ## Dependencies
 
@@ -63,9 +63,7 @@ github_release and github_actions_secret in the github_provider!) -->
    into the respective `/app` directories.
 
     ```bash
-    ./app-setup-eks.sh
     ./app-setup-smtp.sh
-    ./app-setup-solrcloud.sh
     ```
 
 1. Copy the `backend.tfvars-template` and edit in the non-sensitive values for the S3 bucket.
@@ -113,7 +111,7 @@ github_release and github_actions_secret in the github_provider!) -->
 
     ```bash
     docker-compose --env-file=.backend.secrets run --rm terraform workspace new ${ENV_NAME}
-    docker-compose --env-file=.backend.secrets run --rm terraform workspace select ${ENV_NAME}    
+    docker-compose --env-file=.backend.secrets run --rm terraform workspace select ${ENV_NAME}
     ```
 
 1. Run Terraform apply, review the plan, and answer `yes` when prompted.
@@ -179,6 +177,13 @@ Once these secrets are in place, the GitHub Action should be operational.
   1. run tests on the broker in the staging environment
   1. (if successful) deploy the changes to the production environment
 
+#### AWS Accounts and Regions in use:
+
+| SSB Environment | AWS Account | AWS Region |
+|-----------------|-------------|------------|
+| Production | GovCloud prod | us-gov-west-1 |
+| Staging | Commercial prod | us-west-2 |
+| Development | Commercial dev | us-west-2 |
 
 ## Force cleanup of orphaned resources
 
@@ -208,13 +213,13 @@ In those situations, don't panic. Here's how you can clean up!
 
            export SECURITY_USER_PASSWORD=${the-encoded-value}
 
-4. Invoke the deprovision operation directly. 
+4. Invoke the deprovision operation directly.
 
     ``` bash
     $ ./cloud-service-broker client deprovision --serviceid <serviceid> --planid <planid> --instanceid <instanceid>
     ```
 
-    * The `instanceid` is the GUID you extracted in step 1. 
+    * The `instanceid` is the GUID you extracted in step 1.
     * The `serviceid` and `planid` are the GUIDs from the service catalog.
 
 4. Log out of the SSH session

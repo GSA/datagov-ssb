@@ -10,14 +10,14 @@ env:
   REGION: "${{ secrets.REGION }}"
   KEY: "ssb-tfstate"
   ENCRYPT: "true"
-  
+
 jobs:
   test:
     name: test format and validity
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: terraform fmt
         uses: dflook/terraform-fmt-check@v1
@@ -40,20 +40,12 @@ jobs:
       TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
       TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
       TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
-      TERRAFORM_PRE_RUN: |
-          ./install-tools.sh
-          cp helm /usr/local/bin/
-          cp kubectl /usr/local/bin/
-          cp aws-iam-authenticator /usr/local/bin/
-          aws-iam-authenticator help
 
     steps:
       - name: checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: prep applications
         run: |
-          ./app-setup-eks.sh
-          ./app-setup-solrcloud.sh
           ./app-setup-smtp.sh
 
       - name: terraform apply (development)
