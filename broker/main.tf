@@ -20,7 +20,6 @@ resource "cloudfoundry_service_instance" "db" {
     update = "30m"
     delete = "30m"
   }
-
 }
 
 resource "random_uuid" "client_username" {}
@@ -88,7 +87,7 @@ data "cloudfoundry_domain" "apps" {
 resource "cloudfoundry_route" "ssb_uri" {
   domain   = data.cloudfoundry_domain.apps.id
   space    = data.cloudfoundry_space.broker_space.id
-  hostname = "${var.name}-${var.broker_space.org}-${var.broker_space.space}"
+  hostname = "${var.name}-${var.broker_space.space}"
 }
 
 # Register the broker in each of these spaces
@@ -124,4 +123,3 @@ resource "cloudfoundry_service_broker" "standard_broker" {
     cloudfoundry_app.ssb
   ]
 }
-
