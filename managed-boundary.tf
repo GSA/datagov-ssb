@@ -163,19 +163,27 @@ module "ssb-smtp-broker-user" {
 resource "aws_iam_user_policy_attachment" "smtp_broker_policies" {
   for_each = toset([
     // ACM manager: for aws_acm_certificate, aws_acm_certificate_validation
-    "arn:aws:iam::aws:policy/AWSCertificateManagerFullAccess",
+    data.aws_iam_policy.cert-manager-full-access.arn,
 
     // Route53 manager: for aws_route53_record, aws_route53_zone
-    "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
+    data.aws_iam_policy.route-53-full-access.arn,
 
     // AWS SES policy defined below
-    "arn:aws:iam::${local.this_aws_account_id}:policy/${module.smtp_broker_policy.name}",
+    module.smtp_broker_policy.arn,
 
     // Uncomment if we are still missing stuff and need to get it working again
     // "arn:aws:iam::aws:policy/AdministratorAccess"
   ])
   user       = module.ssb-smtp-broker-user.iam_user_name
   policy_arn = each.key
+}
+
+data "aws_iam_policy" "cert-manager-full-access" {
+  name = "AWSCertificateManagerFullAccess"
+}
+
+data "aws_iam_policy" "route-53-full-access" {
+  name = "AmazonRoute53FullAccess"
 }
 
 module "smtp_broker_policy" {
