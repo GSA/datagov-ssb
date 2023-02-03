@@ -8,4 +8,5 @@ broker_space = {
 }
 broker_zone       = "notify-dev.rcahearn.net"
 manage_zone       = true
+name_prefix       = "ssb-devel"
 aws_target_region = "us-west-2"
