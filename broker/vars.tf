@@ -54,6 +54,11 @@ variable "enable_ssh" {
   description = "Whether `cf ssh` should be enabled for the broker app"
 }
 
+variable "broker_db_plan_name" {
+  default     = "small-mysql"
+  description = "DB plan name for the broker app"
+}
+
 variable "aws_access_key_id" {
   description = "AWS access key to use for managing resources. Policy requirements: https://github.com/pivotal/cloud-service-broker/blob/master/docs/aws-installation.md#required-iam-policies"
   default     = ""

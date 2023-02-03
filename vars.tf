@@ -68,3 +68,13 @@ variable "enable_ssh" {
   default     = true
   description = "Whether `cf ssh` should be enabled for the broker app"
 }
+
+variable "broker_db_plan_name" {
+  default     = "small-mysql"
+  description = "DB plan name for the broker app"
+}
+
+variable "name_prefix" {
+  default     = "ssb"
+  description = "Prefix for infrastructure names, to aid in deduplication"
+}

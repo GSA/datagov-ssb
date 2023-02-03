@@ -6,11 +6,12 @@ data "cloudfoundry_space" "broker_space" {
 module "broker_smtp" {
   source = "./broker"
 
-  name                  = "ssb-smtp"
+  name                  = "${var.name_prefix}-smtp"
   path                  = "./app-smtp"
   broker_space          = var.broker_space
   client_spaces         = var.client_spaces
   enable_ssh            = var.enable_ssh
+  broker_db_plan_name   = var.broker_db_plan_name
   aws_access_key_id     = module.ssb-smtp-broker-user.iam_access_key_id
   aws_secret_access_key = module.ssb-smtp-broker-user.iam_access_key_secret
   aws_region            = var.aws_target_region
