@@ -31,6 +31,7 @@ jobs:
       - name: prep applications
         run: |
           ./app-setup-smtp.sh
+          ./app-setup-sms.sh
       - name: terraform plan (staging)
         uses: dflook/terraform-plan@v1
         with:
@@ -62,6 +63,7 @@ jobs:
       - name: prep applications
         run: |
           ./app-setup-smtp.sh
+          ./app-setup-sms.sh
       - name: terraform plan (production)
         uses: dflook/terraform-plan@v1
         with:

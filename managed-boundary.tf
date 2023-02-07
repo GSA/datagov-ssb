@@ -258,33 +258,33 @@ module "smtp_broker_policy" {
   EOF
 }
 
-module "ssb-sns-broker-user" {
+module "ssb-sms-broker-user" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-user"
   version = "~> 4.2.0"
 
   create_iam_user_login_profile = false
   force_destroy                 = true
-  name                          = "ssb-sns-broker"
+  name                          = "ssb-sms-broker"
 }
 
-resource "aws_iam_user_policy_attachment" "sns_broker_policies" {
+resource "aws_iam_user_policy_attachment" "sms_broker_policies" {
   for_each = {
     // AWS SES policy defined below
-    "sns_broker" = module.sns_broker_policy.arn
+    "sms_broker" = module.sms_broker_policy.arn
     // Uncomment if we are still missing stuff and need to get it working again
     // "AdministratorAccess" = data.aws_iam_policy.administrator-access.arn
   }
-  user       = module.ssb-sns-broker-user.iam_user_name
+  user       = module.ssb-sms-broker-user.iam_user_name
   policy_arn = each.value
 }
 
-module "sns_broker_policy" {
+module "sms_broker_policy" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
   version = "~> 4.2.0"
 
-  name        = "sns_broker"
+  name        = "sms_broker"
   path        = "/"
-  description = "SNS broker policy (covers SNS, IAM)"
+  description = "SMS broker policy (covers SNS, IAM)"
 
   policy = <<-EOF
   {

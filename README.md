@@ -64,6 +64,7 @@ github_release and github_actions_secret in the github_provider!) -->
 
     ```bash
     ./app-setup-smtp.sh
+    ./app-setup-sms.sh
     ```
 
 1. Copy the `backend.tfvars-template` and edit in the non-sensitive values for the S3 bucket.
@@ -179,11 +180,11 @@ Once these secrets are in place, the GitHub Action should be operational.
 
 #### AWS Accounts and Regions in use:
 
-| SSB Environment | AWS Account | AWS Region |
-|-----------------|-------------|------------|
-| Production | GovCloud prod | us-gov-west-1 |
-| Staging | Commercial prod | us-west-2 |
-| Development | Commercial dev | us-west-2 |
+| SSB Environment | U.S. Notify Environments |AWS Account | AWS Region |
+|-----------------|--------------------------|------------|------------|
+| Production | prod & demo | GovCloud prod | us-gov-west-1 |
+| Staging | staging & sandbox | Commercial prod | us-west-2 |
+| Development | sandbox | Commercial dev | us-west-2 |
 
 ## Force cleanup of orphaned resources
 

@@ -47,6 +47,7 @@ jobs:
       - name: prep applications
         run: |
           ./app-setup-smtp.sh
+          ./app-setup-sms.sh
 
       - name: terraform apply (development)
         uses: dflook/terraform-apply@v1
