@@ -4,6 +4,7 @@
 ### Terraform ###
 # Local .terraform directories
 **/.terraform/*
+.terraform.lock.hcl
 
 # .tfstate files
 *.tfstate
@@ -39,9 +40,7 @@ terraform.tfvars
 backend.tfvars
 .env.secrets
 app-smtp
-app-eks
-app-solr
-app-solrcloud
+app-sms
 app-ssb-*.zip
 .backend.secrets
 .env.*.secrets

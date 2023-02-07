@@ -151,6 +151,18 @@ resource "aws_route53_hosted_zone_dnssec" "zone" {
 #   }
 # }
 
+data "aws_iam_policy" "cert-manager-full-access" {
+  name = "AWSCertificateManagerFullAccess"
+}
+
+data "aws_iam_policy" "route-53-full-access" {
+  name = "AmazonRoute53FullAccess"
+}
+
+data "aws_iam_policy" "administrator-access" {
+  name = "AdministratorAccess"
+}
+
 module "ssb-smtp-broker-user" {
   source  = "terraform-aws-modules/iam/aws//modules/iam-user"
   version = "~> 4.2.0"
@@ -173,18 +185,6 @@ resource "aws_iam_user_policy_attachment" "smtp_broker_policies" {
   }
   user       = module.ssb-smtp-broker-user.iam_user_name
   policy_arn = each.value
-}
-
-data "aws_iam_policy" "cert-manager-full-access" {
-  name = "AWSCertificateManagerFullAccess"
-}
-
-data "aws_iam_policy" "route-53-full-access" {
-  name = "AmazonRoute53FullAccess"
-}
-
-data "aws_iam_policy" "administrator-access" {
-  name = "AdministratorAccess"
 }
 
 module "smtp_broker_policy" {
@@ -250,6 +250,83 @@ module "smtp_broker_policy" {
               "sns:Subscribe",
               "sns:Unsubscribe",
               "sns:GetSubscriptionAttributes"
+          ],
+          "Resource": "*"
+        }
+    ]
+  }
+  EOF
+}
+
+module "ssb-sms-broker-user" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-user"
+  version = "~> 4.2.0"
+
+  create_iam_user_login_profile = false
+  force_destroy                 = true
+  name                          = "ssb-sms-broker"
+}
+
+resource "aws_iam_user_policy_attachment" "sms_broker_policies" {
+  for_each = {
+    // AWS SES policy defined below
+    "sms_broker" = module.sms_broker_policy.arn
+    // Uncomment if we are still missing stuff and need to get it working again
+    // "AdministratorAccess" = data.aws_iam_policy.administrator-access.arn
+  }
+  user       = module.ssb-sms-broker-user.iam_user_name
+  policy_arn = each.value
+}
+
+module "sms_broker_policy" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
+  version = "~> 4.2.0"
+
+  name        = "sms_broker"
+  path        = "/"
+  description = "SMS broker policy (covers SNS, IAM)"
+
+  policy = <<-EOF
+  {
+    "Version":"2012-10-17",
+    "Statement":
+      [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "sns:GetSMSAttributes",
+            "sns:SetSMSAttributes"
+          ],
+          "Resource":"*"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+              "iam:CreateUser",
+              "iam:DeleteUser",
+              "iam:GetUser",
+
+              "iam:CreateAccessKey",
+              "iam:DeleteAccessKey",
+
+              "iam:CreateRole",
+              "iam:DeleteRole",
+              "iam:GetRole",
+              "iam:GetRolePolicy",
+              "iam:PutRolePolicy",
+              "iam:DeleteRolePolicy",
+
+              "iam:GetUserPolicy",
+              "iam:PutUserPolicy",
+              "iam:DeleteUserPolicy",
+
+              "iam:CreatePolicy",
+              "iam:DeletePolicy",
+              "iam:GetPolicy",
+              "iam:AttachUserPolicy",
+              "iam:DetachUserPolicy",
+
+              "iam:List*"
           ],
           "Resource": "*"
         }
