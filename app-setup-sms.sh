@@ -2,7 +2,7 @@
 set -ex
 
 CSB_VERSION="v0.15.0"
-SMS_BROKERPAK_VERSION="v1.0.1"
+SMS_BROKERPAK_VERSION="v1.0.2"
 
 # Set up an app dir and bin dir
 mkdir -p app-sms/bin
