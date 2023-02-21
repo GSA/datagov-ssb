@@ -182,8 +182,8 @@ Once these secrets are in place, the GitHub Action should be operational.
 
 | SSB Environment | U.S. Notify Environments |AWS Account | AWS Region |
 |-----------------|--------------------------|------------|------------|
-| Production | prod & demo | GovCloud prod | us-gov-west-1 |
-| Staging | staging & sandbox | Commercial prod | us-west-2 |
+| Production | prod | GovCloud prod | us-gov-west-1 |
+| Staging | demo, staging, & sandbox | Commercial prod | us-west-2 |
 | Development | sandbox | Commercial dev | us-west-2 |
 
 ## Force cleanup of orphaned resources
