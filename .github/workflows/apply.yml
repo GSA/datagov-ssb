@@ -17,8 +17,6 @@ env:
 jobs:
 
   apply-staging:
-    needs: apply-production
-
     name: apply (staging)
     runs-on: ubuntu-latest
     environment: staging
@@ -59,7 +57,7 @@ jobs:
         run: echo staging tests ok  # TODO staging smoke tests
 
   apply-production:
-    # needs: apply-staging
+    needs: apply-staging
 
     name: apply (production)
     runs-on: ubuntu-latest
