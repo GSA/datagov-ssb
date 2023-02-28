@@ -2,7 +2,7 @@
 set -ex
 
 CSB_VERSION="v0.15.0"
-SMTP_BROKERPAK_VERSION="v1.2.0"
+SMTP_BROKERPAK_VERSION="v1.3.1"
 
 # Set up an app dir and bin dir
 mkdir -p app-smtp/bin
