@@ -1,0 +1,46 @@
+---
+name: Restage apps
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Which environment needs to be restaged"
+        required: true
+        default: staging
+        type: environment
+
+jobs:
+  restage_development:
+    runs-on: ubuntu-latest
+    if: inputs.environment == 'development'
+    environment: development
+    strategy:
+      matrix:
+        app: ["sms", "smtp"]
+    steps:
+      - name: Restage devel ${{matrix.app}}
+        uses: 18f/cg-deploy-action@main
+        with:
+          cf_username: ${{ secrets.TF_VAR_cf_username }}
+          cf_password: ${{ secrets.TF_VAR_cf_password }}
+          cf_org: gsa-tts-benefits-studio-prototyping
+          cf_space: notify-sandbox
+          full_command: "cf restage --strategy rolling ssb-devel-${{matrix.app}}"
+
+  restage_ssb:
+    runs-on: ubuntu-latest
+    if: inputs.environment != 'development'
+    environment: ${{ inputs.environment }}
+    strategy:
+      matrix:
+        app: ["sms", "smtp"]
+    steps:
+      - name: Restage ${{matrix.app}}
+        uses: 18f/cg-deploy-action@main
+        with:
+          cf_username: ${{ secrets.TF_VAR_cf_username }}
+          cf_password: ${{ secrets.TF_VAR_cf_password }}
+          cf_org: gsa-tts-benefits-studio-prototyping
+          cf_space: ${{ inputs.environment == 'production' && 'notify-management' || 'notify-management-staging' }}
+          full_command: "cf restage --strategy rolling ssb-${{matrix.app}}"
