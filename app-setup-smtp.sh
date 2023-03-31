@@ -2,7 +2,7 @@
 set -ex
 
 CSB_VERSION="v0.15.0"
-SMTP_BROKERPAK_VERSION="v1.3.1"
+SMTP_BROKERPAK_VERSION="v2.0.0"
 
 # Set up an app dir and bin dir
 mkdir -p app-smtp/bin
@@ -20,4 +20,4 @@ chmod +x app-smtp/.profile
     chmod +x app-smtp/cloud-service-broker
 
 # Add the brokerpak(s)
-(cd app-smtp && curl -f -LO https://github.com/GSA/datagov-brokerpak-smtp/releases/download/${SMTP_BROKERPAK_VERSION}/datagov-brokerpak-smtp-${SMTP_BROKERPAK_VERSION}.brokerpak)
+(cd app-smtp && curl -f -LO https://github.com/GSA-TTS/datagov-brokerpak-smtp/releases/download/${SMTP_BROKERPAK_VERSION}/datagov-brokerpak-smtp-${SMTP_BROKERPAK_VERSION}.brokerpak)
