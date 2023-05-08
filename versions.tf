@@ -7,7 +7,7 @@ terraform {
     }
     cloudfoundry = {
       source  = "registry.terraform.io/cloudfoundry-community/cloudfoundry"
-      version = "~> 0.14.0"
+      version = "~> 0.50.7"
     }
     random = {
       source  = "hashicorp/random"
