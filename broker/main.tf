@@ -50,7 +50,7 @@ resource "cloudfoundry_app" "ssb" {
   disk_quota       = var.disk
   enable_ssh       = var.enable_ssh
   source_code_hash = data.archive_file.app_zip.output_base64sha256
-  strategy         = "blue-green"
+  strategy         = "rolling"
   service_binding {
     service_instance = cloudfoundry_service_instance.db.id
   }
