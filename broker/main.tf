@@ -34,16 +34,12 @@ data "archive_file" "app_zip" {
   output_path = "./app-${var.name}.zip"
 }
 
-data "cloudfoundry_stack" "cflinuxfs4" {
-  name = "cflinuxfs4"
-}
-
 resource "cloudfoundry_app" "ssb" {
   space            = data.cloudfoundry_space.broker_space.id
   name             = var.name
   path             = data.archive_file.app_zip.output_path
   buildpack        = "binary_buildpack"
-  stack            = data.cloudfoundry_stack.cflinuxfs4.id
+  stack            = "cflinuxfs4"
   command          = var.command
   instances        = var.instances
   memory           = var.memory
