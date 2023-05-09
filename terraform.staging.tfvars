@@ -6,6 +6,6 @@ broker_space = {
   org   = "gsa-tts-benefits-studio-prototyping"
   space = "notify-management-staging"
 }
-broker_zone       = "notify-staging.rcahearn.net"
+broker_zone       = "ssb.notify.gov"
 manage_zone       = true
 aws_target_region = "us-west-2"
