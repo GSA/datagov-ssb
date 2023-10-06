@@ -771,3 +771,45 @@ module "solr_brokerpak_policy" {
   }
   EOF
 }
+
+module "ssb-airflow-broker-user" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-user"
+  version = "~> 4.2.0"
+
+  create_iam_user_login_profile = false
+  force_destroy                 = true
+  name                          = "ssb-airflow-broker"
+}
+
+resource "aws_iam_user_policy_attachment" "airflow_broker_policies" {
+  for_each = toset([
+    // TODO: Add Permissions for Airflow
+
+    // Airflow policy defined below
+    "arn:aws:iam::${local.this_aws_account_id}:policy/${module.airflow_broker_policy.name}",
+
+    // Uncomment if we are still missing stuff and need to get it working again
+    // "arn:aws:iam::aws:policy/AdministratorAccess"
+  ])
+  user       = module.ssb-airflow-broker-user.iam_user_name
+  policy_arn = each.key
+}
+
+module "airflow_broker_policy" {
+  source  = "terraform-aws-modules/iam/aws//modules/iam-policy"
+  version = "~> 4.2.0"
+
+  name        = "smtp_broker"
+  path        = "/"
+  description = "Airflow broker policy (covers ...TODO...)"
+
+  // TODO: Figure out airflow specific permissions
+  policy = <<-EOF
+  {
+    "Version":"2012-10-17",
+    "Statement":
+      [
+      ]
+  }
+  EOF
+}
