@@ -39,6 +39,7 @@ jobs:
           ./app-setup-eks.sh
           ./app-setup-solrcloud.sh
           ./app-setup-smtp.sh
+          ./app-setup-airflow.sh
       - name: terraform plan (staging)
         uses: dflook/terraform-plan@v1
         with:

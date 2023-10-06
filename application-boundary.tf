@@ -52,7 +52,6 @@ resource "cloudfoundry_service_instance" "solrcloud_broker_k8s_cluster" {
     module.broker_eks
   ]
 }
-
 module "broker_solrcloud" {
   source = "./broker"
 
@@ -66,4 +65,20 @@ module "broker_solrcloud" {
   aws_secret_access_key = module.ssb-solr-broker-user.iam_access_key_secret
   aws_zone              = var.broker_zone
   services              = [cloudfoundry_service_instance.solrcloud_broker_k8s_cluster.id]
+}
+
+module "broker_airflow" {
+  source = "./broker"
+
+  name                  = "ssb-airflow"
+  path                  = "./app-airflow"
+  broker_space          = var.broker_space
+  client_spaces         = var.client_spaces
+  enable_ssh            = var.enable_ssh
+  memory                = 1024
+  aws_access_key_id     = module.ssb-airflow-broker-user.iam_access_key_id
+  aws_secret_access_key = module.ssb-airflow-broker-user.iam_access_key_secret
+  aws_zone              = var.broker_zone
+  // TODO: Add dependency to EKS, as necessary
+  // services              = [cloudfoundry_service_instance.airflow_broker_k8s_cluster.id]
 }
