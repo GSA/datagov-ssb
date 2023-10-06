@@ -41,6 +41,7 @@ jobs:
           ./app-setup-eks.sh
           ./app-setup-solrcloud.sh
           ./app-setup-smtp.sh
+          ./app-setup-airflow.sh
       - name: terraform apply (staging)
         uses: dflook/terraform-apply@v1
         with:

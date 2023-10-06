@@ -42,6 +42,7 @@ app-smtp
 app-eks
 app-solr
 app-solrcloud
+app-airflow
 app-ssb-*.zip
 .backend.secrets
 .env.*.secrets
@@ -53,3 +54,4 @@ vars-solr-template.yml
 vars-solrcloud-template.yml
 manifest-solr.yml
 manifest-solrcloud.yml
+manifest-airflow.yml
