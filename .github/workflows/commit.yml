@@ -52,29 +52,4 @@ jobs:
         uses: actions/checkout@v3
       - name: prep applications
         run: |
-          ./app-setup-eks.sh
-          ./app-setup-solrcloud.sh
-          ./app-setup-smtp.sh
-
-      - name: terraform apply (development)
-        uses: dflook/terraform-apply@v1
-        with:
-          path: .
-          label: development
-          workspace: development
-          auto_approve: true
-          var_file: terraform.development.tfvars
-          backend_config: >
-            bucket=${{ env.BUCKET }},
-            key=${{ env.KEY }},
-            region=${{ env.REGION }},
-            encrypt=${{ env.ENCRYPT }},
-            access_key=${{ env.AWS_ACCESS_KEY_ID }},
-            secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}
-      # - name: Setup tmate session
-      #   if: ${{ failure() }}
-      #   uses: mxschmitt/action-tmate@v3
-      #   with:
-      #     limit-access-to-actor: true
-      - name: test development environment
-        run: echo development tests ok  # TODO development smoke tests
+          echo 111
