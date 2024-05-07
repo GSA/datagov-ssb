@@ -60,7 +60,7 @@ Try to do this automatically with terraform... It seems possible with
 github_release and github_actions_secret in the github_provider!) -->
 
 1. Download the broker binary, desired brokerpaks, and prerequisite binaries
-   into the respective `/app` directories.
+   into the respective `/app` directories by running these two shell scripts:
 
     ```bash
     ./app-setup-smtp.sh
@@ -94,7 +94,7 @@ github_release and github_actions_secret in the github_provider!) -->
     ${EDITOR} terraform.${ENV_NAME}.tfvars
     ```
 
-1. Copy the `.env.secrets-template` and edit in the values for the Cloud
+1. Copy the `.env.secrets-template` and edit in [the values](#set-up-environment-secrets-used-to-deploy-and-configure-the-broker) for the Cloud
    Foundry service account and your AWS deployment user.
 
     ```bash
