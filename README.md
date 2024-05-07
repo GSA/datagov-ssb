@@ -73,6 +73,7 @@ github_release and github_actions_secret in the github_provider!) -->
     cp backend.tfvars-template backend.tfvars
     ${EDITOR} backend.tfvars
     ```
+    Paste in the GUID (into `bucket`) and the `region` of the S3 bucket that holds Terraform state. These should be the same as [used in the notifications-api](https://github.com/GSA/notifications-api/blob/7a1c49b7c70245f59f62d8b0ea4311f6393c4fe4/terraform/sandbox/providers.tf#L11) repo.
 
 1. Copy the `.backend.secrets-template` and edit in the sensitive values for the S3 bucket.
 
@@ -80,14 +81,16 @@ github_release and github_actions_secret in the github_provider!) -->
     cp .backend.secrets-template .backend.secrets
     ${EDITOR} .backend.secrets
     ```
+    The file must contain credentials for the S3 bucket that holds Terraform state. If you have previously set yourself up to run Terraform in Notify's other repos, then you may have these credentials in your local `~/.aws/credentials` file and you may copy them from there. Otherwise, [use these instructions](https://github.com/GSA/notifications-api/tree/main/terraform#use-bootstrap-credentials).
 
 1. Set a variable with the name of the environment you want to work with
 
     ```bash
     export ENV_NAME=[environment_name]
     ```
+    If you are new to the project, you will probably start with the environment name `development`.
 
-1. Copy the `terraform.tfvars-template` and edit in any variable customizations for the target environment.
+1. You don't need to do this unless you are creating a brand-new environment. If you are doing that, copy the `terraform.tfvars-template` and edit in any variable customizations for the target environment.
 
     ```bash
     cp terraform.tfvars-template terraform.${ENV_NAME}.tfvars
@@ -107,6 +110,7 @@ github_release and github_actions_secret in the github_provider!) -->
     ```bash
     docker-compose --env-file .backend.secrets run --rm terraform init -backend-config backend.tfvars
     ```
+    If you get the error `Failed to query available provider packages` that's a Zscaler problem.
 
 1. Create a Terraform workspace for your environment and switch to it
 
@@ -115,11 +119,13 @@ github_release and github_actions_secret in the github_provider!) -->
     docker-compose --env-file=.backend.secrets run --rm terraform workspace select ${ENV_NAME}
     ```
 
-1. Run Terraform apply, review the plan, and answer `yes` when prompted.
+1. Run Terraform plan and review the output
 
     ```bash
-    docker-compose --env-file=.env.${ENV_NAME}.secrets run --rm terraform apply -var-file=terraform.${ENV_NAME}.tfvars
+    docker-compose --env-file=.env.${ENV_NAME}.secrets run --rm terraform plan -var-file=terraform.${ENV_NAME}.tfvars
     ```
+
+1. If everything looks good, modify the above command to run Terraform apply. Review the plan again, and answer `yes` when prompted.
 
 ## Uninstalling and deleting the broker
 
