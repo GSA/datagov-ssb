@@ -97,13 +97,16 @@ github_release and github_actions_secret in the github_provider!) -->
     ${EDITOR} terraform.${ENV_NAME}.tfvars
     ```
 
-1. Copy the `.env.secrets-template` and edit in [the values](#set-up-environment-secrets-used-to-deploy-and-configure-the-broker) for the Cloud
-   Foundry service account and your AWS deployment user.
+1. Copy the `.env.secrets-template` and edit in the values for the Cloud
+Foundry service account and your AWS deployment user.
 
     ```bash
     cp .env.secrets-template .env.${ENV_NAME}.secrets
     ${EDITOR} .env.${ENV_NAME}.secrets
     ```
+    * `TF_VAR_aws_access_key_id` and `TF_VAR_aws_secret_access_key` are created within the AWS console, associated with an IAM role with appropriate permissions.
+    * `TF_VAR_cf_username` and `password` refer to SpaceDeployer credentials which were output from the `cf service-key` command in the [prerequisites](#prerequisites).
+    * `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY` are the same as what you saved in `.backend.secrets` in a previous step.
 
 1. Run Terraform init to set up the backend.
 
