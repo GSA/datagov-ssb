@@ -24,7 +24,7 @@ jobs:
         with:
           cf_username: ${{ secrets.TF_VAR_cf_username }}
           cf_password: ${{ secrets.TF_VAR_cf_password }}
-          cf_org: gsa-tts-benefits-studio-prototyping
+          cf_org: gsa-tts-benefits-studio
           cf_space: notify-sandbox
           full_command: "cf restage --strategy rolling ssb-devel-${{matrix.app}}"
 
@@ -41,6 +41,6 @@ jobs:
         with:
           cf_username: ${{ secrets.TF_VAR_cf_username }}
           cf_password: ${{ secrets.TF_VAR_cf_password }}
-          cf_org: gsa-tts-benefits-studio-prototyping
+          cf_org: gsa-tts-benefits-studio
           cf_space: ${{ inputs.environment == 'production' && 'notify-management' || 'notify-management-staging' }}
           full_command: "cf restage --strategy rolling ssb-${{matrix.app}}"
