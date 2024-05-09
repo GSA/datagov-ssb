@@ -1,9 +1,9 @@
 # See vars.tf for more information
 client_spaces = {
-  gsa-tts-benefits-studio-prototyping = ["notify-management", "notify-production"]
+  gsa-tts-benefits-studio = ["notify-management", "notify-production"]
 }
 broker_space = {
-  org   = "gsa-tts-benefits-studio-prototyping"
+  org   = "gsa-tts-benefits-studio"
   space = "notify-management"
 }
 broker_zone         = "ssb.notify.gov"
