@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 
-CSB_VERSION="v0.17.10"
+CSB_VERSION="v2.0.2"
 SMS_BROKERPAK_VERSION="v2.1.1"
 
 # Set up an app dir and bin dir
