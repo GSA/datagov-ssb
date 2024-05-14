@@ -1,6 +1,6 @@
 data "cloudfoundry_space" "broker_space" {
-  name     = var.broker_space.space
-  org_name = var.broker_space.org
+  name = var.broker_space.space
+  org  = "9e428562-a2d9-41b4-9c23-1ef5237fb44e" # gsa-tts-benefits-studio
 }
 
 data "cloudfoundry_service" "rds" {
