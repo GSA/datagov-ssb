@@ -128,7 +128,12 @@ Foundry service account and your AWS deployment user.
     docker-compose --env-file=.env.${ENV_NAME}.secrets run --rm terraform plan -var-file=terraform.${ENV_NAME}.tfvars
     ```
 
-1. If everything looks good, modify the above command to run Terraform apply. Review the plan again, and answer `yes` when prompted.
+1. If everything looks good, run this command:
+
+    ```bash
+    docker-compose --env-file=.env.${ENV_NAME}.secrets run --rm terraform apply -var-file=terraform.${ENV_NAME}.tfvars
+    ````
+   Review the plan again, and answer `yes` when prompted.
 
 ## Uninstalling and deleting the broker
 
