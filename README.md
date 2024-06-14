@@ -278,8 +278,6 @@ This project is in the worldwide [public domain](LICENSE.md). As stated in
 
 ## Troubleshooting
 
-TKTK
-
 ### Domain identity verification
 
 ```
@@ -296,3 +294,11 @@ docker-compose --env-file=.env.${ENV_NAME}.secrets run --rm terraform show
 (The value of `ENV_NAME` comes from [§ Creating and installing the broker](https://github.com/GSA/usnotify-ssb?tab=readme-ov-file#creating-and-installing-the-broker))
 
 For more, refer to the [Troubleshooting section](https://github.com/GSA-TTS/datagov-brokerpak-smtp/tree/main/terraform/provision#troubleshooting) of the SMTP Brokerpak provisioning module.
+
+### PR plan mismatch
+
+Either of these errors indicate a mismatch between a Terraform `plan` created and stored when a pull request was first made, checked against the output when `plan` is run more recently:
+* `Performing diff between the pull request plan and the plan generated at execution time`
+* `Plan not found on PR`
+
+This may be caused by a change in deployed resources or a change in Terraform's state that took place after a PR was first created. You could check that the CI/CD pipeline is still working by creating and merging a new, trivial PR.
