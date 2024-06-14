@@ -1,5 +1,7 @@
 # usnotify-ssb
 
+Part of [Notify.gov](https://notify.gov/)
+
 The Supplementary Service Broker (SSB) manages the lifecycle of services, filling gaps in [cloud.gov](https://cloud.gov)'s brokered services. The SSB is compliant with the [Open Service Broker API](https://www.openservicebrokerapi.org/) specification. Using this API, the service broker advertises a catalog of service offerings and service plans, and interprets calls for provision (create), bind, unbind, and deprovision (delete). What the broker does with each call can vary between services. In general, `provision` reserves resources on a service and `bind` delivers information to an app necessary for accessing the resource. The reserved resource is called a service instance.
 
 What a service instance represents can vary by service, for example a single database on a multi-tenant server, a dedicated cluster, or even just an account on a web app. Clients, often platforms in their own right, interact with the SSB to provision and manage instances of the services offered. The broker provides all the information that an application or container needs to connect to the service instance, regardless of how or where the service is running.
