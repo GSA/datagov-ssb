@@ -280,3 +280,19 @@ This project is in the worldwide [public domain](LICENSE.md). As stated in
 
 TKTK
 
+### Domain identity verification
+
+```
+Error creating SES domain identity verification
+```
+The error may say the verification is stuck in `Pending` or `Failed`.
+
+This indicates AWS is unable to [verify a domain used for emailing](https://docs.aws.amazon.com/ses/latest/dg/creating-identities.html). This problem arises when provisioning resources with the [SMTP Brokerpak](https://github.com/GSA-TTS/datagov-brokerpak-smtp). It may be caused by a DNS misconfiguration.
+
+Needed DNS records are described in the output of:
+``` bash
+docker-compose --env-file=.env.${ENV_NAME}.secrets run --rm terraform show
+```
+(The value of `ENV_NAME` comes from [§ Creating and installing the broker](https://github.com/GSA/usnotify-ssb?tab=readme-ov-file#creating-and-installing-the-broker))
+
+For more, refer to the [Troubleshooting section](https://github.com/GSA-TTS/datagov-brokerpak-smtp/tree/main/terraform/provision#troubleshooting) of the SMTP Brokerpak provisioning module.
