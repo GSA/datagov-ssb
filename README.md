@@ -291,7 +291,7 @@ Needed DNS records are described in the output of:
 ``` bash
 docker-compose --env-file=.env.${ENV_NAME}.secrets run --rm terraform show
 ```
-(The value of `ENV_NAME` comes from [§ Creating and installing the broker](#creating-and-installing-the-broker))
+(The value of `ENV_NAME` comes from [&sect; Creating and installing the broker](#creating-and-installing-the-broker))
 
 For more, refer to the [Troubleshooting section](https://github.com/GSA-TTS/datagov-brokerpak-smtp/tree/main/terraform/provision#troubleshooting) of the SMTP Brokerpak provisioning module.
 
