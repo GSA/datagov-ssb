@@ -20,7 +20,7 @@ jobs:
         app: ["sms", "smtp"]
     steps:
       - name: Restage devel ${{matrix.app}}
-        uses: 18f/cg-deploy-action@main
+        uses: cloud-gov/cg-cli-tools@main
         with:
           cf_username: ${{ secrets.TF_VAR_cf_username }}
           cf_password: ${{ secrets.TF_VAR_cf_password }}
@@ -37,7 +37,7 @@ jobs:
         app: ["sms", "smtp"]
     steps:
       - name: Restage ${{matrix.app}}
-        uses: 18f/cg-deploy-action@main
+        uses: cloud-gov/cg-cli-tools@main
         with:
           cf_username: ${{ secrets.TF_VAR_cf_username }}
           cf_password: ${{ secrets.TF_VAR_cf_password }}
