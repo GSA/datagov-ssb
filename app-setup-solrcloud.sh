@@ -12,10 +12,8 @@ BASE_URL="https://get.helm.sh"
 TAR_FILE="helm-v${HELM_VERSION}-linux-amd64.tar.gz"
 
 # Install zip for AWS Lambda restarts of solr
-sudo apt-get -y install zip
-
 # Install pip to install slack_sdk for Slack notifications
-python3 -m ensurepip
+sudo apt-get -y install zip python3-pip
 
 # Set up an app dir and bin dir
 mkdir -p $APP_NAME/bin
