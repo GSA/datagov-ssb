@@ -1,7 +1,7 @@
 #!/bin/bash
 set -ex
 APP_NAME=app-solrcloud
-CSB_VERSION="v0.10.0"
+CSB_VERSION="v2.5.3"
 DATAGOV_BROKERPAK_SOLR_VERSION="v1.3.9"
 
 # TODO: Check sha256 sums
@@ -15,8 +15,7 @@ TAR_FILE="helm-v${HELM_VERSION}-linux-amd64.tar.gz"
 sudo apt-get -y install zip
 
 # Install pip to install slack_sdk for Slack notifications
-curl -sSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
-python3 /tmp/get-pip.py
+python3 -m ensurepip
 
 # Set up an app dir and bin dir
 mkdir -p $APP_NAME/bin
