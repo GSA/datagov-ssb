@@ -18,6 +18,12 @@ module "broker_smtp" {
   aws_zone              = var.broker_zone
 }
 
+# For now we are using a hand-provisioned user-provided service, not managed by Terraform
+data "cloudfoundry_space" "broker-space" {
+  name     = var.broker_space.space
+  org_name = var.broker_space.org
+}
+
 module "broker_solrcloud" {
   source = "./broker"
 

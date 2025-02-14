@@ -15,8 +15,6 @@ resource "aws_servicequotas_service_quota" "minimum_quotas" {
     "vpc/L-FE5A380F" = 20 # NAT gateways per AZ
     "vpc/L-2AFB9258" = 16 # security groups per network interface (16 is the max)
     "vpc/L-F678F1CE" = 20 # VPCs per region
-    "eks/L-33415657" = 20 # Fargate profiles per cluster
-    "eks/L-23414FF3" = 10 # label pairs per Fargate profile selector
     "ec2/L-0263D0A3" = 20 # EC2-VPC Elastic IPs
   }
   service_code = element(split("/", each.key), 0)
@@ -268,9 +266,6 @@ resource "aws_iam_user_policy_attachment" "solr_broker_policies" {
 
     // Route53 manager: for aws_route53_record, aws_route53_zone
     "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
-
-    // AWS EKS module policy defined below
-    "arn:aws:iam::${local.this_aws_account_id}:policy/${module.solr_brokerpak_policy.name}",
 
     // Uncomment if we are still missing stuff and need to get it working again
     // "arn:aws:iam::aws:policy/AdministratorAccess"
