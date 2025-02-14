@@ -1,13 +1,17 @@
-FROM hashicorp/terraform:1.1.5 as upstream
+FROM hashicorp/terraform:1.1.5 AS upstream
 
-FROM alpine/k8s:1.20.7
-
+# Github actions runs on Ubuntu-latest, use the same thing here
+FROM ubuntu:24.04
 COPY --from=upstream /bin/terraform /bin/terraform
 
-RUN apk update
-RUN apk upgrade
-# Install git so we can use it to grab Terraform modules
-RUN apk add --update git
+
+# Install the ca-certificate package and git
+RUN apt-get update && apt-get install -y ca-certificates git
+
+# Add the zscaler certificate to the trusted certs
+# GSA man-in-the-middles SSL with this root certificate
+COPY .docker/zscaler_cert.pem /usr/local/share/ca-certificates/zscaler.crt
+RUN update-ca-certificates
 
 WORKDIR /bin
 ENTRYPOINT ["/bin/terraform"]
