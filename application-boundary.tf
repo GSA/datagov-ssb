@@ -28,7 +28,7 @@ module "broker_solrcloud" {
   source = "./broker"
 
   name                  = "ssb-solrcloud"
-  path                  = "./app-solrcloud"
+  path                  = "./app-solr"
   broker_space          = var.broker_space
   client_spaces         = var.client_spaces
   enable_ssh            = var.enable_ssh
