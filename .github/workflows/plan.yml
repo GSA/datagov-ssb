@@ -24,22 +24,16 @@ jobs:
       TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
       TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
       TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
-      TERRAFORM_PRE_RUN: |
-          ./install-tools.sh
-          cp helm /usr/local/bin/
-          cp kubectl /usr/local/bin/
-          cp aws-iam-authenticator /usr/local/bin/
-          aws-iam-authenticator help
 
     steps:
       - name: checkout
         uses: actions/checkout@v3
       - name: prep applications
         run: |
-          ./app-setup-solrcloud.sh
+          ./app-setup-solr.sh
           ./app-setup-smtp.sh
-      - name: terraform plan (staging)
-        uses: dflook/terraform-plan@v1
+      - name: OpenTofu plan (staging)
+        uses: dflook/tofu-plan@v1
         with:
           path: .
           label: staging
@@ -52,6 +46,7 @@ jobs:
             encrypt=${{ env.ENCRYPT }},
             access_key=${{ env.AWS_ACCESS_KEY_ID }},
             secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}
+
   plan-production:
     name: plan (production)
     runs-on: ubuntu-latest
@@ -62,22 +57,16 @@ jobs:
       TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
       TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
       TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
-      TERRAFORM_PRE_RUN: |
-          ./install-tools.sh
-          cp helm /usr/local/bin/
-          cp kubectl /usr/local/bin/
-          cp aws-iam-authenticator /usr/local/bin/
-          aws-iam-authenticator help
 
     steps:
       - name: checkout
         uses: actions/checkout@v3
       - name: prep applications
         run: |
-          ./app-setup-solrcloud.sh
+          ./app-setup-solr.sh
           ./app-setup-smtp.sh
-      - name: terraform plan (production)
-        uses: dflook/terraform-plan@v1
+      - name: OpenTofu plan (production)
+        uses: dflook/tofu-plan@v1
         with:
           path: .
           label: production
