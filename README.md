@@ -102,10 +102,10 @@ github_release and github_actions_secret in the github_provider!) -->
     ${EDITOR} .env.${ENV_NAME}.secrets
     ```
 
-1. Run Terraform init to set up the backend.
+1. Run Tofu
 
     ```bash
-    docker-compose --env-file .backend.secrets run --rm terraform init -backend-config backend.tfvars
+    docker-compose --env-file .backend.secrets run --rm tofu init -backend-config backend.tfvars
     ```
 
 1. Create a Terraform workspace for your environment and switch to it
