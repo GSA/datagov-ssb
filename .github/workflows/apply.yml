@@ -26,23 +26,16 @@ jobs:
       TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
       TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
       TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
-      TERRAFORM_PRE_RUN: |
-          ./install-tools.sh
-          cp helm /usr/local/bin/
-          cp kubectl /usr/local/bin/
-          cp aws-iam-authenticator /usr/local/bin/
-          aws-iam-authenticator help
 
     steps:
       - name: checkout
         uses: actions/checkout@v3
       - name: prep applications
         run: |
-          ./app-setup-eks.sh
-          ./app-setup-solrcloud.sh
+          ./app-setup-solr.sh
           ./app-setup-smtp.sh
-      - name: terraform apply (staging)
-        uses: dflook/terraform-apply@v1
+      - name: OpenTofu apply (staging)
+        uses: dflook/tofu-apply@v1
         with:
           path: .
           label: staging
@@ -75,23 +68,16 @@ jobs:
       TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
       TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
       TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
-      TERRAFORM_PRE_RUN: |
-          ./install-tools.sh
-          cp helm /usr/local/bin/
-          cp kubectl /usr/local/bin/
-          cp aws-iam-authenticator /usr/local/bin/
-          aws-iam-authenticator help
 
     steps:
       - name: checkout
         uses: actions/checkout@v3
       - name: prep applications
         run: |
-          ./app-setup-eks.sh
-          ./app-setup-solrcloud.sh
+          ./app-setup-solr.sh
           ./app-setup-smtp.sh
-      - name: terraform apply (production)
-        uses: dflook/terraform-apply@v1
+      - name: OpenTofu apply (production)
+        uses: dflook/tofu-apply@v1
         with:
           path: .
           label: production

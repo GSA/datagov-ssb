@@ -6,7 +6,7 @@ What a service instance represents can vary by service, for example a single dat
 
 The SSB can also be used from the command-line with [`eden`](https://github.com/starkandwayne/eden), or integrated into other platforms that make use of the [OSBAPI](https://www.openservicebrokerapi.org).
 
-The SSB currently provides [SMTP](https://github.com/GSA/datagov-brokerpak-smtp), [Solr](https://github.com/GSA/datagov-brokerpak), and [(limited) Kubernetes](https://github.com/GSA/eks-brokerpak) services.
+The SSB currently provides [SMTP](https://github.com/GSA/datagov-brokerpak-smtp) and [Solr](https://github.com/GSA/datagov-brokerpak) services.
  
 Services are defined in a
 [brokerpaks](https://github.com/pivotal/cloud-service-broker/blob/master/docs/brokerpak-intro.md),
@@ -63,7 +63,6 @@ github_release and github_actions_secret in the github_provider!) -->
    into the respective `/app` directories.
 
     ```bash
-    ./app-setup-eks.sh
     ./app-setup-smtp.sh
     ./app-setup-solrcloud.sh
     ```
@@ -103,10 +102,10 @@ github_release and github_actions_secret in the github_provider!) -->
     ${EDITOR} .env.${ENV_NAME}.secrets
     ```
 
-1. Run Terraform init to set up the backend.
+1. Run Tofu
 
     ```bash
-    docker-compose --env-file .backend.secrets run --rm terraform init -backend-config backend.tfvars
+    docker-compose --env-file .backend.secrets run --rm tofu init -backend-config backend.tfvars
     ```
 
 1. Create a Terraform workspace for your environment and switch to it

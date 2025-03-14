@@ -6,5 +6,5 @@ broker_space = {
   org   = "gsa-datagov"
   space = "development-ssb"
 }
-broker_zone = "ssb-dev.data.gov"
+broker_zone = "ssb.data.gov"
 manage_zone = true
