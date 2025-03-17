@@ -30,5 +30,4 @@ module "broker_solrcloud" {
   aws_access_key_id     = module.ssb-solr-broker-user.iam_access_key_id
   aws_secret_access_key = module.ssb-solr-broker-user.iam_access_key_secret
   aws_zone              = var.broker_zone
-  services              = [cloudfoundry_service_instance.solrcloud_broker_k8s_cluster.id]
 }
