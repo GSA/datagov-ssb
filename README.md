@@ -102,7 +102,8 @@ github_release and github_actions_secret in the github_provider!) -->
     ${EDITOR} .env.${ENV_NAME}.secrets
     ```
 
-1. Run Tofu
+1. Run Tofu init to set up the backend. This also locks the provider versions
+   in the version-controlled file `.terraform.lock.hcl`
 
     ```bash
     docker-compose --env-file .backend.secrets run --rm tofu init -backend-config backend.tfvars
