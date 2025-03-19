@@ -350,6 +350,12 @@ module "solr_brokerpak_policy" {
               "logs:ListTagsLogGroup",
               "logs:PutRetentionPolicy",
 
+              "secretsmanager:GetResourcePolicy",
+              "secretsmanager:DescribeSecret",
+              "secretsmanager:GetSecretValue",
+              "secretsmanager:ListSecretVersionIds",
+              "secretsmanager:ListSecrets",
+
               "servicediscovery:DeleteNamespace",
               "servicediscovery:ListTagsForResource",
 
