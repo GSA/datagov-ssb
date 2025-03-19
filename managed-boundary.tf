@@ -267,6 +267,10 @@ resource "aws_iam_user_policy_attachment" "solr_broker_policies" {
     // Route53 manager: for aws_route53_record, aws_route53_zone
     "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
 
+    // AWS Solr Brokerpak policy defined below
+    "arn:aws:iam::${local.this_aws_account_id}:policy/${module.solr_brokerpak_policy.name}",
+
+
     // Uncomment if we are still missing stuff and need to get it working again
     // "arn:aws:iam::aws:policy/AdministratorAccess"
   ])
