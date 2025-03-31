@@ -352,6 +352,7 @@ module "solr_brokerpak_policy" {
               "logs:DescribeLogGroups",
               "logs:DeleteLogGroup",
               "logs:ListTagsLogGroup",
+              "logs:ListTagsForResource",
               "logs:PutRetentionPolicy",
 
               "secretsmanager:GetResourcePolicy",
@@ -368,6 +369,7 @@ module "solr_brokerpak_policy" {
               "sns:GetSubscriptionAttributes",
               "sns:GetTopicAttributes",
               "sns:ListTopics",
+              "sns:ListTagsForResource",
               "sns:SetTopicAttributes",
               "sns:Subscribe",
               "sns:Unsubscribe"
