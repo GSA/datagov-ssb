@@ -2,11 +2,11 @@
 set -ex
 APP_NAME=app-solr
 CSB_VERSION="v2.5.6"
-DATAGOV_BROKERPAK_SOLR_VERSION="v2.1.0"
+DATAGOV_BROKERPAK_SOLR_VERSION="v2.2.0"
 
 # Install zip for AWS Lambda restarts of solr
 # Install pip to install slack_sdk for Slack notifications
-sudo apt-get -y install zip python3-pip
+sudo apt-get -y install zip
 
 # Set up an app dir and bin dir
 mkdir -p $APP_NAME/bin
@@ -53,6 +53,7 @@ applications:
     DB_TLS: "skip-verify"
     GSB_COMPATIBILITY_ENABLE_CATALOG_SCHEMAS: true
     GSB_COMPATIBILITY_ENABLE_CF_SHARING: true
+    GSB_DEBUG: true
     AWS_ZONE: ((AWS_ZONE))
 MANIFEST
 cat > vars-solr-template.yml << VARS
