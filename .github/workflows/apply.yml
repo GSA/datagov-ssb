@@ -15,51 +15,9 @@ env:
   ENCRYPT: "true"
 
 jobs:
+  apply:
 
-  apply-staging:
-    name: apply (staging)
-    runs-on: ubuntu-latest
-    environment: staging
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      TF_VAR_cf_username: ${{ secrets.TF_VAR_cf_username }}
-      TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
-      TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
-      TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
-
-    steps:
-      - name: checkout
-        uses: actions/checkout@v3
-      - name: prep applications
-        run: |
-          ./app-setup-solr.sh
-          ./app-setup-smtp.sh
-      - name: OpenTofu apply (staging)
-        uses: dflook/tofu-apply@v1
-        with:
-          path: .
-          label: staging
-          workspace: staging
-          var_file: terraform.staging.tfvars
-          backend_config: >
-            bucket=${{ env.BUCKET }},
-            key=${{ env.KEY }},
-            region=${{ env.REGION }},
-            encrypt=${{ env.ENCRYPT }},
-            access_key=${{ env.AWS_ACCESS_KEY_ID }},
-            secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}
-      # - name: Setup tmate session
-      #   if: ${{ failure() }}
-      #   uses: mxschmitt/action-tmate@v3
-      #   with:
-      #     limit-access-to-actor: true
-      - name: test staging environment
-        run: echo staging tests ok  # TODO staging smoke tests
-
-  apply-production:
-    needs: apply-staging
-
-    name: apply (production)
+    name: apply
     runs-on: ubuntu-latest
     environment: production
     env:

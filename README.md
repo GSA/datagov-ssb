@@ -137,14 +137,6 @@ docker-compose --env-file=.env.${ENV_NAME}.secrets run --rm terraform destroy -v
 This repository includes a GitHub Action that can continuously deploy the
 `main` branch for you. To configure it, fork this repository in GitHub, then follow these steps.
 
-### Create a workspace for the staging environment
-
-Set up a new workspace in the Terraform state for the staging environment.
-
-```bash
-docker-compose run --rm terraform workspace new staging
-```
-
 ### Set up global secrets (used for sharing the Terraform state)
 
 Enter the following into [GitHub's `Settings > Secrets` page](/settings/secrets) on your fork:
@@ -156,7 +148,7 @@ Enter the following into [GitHub's `Settings > Secrets` page](/settings/secrets)
 
 ### Set up environment secrets (used to deploy and configure the broker)
 
-Create "staging" and "production" environments in [GitHub's `Settings > Environments` page](/settings/environments) on your fork. In each environment, enter the following secrets:
+Create a "production" environment in [GitHub's `Settings > Environments` page](/settings/environments) on your fork. In each environment, enter the following secrets:
 
 | Secret Name | Description |
 |-------------|-------------|
@@ -165,7 +157,7 @@ Create "staging" and "production" environments in [GitHub's `Settings > Environm
 | TF_VAR_cf_username | the username for a Cloud Foundry user with `SpaceDeveloper` access to the target spaces |
 | TF_VAR_cf_password | the password for a Cloud Foundry user with `SpaceDeveloper` access to the target spaces |
 
-Finally, edit the `terraform.staging.tfvars` and `terraform.production.tfvars` files to supply the target orgs and spaces for the deployment.
+Finally, edit the `terraform.production.tfvars` file to supply the target orgs and spaces for the deployment.
 
 Once these secrets are in place, the GitHub Action should be operational.
 
@@ -175,9 +167,7 @@ Once these secrets are in place, the GitHub Action should be operational.
   1. test the Terraform validity for the production environment
   1. post a summary of the planned changes for each environment on the pull-request
 * Any merges to the `main` branch will
-  1. deploy the changes to the staging environment
-  1. run tests on the broker in the staging environment
-  1. (if successful) deploy the changes to the production environment
+  1. deploy the changes to the production environment
 
 
 ## Force cleanup of orphaned resources
