@@ -9,7 +9,6 @@ on:   # yamllint disable-line rule:truthy
         required: true
         type: choice
         options:
-          - "ssb-eks"
           - "ssb-smtp"
           - "ssb-solrcloud"
       appSpace:

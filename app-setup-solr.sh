@@ -1,40 +1,21 @@
 #!/bin/bash
 set -ex
-APP_NAME=app-solrcloud
-CSB_VERSION="v0.10.0"
-DATAGOV_BROKERPAK_SOLR_VERSION="v1.3.9"
-
-# TODO: Check sha256 sums
-HELM_VERSION="3.7.1"
-KUBECTL_VERSION="1.22.3"
-
-BASE_URL="https://get.helm.sh"
-TAR_FILE="helm-v${HELM_VERSION}-linux-amd64.tar.gz"
+APP_NAME=app-solr
+CSB_VERSION="v2.5.6"
+DATAGOV_BROKERPAK_SOLR_VERSION="v2.2.0"
 
 # Install zip for AWS Lambda restarts of solr
-sudo apt-get -y install zip
-
 # Install pip to install slack_sdk for Slack notifications
-curl -sSL https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py
-python3 /tmp/get-pip.py
+sudo apt-get -y install zip
 
 # Set up an app dir and bin dir
 mkdir -p $APP_NAME/bin
 
 # Generate a .profile to be run at startup for mapping VCAP_SERVICES to needed
 # environment variables
-# export SERVICE_NAME=ssb-solrcloud-k8s
 cat > $APP_NAME/.profile << 'EOF'
 # Locate additional binaries needed by the deployed brokerpaks
 export PATH="$PATH:${PWD}/bin"
-
-# Export credentials for the k8s cluster and namespace where the Solr brokerpak
-# should manage instances of SolrCloud. We get these from the binding directly.
-export SOLR_SERVER=$(echo $VCAP_SERVICES | jq -r '.[][]| select(.name=="ssb-solrcloud-k8s") | .credentials.server')
-export SOLR_CLUSTER_CA_CERTIFICATE=$(echo $VCAP_SERVICES | jq -r '.[][]| select(.name=="ssb-solrcloud-k8s") | .credentials.certificate_authority_data')
-export SOLR_TOKEN=$(echo $VCAP_SERVICES | jq -r '.[][]| select(.name=="ssb-solrcloud-k8s") | .credentials.token')
-export SOLR_NAMESPACE=$(echo $VCAP_SERVICES | jq -r '.[][]| select(.name=="ssb-solrcloud-k8s") | .credentials.namespace')
-export SOLR_DOMAIN_NAME=$(echo $VCAP_SERVICES | jq -r '.[][]| select(.name=="ssb-solrcloud-k8s") | .credentials.domain_name')
 EOF
 chmod +x $APP_NAME/.profile
 
@@ -45,27 +26,16 @@ chmod +x $APP_NAME/.profile
 # Add the brokerpak(s)
 (cd $APP_NAME && curl -f -LO https://github.com/GSA/datagov-brokerpak-solr/releases/download/${DATAGOV_BROKERPAK_SOLR_VERSION}/datagov-brokerpak-solr-${DATAGOV_BROKERPAK_SOLR_VERSION}.brokerpak)
 
-# Install the Helm binary
-curl -f -L ${BASE_URL}/${TAR_FILE} |tar xvz && \
-    mv linux-amd64/helm $APP_NAME/bin/helm && \
-    chmod +x $APP_NAME/bin/helm && \
-    rm -rf linux-amd64
-
-# Install kubectl
-curl -f -LO https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/amd64/kubectl && \
-    mv kubectl $APP_NAME/bin/kubectl && \
-    chmod +x $APP_NAME/bin/kubectl
-
 
 # Create a manifest for pushing by hand, if necessary
 cat > manifest-solrcloud.yml << MANIFEST
 ---
-# Make a copy of vars-solrcloud-template.yml for each deployment target, editing the
+# Make a copy of vars-solr-template.yml for each deployment target, editing the
 # values to match your expectations. Then push with
-#   cf push ssb-solrcloud -f manifest-solrcloud.yml --vars-file vars-solrcloud-ENV_NAME
+#   cf push ssb-solrcloud -f manifest-solrcloud.yml --vars-file vars-solr-ENV_NAME
 applications:
 - name: ssb-solrcloud
-  path: app-solrcloud
+  path: app-solr
   buildpacks:
   - binary_buildpack
   command: source .profile && ./cloud-service-broker serve
@@ -83,9 +53,10 @@ applications:
     DB_TLS: "skip-verify"
     GSB_COMPATIBILITY_ENABLE_CATALOG_SCHEMAS: true
     GSB_COMPATIBILITY_ENABLE_CF_SHARING: true
+    GSB_DEBUG: true
     AWS_ZONE: ((AWS_ZONE))
 MANIFEST
-cat > vars-solrcloud-template.yml << VARS
+cat > vars-solr-template.yml << VARS
 AWS_ACCESS_KEY_ID: your-key-id
 AWS_SECRET_ACCESS_KEY: your-key-secret
 AWS_DEFAULT_REGION: us-west-2

@@ -4,13 +4,6 @@ provider "aws" {
   secret_key = var.aws_secret_access_key
 }
 
-provider "aws" {
-  region     = "us-west-2"
-  alias      = "eks-terraform"
-  access_key = module.ssb-eks-broker-user.iam_access_key_id
-  secret_key = module.ssb-eks-broker-user.iam_access_key_secret
-}
-
 # A separate provider for creating KMS keys in the us-east-1 region, which is required for DNSSEC.
 # See https://docs.aws.amazon.com/Route53/latest/DeveloperGuide/dns-configuring-dnssec-cmk-requirements.html
 provider "aws" {
