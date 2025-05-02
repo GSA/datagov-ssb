@@ -6,7 +6,7 @@ What a service instance represents can vary by service, for example a single dat
 
 The SSB can also be used from the command-line with [`eden`](https://github.com/starkandwayne/eden), or integrated into other platforms that make use of the [OSBAPI](https://www.openservicebrokerapi.org).
 
-The SSB currently provides [SMTP](https://github.com/GSA/datagov-brokerpak-smtp) and [Solr](https://github.com/GSA/datagov-brokerpak) services.
+The SSB currently provides [SMTP](https://github.com/GSA/datagov-brokerpak-smtp), [Solr](https://github.com/GSA/datagov-brokerpak), and [(limited) Kubernetes](https://github.com/GSA/eks-brokerpak) services.
  
 Services are defined in a
 [brokerpaks](https://github.com/pivotal/cloud-service-broker/blob/master/docs/brokerpak-intro.md),
@@ -63,6 +63,7 @@ github_release and github_actions_secret in the github_provider!) -->
    into the respective `/app` directories.
 
     ```bash
+    ./app-setup-eks.sh
     ./app-setup-smtp.sh
     ./app-setup-solrcloud.sh
     ```
@@ -102,11 +103,10 @@ github_release and github_actions_secret in the github_provider!) -->
     ${EDITOR} .env.${ENV_NAME}.secrets
     ```
 
-1. Run Tofu init to set up the backend. This also locks the provider versions
-   in the version-controlled file `.terraform.lock.hcl`
+1. Run Terraform init to set up the backend.
 
     ```bash
-    docker-compose --env-file .backend.secrets run --rm tofu init -backend-config backend.tfvars
+    docker-compose --env-file .backend.secrets run --rm terraform init -backend-config backend.tfvars
     ```
 
 1. Create a Terraform workspace for your environment and switch to it
@@ -137,6 +137,14 @@ docker-compose --env-file=.env.${ENV_NAME}.secrets run --rm terraform destroy -v
 This repository includes a GitHub Action that can continuously deploy the
 `main` branch for you. To configure it, fork this repository in GitHub, then follow these steps.
 
+### Create a workspace for the staging environment
+
+Set up a new workspace in the Terraform state for the staging environment.
+
+```bash
+docker-compose run --rm terraform workspace new staging
+```
+
 ### Set up global secrets (used for sharing the Terraform state)
 
 Enter the following into [GitHub's `Settings > Secrets` page](/settings/secrets) on your fork:
@@ -148,7 +156,7 @@ Enter the following into [GitHub's `Settings > Secrets` page](/settings/secrets)
 
 ### Set up environment secrets (used to deploy and configure the broker)
 
-Create a "production" environment in [GitHub's `Settings > Environments` page](/settings/environments) on your fork. In each environment, enter the following secrets:
+Create "staging" and "production" environments in [GitHub's `Settings > Environments` page](/settings/environments) on your fork. In each environment, enter the following secrets:
 
 | Secret Name | Description |
 |-------------|-------------|
@@ -157,7 +165,7 @@ Create a "production" environment in [GitHub's `Settings > Environments` page](/
 | TF_VAR_cf_username | the username for a Cloud Foundry user with `SpaceDeveloper` access to the target spaces |
 | TF_VAR_cf_password | the password for a Cloud Foundry user with `SpaceDeveloper` access to the target spaces |
 
-Finally, edit the `terraform.production.tfvars` file to supply the target orgs and spaces for the deployment.
+Finally, edit the `terraform.staging.tfvars` and `terraform.production.tfvars` files to supply the target orgs and spaces for the deployment.
 
 Once these secrets are in place, the GitHub Action should be operational.
 
@@ -167,7 +175,9 @@ Once these secrets are in place, the GitHub Action should be operational.
   1. test the Terraform validity for the production environment
   1. post a summary of the planned changes for each environment on the pull-request
 * Any merges to the `main` branch will
-  1. deploy the changes to the production environment
+  1. deploy the changes to the staging environment
+  1. run tests on the broker in the staging environment
+  1. (if successful) deploy the changes to the production environment
 
 
 ## Force cleanup of orphaned resources

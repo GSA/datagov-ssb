@@ -1,5 +1,8 @@
+version: '3.7'
+
 services:
-  tofu:
+  terraform:
+    image: datagov-ssb/terraform:latest
     build:
       context: .
     volumes:
@@ -9,7 +12,7 @@ services:
       # Terraform backend bucket creds
       - AWS_ACCESS_KEY_ID
       - AWS_SECRET_ACCESS_KEY
-
+      
       # Secrets for the appropriate Terraform workspace
       - TF_VAR_aws_access_key_id
       - TF_VAR_aws_secret_access_key

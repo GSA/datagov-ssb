@@ -1,24 +1,14 @@
-FROM alpine:3.20 AS tofu
+FROM hashicorp/terraform:1.1.5 as upstream
 
-ADD install-opentofu.sh /install-opentofu.sh
-RUN chmod +x /install-opentofu.sh
-RUN apk add gpg gpg-agent
-RUN ./install-opentofu.sh --install-method standalone --install-path / --symlink-path -
+FROM alpine/k8s:1.20.7
 
-## This is your stage:
+COPY --from=upstream /bin/terraform /bin/terraform
 
-# Github actions runs on Ubuntu-latest, use the same thing here
-FROM ubuntu:24.04
-COPY --from=tofu /tofu /bin/tofu
-
-# Install the ca-certificate package and git
-RUN apt-get update && apt-get install -y ca-certificates git
-
-# Add the zscaler certificate to the trusted certs
-# GSA man-in-the-middles SSL with this root certificate
-COPY .docker/zscaler_cert.pem /usr/local/share/ca-certificates/zscaler.crt
-RUN update-ca-certificates
+RUN apk update
+RUN apk upgrade
+# Install git so we can use it to grab Terraform modules
+RUN apk add --update git
 
 WORKDIR /bin
-ENTRYPOINT ["/bin/tofu"]
+ENTRYPOINT ["/bin/terraform"]
 CMD ["help"]

@@ -14,9 +14,47 @@ env:
 
 jobs:
 
+  plan-staging:
+    name: plan (staging)
+    runs-on: ubuntu-latest
+    environment: staging
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TF_VAR_cf_username: ${{ secrets.TF_VAR_cf_username }}
+      TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
+      TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
+      TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
+      TERRAFORM_PRE_RUN: |
+          ./install-tools.sh
+          cp helm /usr/local/bin/
+          cp kubectl /usr/local/bin/
+          cp aws-iam-authenticator /usr/local/bin/
+          aws-iam-authenticator help
 
-  plan:
-    name: plan
+    steps:
+      - name: checkout
+        uses: actions/checkout@v3
+      - name: prep applications
+        run: |
+          ./app-setup-eks.sh
+          ./app-setup-solrcloud.sh
+          ./app-setup-smtp.sh
+      - name: terraform plan (staging)
+        uses: dflook/terraform-plan@v1
+        with:
+          path: .
+          label: staging
+          workspace: staging
+          var_file: terraform.staging.tfvars
+          backend_config: >
+            bucket=${{ env.BUCKET }},
+            key=${{ env.KEY }},
+            region=${{ env.REGION }},
+            encrypt=${{ env.ENCRYPT }},
+            access_key=${{ env.AWS_ACCESS_KEY_ID }},
+            secret_key=${{ env.AWS_SECRET_ACCESS_KEY }}
+  plan-production:
+    name: plan (production)
     runs-on: ubuntu-latest
     environment: production
     env:
@@ -25,16 +63,23 @@ jobs:
       TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
       TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
       TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
+      TERRAFORM_PRE_RUN: |
+          ./install-tools.sh
+          cp helm /usr/local/bin/
+          cp kubectl /usr/local/bin/
+          cp aws-iam-authenticator /usr/local/bin/
+          aws-iam-authenticator help
 
     steps:
       - name: checkout
         uses: actions/checkout@v3
       - name: prep applications
         run: |
-          ./app-setup-solr.sh
+          ./app-setup-eks.sh
+          ./app-setup-solrcloud.sh
           ./app-setup-smtp.sh
-      - name: OpenTofu plan (production)
-        uses: dflook/tofu-plan@v1
+      - name: terraform plan (production)
+        uses: dflook/terraform-plan@v1
         with:
           path: .
           label: production

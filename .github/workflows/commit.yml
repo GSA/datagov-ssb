@@ -10,7 +10,7 @@ env:
   REGION: "${{ secrets.REGION }}"
   KEY: "ssb-tfstate"
   ENCRYPT: "true"
-
+  
 jobs:
   test:
     name: test format and validity
@@ -19,13 +19,13 @@ jobs:
       - name: checkout
         uses: actions/checkout@v3
 
-      - name: OpenTofu fmt
-        uses: dflook/tofu-fmt-check@v1
+      - name: terraform fmt
+        uses: dflook/terraform-fmt-check@v1
         with:
           path: .
 
-      - name: OpenTofu validate
-        uses: dflook/tofu-validate@v1
+      - name: terraform validate
+        uses: dflook/terraform-validate@v1
         with:
           path: .
 
@@ -40,17 +40,24 @@ jobs:
       TF_VAR_cf_password: ${{ secrets.TF_VAR_cf_password }}
       TF_VAR_aws_access_key_id: ${{ secrets.TF_VAR_aws_access_key_id }}
       TF_VAR_aws_secret_access_key: ${{ secrets.TF_VAR_aws_secret_access_key }}
+      TERRAFORM_PRE_RUN: |
+          ./install-tools.sh
+          cp helm /usr/local/bin/
+          cp kubectl /usr/local/bin/
+          cp aws-iam-authenticator /usr/local/bin/
+          aws-iam-authenticator help
 
     steps:
       - name: checkout
         uses: actions/checkout@v3
       - name: prep applications
         run: |
-          ./app-setup-solr.sh
+          ./app-setup-eks.sh
+          ./app-setup-solrcloud.sh
           ./app-setup-smtp.sh
 
-      - name: OpenTofu apply (development)
-        uses: dflook/tofu-apply@v1
+      - name: terraform apply (development)
+        uses: dflook/terraform-apply@v1
         with:
           path: .
           label: development
