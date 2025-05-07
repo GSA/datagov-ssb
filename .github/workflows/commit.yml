@@ -63,6 +63,7 @@ jobs:
           label: development
           workspace: development
           auto_approve: true
+          refresh: false  # temporary for going to old version
           var_file: terraform.development.tfvars
           backend_config: >
             bucket=${{ env.BUCKET }},
