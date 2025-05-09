@@ -2,7 +2,7 @@
 set -ex
 APP_NAME=app-solr
 CSB_VERSION="v2.5.6"
-DATAGOV_BROKERPAK_SOLR_VERSION="v2.2.0"
+DATAGOV_BROKERPAK_SOLR_VERSION="v2.4.0rc"
 
 # Install zip for AWS Lambda restarts of solr
 # Install pip to install slack_sdk for Slack notifications
