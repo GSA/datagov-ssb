@@ -24,7 +24,7 @@ chmod +x $APP_NAME/.profile
     chmod +x $APP_NAME/cloud-service-broker
 
 # Add the brokerpak(s)
-(cd $APP_NAME && curl -f -LO https://github.com/GSA/datagov-brokerpak-solr/releases/download/${DATAGOV_BROKERPAK_SOLR_VERSION}/datagov-brokerpak-solr-${DATAGOV_BROKERPAK_SOLR_VERSION}.brokerpak)
+(cd $APP_NAME && curl -f -LO https://github.com/GSA-TTS/datagov-brokerpak-solr/releases/download/${DATAGOV_BROKERPAK_SOLR_VERSION}/datagov-brokerpak-solr-${DATAGOV_BROKERPAK_SOLR_VERSION}.brokerpak)
 
 
 # Create a manifest for pushing by hand, if necessary

@@ -168,6 +168,9 @@ resource "aws_iam_user_policy_attachment" "smtp_broker_policies" {
     // Route53 manager: for aws_route53_record, aws_route53_zone
     "arn:aws:iam::aws:policy/AmazonRoute53FullAccess",
 
+    // SNS topics for notifications
+    "arn:aws:iam::aws:policy/AmazonSNSFullAccess",
+
     // AWS SES policy defined below
     "arn:aws:iam::${local.this_aws_account_id}:policy/${module.smtp_broker_policy.name}",
 
