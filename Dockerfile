@@ -8,7 +8,7 @@ RUN ./install-opentofu.sh --install-method standalone --install-path / --symlink
 ## This is your stage:
 
 # Github actions runs on Ubuntu-latest, use the same thing here
-FROM ubuntu:24.04
+FROM ubuntu:24.10
 COPY --from=tofu /tofu /bin/tofu
 
 # Install the ca-certificate package and git
