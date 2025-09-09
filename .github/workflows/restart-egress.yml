@@ -11,7 +11,7 @@ jobs:
   restart-egress:
     strategy:
       matrix:
-        environ: [development-ssb, management-staging, management]
+        environ: [development-ssb, management]
     name: restart egress (${{matrix.environ}})
     concurrency: ${{matrix.environ}}
     environment: ${{matrix.environ}}
