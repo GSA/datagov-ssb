@@ -9,7 +9,6 @@ on:   # yamllint disable-line rule:truthy
         required: true
         type: choice
         options:
-          - "ssb-smtp"
           - "ssb-solrcloud"
       appSpace:
         description: 'Cloud Foundry Space'
@@ -17,7 +16,6 @@ on:   # yamllint disable-line rule:truthy
         type: choice
         options:
           - "development-ssb"
-          - "management-staging"
           - "management"
 
 jobs:

@@ -38,9 +38,6 @@ override.tf.json
 terraform.tfvars
 backend.tfvars
 .env.secrets
-app-smtp
-app-eks
-app-solr
 app-solrcloud
 app-ssb-*.zip
 .backend.secrets
@@ -48,8 +45,5 @@ app-ssb-*.zip
 
 linux-amd64/
 bin/
-kubeconfig*
-vars-solr-template.yml
 vars-solrcloud-template.yml
-manifest-solr.yml
 manifest-solrcloud.yml

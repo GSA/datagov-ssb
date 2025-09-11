@@ -32,7 +32,6 @@ jobs:
       - name: prep applications
         run: |
           ./app-setup-solr.sh
-          ./app-setup-smtp.sh
       - name: OpenTofu plan (production)
         uses: dflook/tofu-plan@v1
         with:
